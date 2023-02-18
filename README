@@ -3,6 +3,12 @@
            An enhanced portable open-source NScripter clone
 
 
+  NOTICE
+
+Since this README file hasn't been updated since 2011, some sections
+may be outdated.
+
+
   HISTORY
 
 Naoki Takahashi's `NScripter' is a popular Japanese game engine used
@@ -167,20 +173,25 @@ at the address
 
   ogapee@aqua.dti2.ne.jp
 
-The maintainer of this branch (as of July 2009) is "Uncle" Mion Sonozaki,
-who can be reached by email at
+The maintainer of this branch (as of February 2023) is Galladite, who
+can be reached by email at
+
+  galladite@yandex.com
+
+The previous maintainer, "Uncle" Mion Sonozaki, may be reachable by
+email at
 
   UncleMion@gmail.com
 
-This README was written primarily by the previous maintainer, Haeleth, who
+This README was written primarily by a previous maintainer, Haeleth, who
 can be reached by email at the address
 
   haeleth@haeleth.net
 
 Correspondence in English, or regarding issues related to this branch
-in particular, should be directed to Uncle Mion, as it contains a large
-number of customisations that have nothing to do with Ogapee, and Haeleth
-is no longer actively maintaining ONScripter-EN.
+in particular, should be directed to Galladite, as it contains a large
+number of customisations that have nothing to do with Ogapee, and
+neither Haeleth nor Uncle Mion are actively maintaining ONScripter-EN.
 
 
   LICENSE
