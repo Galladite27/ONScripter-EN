@@ -1,0 +1,50 @@
+.TH nsadec 1 "January 7, 2010" "version 20100107" "USER COMMANDS"
+.SH NAME
+.HP
+.B nsadec 
+\- for extracting files from an nsa archive file (e.g. "arc.nsa")
+.SH SYNOPSIS
+.HP
+.B "nsadec" 
+.RB [ "-offset "
+.I num
+.RB "] [" -o
+.IR out_dir "] " arc_file
+.SH DESCRIPTION
+This tool is used to extract the files from an NScripter or ONScripter archive
+file in NSA format (typically "arc.nsa").  All files are extracted and
+the directory structure within the archive is preserved.
+.SH OPTIONS
+.TP
+.BI "-offset " num 
+Skips
+.I num
+bytes at the beginning of the file.  This option replaces the old
+.BR -ns2 " and " -ns3
+options (rarely needed.)
+.TP
+.BI "-o " out_dir
+Specifies that the extracted files should be placed in
+.I out_dir
+instead of the current directory.
+.SH EXAMPLES
+.TP
+Extract arc.nsa to the current directory:
+
+.B nsadec
+arc.nsa
+.TP
+Extract arc.nsa to a directory called "arc":
+
+.B nsadec -o
+arc arc.nsa
+.SH EXIT STATUS
+.B nsadec
+returns zero on success and a nonzero value if an error occurs.
+.SH AUTHOR
+Ogapee <ogapee@aqua.dti2.ne.jp>, "Uncle" Mion Sonozaki <UncleMion@gmail.com>
+
+http://onscripter.denpa.mobi/
+.SH SEE ALSO
+.BR nsaconv "(1), " nsamake "(1), " sardec "(1), " ns2dec (1)
+

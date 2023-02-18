@@ -1,0 +1,2 @@
+[nscripter\interpreter\test]
+"IsThisONScripter" = "yes"

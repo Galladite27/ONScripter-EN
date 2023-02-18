@@ -1,0 +1,67 @@
+*define
+nsa
+setlayer 0,100,"hana.dll"
+windoweffect 10,800
+
+game
+
+*start
+
+setwindow 30,380,30,5,20,20,-1,1,0,1,1,#CCDDCC,20,370,620,460
+
+bg #AACCDD,10,800
+
+lsp 2,"*0"
+
+layermessage 0,"i|sakura1.bmp,8,sakura2.bmp,8,sakura3.bmp,8"
+layermessage 0,"s|3,12,16,8,45"
+
+!sd
+さくらです@
+さくらですよ@
+さくらのつもりなんですってば～\
+止むのを待ちましょう。
+layermessage 0,"h"
+
+*watch
+wait 120
+layermessage 0,"n"
+getret %0
+if %0>0 : goto *watch
+
+vsp 2,0
+textclear
+textoff
+
+bg black,10,1500
+
+; 楓画像をスプライトとして読み込む
+lsph 10,":a/8,0,3;kaede1.jpg",0,0
+lsph 11,":a/8,0,3;kaede2.jpg",0,0
+lsph 12,":a/8,0,3;kaede3.jpg",0,0
+
+layermessage 0,"i|10,8,11,8,12,8"	;スプライト登録
+layermessage 0,"s|3,18,-24,16,32"
+
+layermessage 0,"g"
+getret $0
+caption $0
+
+layermessage 0,"f"
+vsp 2,1
+print 10,100
+
+α合成モードで急に出現させてみたり。
+ってか、季節の変わり方の方が急ですね。\
+
+layermessage 0,"p"
+
+動きを止めてみたり。\
+
+layermessage 0,"r"
+
+また動かしてみたり。\
+
+csp 2
+print 10,800
+end

@@ -1,0 +1,77 @@
+
+;gameid test
+
+*define
+windowback
+textgosub *text_lb
+textbtnstart 100
+usewheel
+game
+
+
+*text_lb
+;テキストボタン用の設定
+mov %3,0
+*text_1b_loop
+btndef clear
+for %0=0 to 10
+gettextbtnstr $0,%0+100
+if $0="" goto *next_lp;無いから次へ
+mov $1,"【"
+add $1,$0
+add $1,"】\"
+mov %1,%0+50
+notif $%1="" mov %3,1
+add $1,$%1
+strsp %0+10,$1,10,20,30,5,20,20,0,0,1,1
+vsp %0+10,0
+mov $2,"C10-20P"
+itoa $3,%0+10
+add $2,$3
+textexbtn %0+100,$2
+*next_lp
+next
+
+print 1
+delay 1000
+exbtn_d "C10-20"
+if %3 = 0 textbtnoff
+*tbloop
+delay 500
+textbtnwait %0
+if %0=-1 && %3=0 erasetextbtn : mov %3,1 : goto *text_1b_loop
+if %0=-1 && %3=1 erasetextbtn : mov %3,0 : goto *text_1b_loop
+notif %0=-2 jumpf
+for %1=10 to 20
+  vsp %1,0
+next
+systemcall lookback
+~
+if %0<=-2 goto *tbloop
+if %0>=100 erasetextbtn : wait 500
+texec
+erasetextbtn
+for %0=10 to 20:csp %0:next
+print 1
+saveon
+return
+
+*start
+setwindow 26,344,26,5,22,22,0,0,0,1,1,#2266BB,0,320,639,479
+erasetextwindow 0
+linkcolor #FF2222,#8888FF
+;（表示文中の{}に、変数名,値（エイリアスは使えません）と書くことで、その値を代入できます。ここでは、ヘルプの内容を格納するのに使っています。
+
+<テキストボタン>を使って、このように、/
+<ツールヒント>のようなことも出来ます。@
+linkcolor #FFFF22,#88FFFF
+<ツールヒント>のようなことも出来ます。\
+変数名\
+<テキストボタン>{$50,テキストをボタンのように扱う機能です。}を使って、このように、<ツールヒント>{$51,マウスを重ねるとこのように字が表示されます。}のようなことも出来ます。\
+linkcolor #FF2222,#8888FF
+<テキストボタン>{$50,}を使って、このように、/
+linkcolor #FFFF22,#88FFFF
+<ツールヒント>{$51,}のようなことも出来ます。\
+<ＳＴＲＳＰ命令>{$50,ＳＴＲＳＰ命令は、複数行の文字列スプライトを作ります。\端まで来るか半角￥マークで改行しますが、残念ながら禁則処理はまだ実装していません。}の実験も兼ねています。@
+ちょっと難しいですが、うまく活用すれば<「街」>{$51,チュンソフトのサウンドノベルです。}や<流行り神>{$52,日本一ソフトウェアのホラーアドベンチャーゲームです。}で使われているＴＩＰＳ機能のような効果も出せるはずです。\
+end

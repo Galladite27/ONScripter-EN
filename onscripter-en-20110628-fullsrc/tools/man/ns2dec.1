@@ -1,0 +1,52 @@
+.TH ns2dec 1 "January 7, 2010" "version 20100107" "USER COMMANDS"
+.SH NAME
+.HP
+.B ns2dec 
+\- for extracting files from an ns2 archive file (e.g. "00.ns2")
+.SH SYNOPSIS
+.HP
+.B "ns2dec" 
+.RB [ "-offset "
+.I num
+.RB "] [" -o
+.IR out_dir "] " arc_file
+.SH DESCRIPTION
+This tool is used to extract the files from an NScripter or ONScripter archive
+file in NS2 format (typically "00.ns2").  All files are extracted and
+the directory structure within the archive is preserved.
+.SH OPTIONS
+.TP
+.BI "-offset " num 
+Skips
+.I num
+bytes at the beginning of the file.  This option replaces the old
+.BR -ns2 " and " -ns3
+options from
+.B nsadec
+(rarely needed.)
+.TP
+.BI "-o " out_dir
+Specifies that the extracted files should be placed in
+.I out_dir
+instead of the current directory.
+.SH EXAMPLES
+.TP
+Extract 00.ns2 to the current directory:
+
+.B ns2dec
+00.ns2
+.TP
+Extract 00.ns2 to a directory called "arc":
+
+.B ns2dec -o
+arc 00.ns2
+.SH EXIT STATUS
+.B ns2dec
+returns zero on success and a nonzero value if an error occurs.
+.SH AUTHOR
+Ogapee <ogapee@aqua.dti2.ne.jp>, "Uncle" Mion Sonozaki <UncleMion@gmail.com>
+
+http://onscripter.denpa.mobi/
+.SH SEE ALSO
+.BR ns2conv "(1), " ns2make "(1), " sardec "(1), " nsadec (1)
+

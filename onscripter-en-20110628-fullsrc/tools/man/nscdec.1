@@ -1,0 +1,46 @@
+.TH nscdec 1 "December 26, 2009" "version 20091226" "USER COMMANDS"
+.SH NAME
+.B nscdec 
+\- for converting a packaged (O)NScripter script file (e.g. "nscript.dat")
+to a text script ("result.txt" by default)
+.SH SYNOPSIS
+.B "nscdec" 
+.IR nsc_file " [" out_file "]"
+.SH DESCRIPTION
+This tool is used to decode a packaged NScripter or ONScripter script file
+to an SJIS text script.
+
+Each '\\n' in the packaged script is converted to '\\r\\n' in the output text
+file for compatibility with Windows tools.
+
+On non-Windows systems, input and output can be files or may be standard input
+and/or standard output.
+.SH OPTIONS
+.TP
+.I nsc_file
+The input file to decode (usually called "nscript.dat".)  Specify - to
+read from standard input.
+.TP
+.I out_file
+The output file.  Specify - to write to standard output.  If not
+specified, defaults to "result.txt".
+.SH EXAMPLES
+.TP
+Generate 0.txt from nscript.dat:
+
+.B nscdec
+nscript.dat 0.txt
+.TP
+Read nscript.dat and write output to standard out:
+
+.B nscdec
+nscript.dat -
+.SH EXIT STATUS
+.B nscdec
+returns zero on success and a nonzero value if an error occurs.
+.SH AUTHOR
+"Uncle" Mion Sonozaki <UncleMion@gmail.com>
+
+http://onscripter.denpa.mobi/
+.SH SEE ALSO
+.BR nscmake (1)

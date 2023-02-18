@@ -1,0 +1,56 @@
+* TO BUILD ONSCRIPTER-EN FOR YOUR USE
+
+This is the usual
+
+  ./configure
+  make
+  sudo make install
+
+
+This will use gcc by default; to use icc, start with
+  CC=icc ./configure
+
+
+* DEALING WITH UNHELPFUL LIBRARIES
+
+Some system-provided libraries are not ideally configured for use with
+ONScripter-En.  For example, some system-provided SDL libraries cause
+stuttering audio.  You can usually fix this by using the internal
+library pack and configuring with something like
+
+  ./configure --with-internal-sdl
+
+(use --help to get a list of the options you can use to selectively
+replace libraries with internal versions).
+
+
+* TO BUILD A RELATIVELY REDISTRIBUTABLE ONSCRIPTER-EN BINARY
+
+Configure with
+
+  ./configure --with-internal-libs
+
+to statically link as many libraries as possible into the executable,
+which makes life better on systems with very primitive application
+installation methods, such as OS X and Windows.
+
+If you are compiling ONScripter-En for a system with modern package
+management - for example, if you are creating a binary package for a
+specific Linux distribution - then it may make more sense to omit the
+--with-internal-libs, compile a dynamically linked executable, and
+have your package depend on the regular platform-specific packages for
+SDL, Freetype, and all the other dependencies.  However, you may still
+need to include some libraries internally to make everything work.
+
+
+* NOTES
+
+For Windows builds, use a MinGW toolchain in the MSYS environment.
+There is no Visual Studio option; it just isn't worth the pain.
+
+For Mac OS X there is an XCode project file in the "macosx" directory.
+It builds a Universal binary as an application bundle.
+Either build from within XCode, or use "xcodebuild" from a shell prompt. 
+It is known to build with XCode 2.4.1 on Mac OS X 10.4.
+The game data can either be stored in the Contents/Resources within the
+bundle, or run ONScripter.app from within the game directory itself.

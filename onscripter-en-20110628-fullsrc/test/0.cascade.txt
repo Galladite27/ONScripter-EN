@@ -1,0 +1,24 @@
+
+; A test for the "cascade.dll" effect.
+
+*define
+nsa
+game
+
+*start
+
+bg "bgi1.jpg",99,5000,"cascade.dll/ux"
+bg "bgi1.jpg",99,3000,"cascade.dll/uo"
+bg "bgi1.jpg",99,2000,"cascade.dll/di"
+bg "bgi0.jpg",99,4000,"cascade.dll/dx"
+bg "bgi0.jpg",99,2000,"cascade.dll/do"
+bg "bgi0.jpg",99,1000,"cascade.dll/ui"
+bg "bgi1.jpg",99,3000,"cascade.dll/lx"
+bg "bgi1.jpg",99,3000,"cascade.dll/lo"
+bg "bgi1.jpg",99,2000,"cascade.dll/ri"
+bg "bgi0.jpg",99,2000,"cascade.dll/rx"
+bg "bgi0.jpg",99,2000,"cascade.dll/ro"
+bg "bgi0.jpg",99,1000,"cascade.dll/li"
+
+click
+end

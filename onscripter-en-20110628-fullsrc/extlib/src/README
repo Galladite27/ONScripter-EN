@@ -1,0 +1,7 @@
+This source code is that used to build static ONScripter executables,
+in accordance with the GNU GPL's requirements.
+
+If you want to use these libraries as such, you should probably
+download their source code from their respective creators, since the
+source provided here has been trimmed somewhat to remove features not
+used in ONScripter, tests, documentation, and so forth.

@@ -1,0 +1,32 @@
+*define
+nsa
+setlayer 0,100,"oldmovie.dll/0"
+windoweffect 10,800
+
+game
+
+*start
+
+setwindow 30,380,30,5,20,20,-1,1,0,1,1,#CCDDCC,20,370,620,460
+
+bg "oldmovie.jpg",1
+
+lsph 10,":l/16,0,3;dust.bmp",0,0
+lsp 2,"*0"
+
+layermessage 0,"s|2,12,10,200,160,10"
+
+!sd
+`This is an old movie.@
+`Well, maybe not.\
+`End of film...
+
+delay 1000
+
+textclear
+csp 2
+
+bg black,10,2000
+
+
+end

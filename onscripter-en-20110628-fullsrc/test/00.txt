@@ -1,0 +1,444 @@
+;mode800
+;gameid test
+
+*define
+
+nsa
+
+pretextgosub *pretext
+english
+clickskippage
+
+dim ?0[10][5][2]
+numalias testnum,   72
+numalias NScripter, 73
+
+numalias skipstr, 71
+numalias teststr, 72
+numalias wantstr, 73
+numalias numstr,  74
+numalias answer,  75
+numalias answer2, 76
+
+; This is ignored by Ponscripter, which always defines it as 1.
+numalias PONSCRIPTER, 0
+
+defsub test
+defsub skiptest
+defsub testsub
+defsub getcharpos
+defsub erase
+defsub printnicely
+
+caption "NScripter test suite"
+versionstr "NScripter test suite"," version 0.1"
+
+savename "Save","Load","File "
+savenumber 20
+effectblank 0
+transmode alpha
+selectcolor #ffffff,#cccccc
+menuselectcolor #ffffff,#aaaaaa,#999999
+menusetwindow 15,18,2,2,0,1,#808080
+rmenu "Reset",reset,"Save",save,"Load",load
+defaultspeed 0,0,0
+
+addkinsoku "：",""
+
+numalias WINDX,  8
+numalias WINDY, 16
+numalias CHARW, 20
+numalias CHARH, 20
+numalias TRACK,  0
+numalias LEAD,   2
+
+rubyon 12,12
+
+game
+
+*start
+if PONSCRIPTER = 0 skip 2
+h_mapfont 0, "default.ttf"
+
+; Check interpreter type: is this real NScripter, or a clone like ONScripter?
+; (If getreg reads from registry.txt, we use ` for English text; otherwise
+; we assume we're using NScripter and use > instead.)
+mov %NScripter,1
+getreg $teststr,"nscripter\interpreter\test","IsThisONScripter"
+if $teststr = "yes" mov %NScripter,0
+
+if %NScripter == 1 skip 2
+language japanese
+
+; Set up basic window.
+;
+textspeed 0 ; can't use !s0 in NScripter in "english" mode
+setwindow WINDX,WINDY,30,23,CHARW,CHARH,TRACK,LEAD,20,1,0,#ffffff,0,0,639,479
+mov %testnum,0
+mov $skipstr,"Skip"
+mov $wantstr,"Want"
+mov $teststr,"Test"
+
+; Test #1: itoa, itoa2, atoi, mid, split, and various `if' statements
+;
+test 1,"○○○○○"
+for %0=210 to 214: movl ?0[7][%0-210], %0, %0, %0: next
+itoa $5, ?0[7][3][1]
+itoa2 $6, ?0[7][3][1]
+mid $4, $5, 1, 1
+if $4 > "0mung" & $4 < "2gsf" puttext "○/": skip 2
+×/
+if $5 = "213" puttext "○/": skip 2
+×/
+if $6 = "２１３" puttext "○/": skip 2
+×/
+if ?0[7][3][1] + 2 > 214 & ?0[7][3][1] < 214 puttext "○/": skip 2
+×/
+split $5, "1", $6, %7
+atoi %8, $6
+if $6 = "2" & %7 * 2 = %8 * 3 puttext "○": skip 2
+×
+
+; Test #2: user subs and parameter handling
+;
+test 2,"風　２４６０１　６１　３６５　４２　婆"
+mov %61,365
+mov $42,"婆"
+testsub "風", 24601, %61, $42
+goto *enddefinition
+*testsub
+  getparam $0,%0,i%1,s%2
+  $0　%0　%1　%%1　%2　$%2
+  return
+*enddefinition
+
+; Test #3: `for' loops and array handling
+;
+test 3,"３０　４２　５４　６６"
+for %0=0 to 4: movl ?0[8][%0], %0, %0, %0: next
+for %50=0 to 6 step 2
+  mov ?0[8][2][0], ?0[8][2][0] + 1
+  ?0[8][2][0]%50　/
+next
+　
+; the previous line is significant whitespace, forcing a line break
+
+
+; Tests #4-6: kinsoku and linebreak
+;
+; NScripter itself gets this one wrong!
+test 4,"モリソン「この世に悪があるとすれば、それは人の心"
+モリソン「この世に悪があるとすれば、それは人の心/
+だ」
+erase "だ」","」"
+test 5,"モリソン「この世に悪があるとすれば、それは人の心"
+モリソン「この世に悪があるとすれば、それは人の/
+心だ」
+erase "だ」","」"
+; / is always a valid break point
+test 6,"モリソン「この世に悪があるとすれば、それは人の心だ"
+モリソン「この世に悪があるとすれば、それは人の心だ/
+」
+erase "だ」","」"
+; Test #7: NScr 2.70+ addkinsoku function (in header)
+test 7,"モリソン「この世に悪があるとすれば、それは人の心"
+モリソン「この世に悪があるとすれば、それは人の心だ：
+erase "だ：","："
+\
+
+
+; Pathological case: will unbreakable tokens cause spurious newlines?
+gosub *nexttest
+lsp 0,":s/20,20,0;#ffffff#000000ｅｘｔ　ｉｓ　ｎｏｔ　ｍｉｓｓｉｎｇ　ｔｈｅ　Ｔ",28,16
+setwindow WINDX,WINDY,1,23,CHARW,CHARH,TRACK,LEAD,20,1,0,#ffffff,0,0,639,479
+Ｔ」
+locate 0,2: erase "Ｔ","」"
+locate 0,3: erase "Ｔ","」"
+\
+csp 0
+
+; Pathological case 2: will unbreakable strings cause spurious newlines?
+; Important to note how NScripter behaves in this case, since some games
+; (like Umineko) seem to make use of that
+setwindow WINDX,WINDY,3,23,CHARW,CHARH,TRACK,LEAD,20,1,0,#ffffff,0,0,639,479
+ＴＴ「「「「「「「「@
+ＴＴ」」」」」」」」\
+
+setwindow WINDX,WINDY,30,23,CHARW,CHARH,TRACK,LEAD,20,1,0,#ffffff,0,0,639,479
+
+; Test #8: ASCII text within Japanese (which is allowed in non-English mode,
+; and used in some games - be sure odd spaces are processed like NScripter!)
+test 8,"モリソン「How does　NScripter parse text」「さあ」"
+モリソン「How does　NScripter parse text」「さあ」
+\
+
+; Test ASCII text.
+;
+; Sadly we need to write all these tests twice, for NScripter and ONScripter;
+; care must be taken to ensure they're always equivalent!  (Obviously
+; NScripter fails them all anyway, but it's useful to be able to show that,
+; in case anyone asks us silly questions like why we don't use NScripter for
+; Windows versions of English games.)
+
+; Switch ONScripter-En into English mode.
+if %NScripter == 1 skip 2
+language english
+
+; Test #9: Is any attempt made to wrap English text nicely?
+;
+test 9,"The quick brown fox jumps over the lazy dog."
+if %NScripter == 1 skip 3
+`The quick brown fox jumps over the lazy dog. FAIL!!!
+skip 2
+>The quick brown fox jumps over the lazy dog. FAIL!!!
+erase "!!", "FAIL!!!"
+
+; Test #10: Are over-long tokens broken appropriately?
+; NScripter passes this one, purely by accident... :)
+;
+test 10,"[see next]|ReallyIdontknowwhysomepeoplefindunbrokentextsodreadfullyhard"
+if %NScripter == 1 skip 4
+`[see next]
+`ReallyIdontknowwhysomepeoplefindunbrokentextsodreadfullyhardtoread.
+skip 3
+>[see next]
+>ReallyIdontknowwhysomepeoplefindunbrokentextsodreadfullyhardtoread.
+erase "toread.", ""
+
+; Test #11: Where the start of a string falls partway through a line,
+; and the first token of the string needs to wrap, is a wrap permitted
+; before that token?
+;
+if %NScripter == 1 skiptest 11:skip 5 ; NScripter can't split English lines
+test 11,"The quick brown fox jumps over the lazy dog."
+`The quick brown fox jumps over the lazy dog. /
+`FAIL!!!
+erase "!!", "FAIL!!!"
+
+; Test #12: What about if we repeat the above the evil way?
+; (It's been done IRL, I assure you...)
+;
+test 12,"The quick brown fox jumps over the lazy dog."
+if %NScripter == 1 skip 3
+`The quick brown fox jumps over the lazy dog.
+skip 2
+>The quick brown fox jumps over the lazy dog.
+getcharpos %0,%1
+locate 27,%1-1
+if %NScripter == 1 skip 3
+`FAIL!!!
+skip 2
+>FAIL!!!
+erase "!!", "FAIL!!!"
+
+; Test #13: Are inline pauses treated as break points?
+; (Mion's rules suggest they shouldn't be, and I agree; if a break is
+; actually desired, the user can split the line with a / before/after
+; the inline pause.)
+;
+if %NScripter == 1 skiptest 13:skip 4 ; NScripter can't handle !d in english mode
+test 13,"The quick brown fox jumps over the lazy dog."
+`The quick brown fox jumps over the lazy dog. F!d1A!d1I!d1L!d1!!d1!!d1!
+erase "!!", "FAIL!!!"
+
+; Test #14: Ditto for inline colour changes.
+;
+if %NScripter == 1 skiptest 14:skip 4 ; It can't do #nnnnnn in english mode either
+test 14,"The quick brown fox jumps over the lazy dog."
+`The quick brown fox jumps over the lazy dog. F#ffffffA#ffffffI#ffffffL#ffffff!#ffffff!#ffffff!
+erase "!!", "FAIL!!!"
+
+
+; Test #15: Are runs of spaces at the end of a line ignored, or can
+; some of the spaces wrap over into the next line?
+;
+test 15,"Carmina qui quondam studio florente peregi|flebilis heu maestos cogor inire modos."
+if %NScripter == 1 skip 3
+`Carmina qui quondam studio florente peregi         flebilis heu maestos cogor inire modos.
+skip 2
+>Carmina qui quondam studio florente peregi         flebilis heu maestos cogor inire modos.
+\
+
+; Switch ONScripter-En into Japanese mode.
+if %NScripter == 1 skip 2
+language japanese
+
+; Setting variables in-text: Japanese
+; (doesn't work with Nscripter in "english" mode
+;
+if %NScripter == 1 skip 8
+テキストボタン{$50,テキストをボタンのように扱う機能です。,%53,45}を使って、このように、ツールヒント{$51,マウスを重ねるとこのように字が表示されます。}のようなことも出来ます。\
+%53$50
+$51 \
+ＳＴＲＳＰ命令{$50,ＳＴＲＳＰ命令は、複数行の文字列スプライトを作ります。}の実験も兼ねています。ちょっと難しいですが、うまく活用すれば「街」{$51,チュンソフトのサウンドノベルです。}や流行り神{$52,日本一ソフトウェアのホラーアドベンチャーゲームです。}で使われているＴＩＰＳ機能のような効果も出せるはずです。\
+$50
+$51
+$52 \
+
+; pretextgosub test - Japanese
+;
+[PASS]モリソン「この世」に悪があるとすれば、それは人の心だ\
+csp 0
+[ALSO/PASS]モリソン「この世」に悪があるとすれば、それは人の心だ\
+csp 0
+print 1
+
+; locate lookback test
+;
+locate 4,6
+if %NScripter == 1 skip 5
+`Carmina qui quondam studio florente peregi
+locate 5,2
+`flebilis heu maestos cogor inire modos.
+skip 4
+>Carmina qui quondam studio florente peregi
+locate 5,2
+>flebilis heu maestos cogor inire modos.
+\
+
+locate 2,10
+if %NScripter == 1 skip 5
+`Now do lookback to see if text stays positioned.
+locate 10,15
+`Did it work?
+skip 4
+>Now do lookback to see if text stays positioned.
+locate 10,15
+>Did it work?
+\
+
+if %NScripter == 1 end
+
+language english
+
+; Setting variables in-text: English
+;  The {} sections need to be out of `` mode, otherwise taken as literal text
+;
+`On the next line you should see 'red'` {$50,`red`,$51,`yellow`} ` and 'yellow'. @
+`$50 and $51. \
+`On the next line you should see 'blue'` {$50,`blue`} ` and 'green'` {$51,`green`} `. @
+`$50 and $51. \
+
+; pretextgosub test - English
+;  The [] must begin the line, be out of `` mode
+;
+[`You pass!`/`Yay!`]`The words "You pass!" should show below.
+\
+csp 0
+[`Pass `again` w/o error!`/`Yay!`]`Did we pass again?
+\
+csp 0
+
+;Displaying numerical values correctly in text
+  mov %1,24601
+  itoa $1,%1
+lsp 0, ":s#FFFFFF`Succeeded in reading "+$1+"`!", 20, 100
+print 1
+  `Successfully,!w200 ` %1`!
+  `Successfully, `$1 `!\
+csp 0
+
+; text with a mix of `` phrases and commands, also some Japanese, ruby
+それは人` hello there. ` !w200 ` How are you? `@ ` So then, @is nearly everything printing okay? `@
+`How about if we have Japanese near the end of the line? あああああ, for example. @
+`How about if we have Japanese near the end of the line? あ　あ　あ　あ　あ, for example. @
+br
+この(世界/せかい)に(悪/あく)があるとすれば、それは(人/ひと)の(心/こころ)だははこの(世/よ)に(悪/あく)があるとすれば、それは(人/ひと)の(心/こころ)だ@
+br
+`I wonder if `(悪/あく)` ruby in English text would work, say "`(世界/せかい)`", for example. @
+`His name is 右代宮 戦人 (Ushiromiya Battler). @
+br
+`Hello there `(戦人/ばとら)`.  Are you having a `(good/いい)` (and/or) bad day?  @
+`*Ring!* a sound effect! @
+それは人それは人それは人それは人それは人それは人それは人それは人それは人それは人@
+`hそれは人それは人それは人それは人それは人それは人それは人それは人それは人それは人\
+
+end
+
+
+;
+; Auxiliary subroutines
+;
+
+*test
+getparam %testnum,$answer
+split $answer,"|",$answer,$answer2
+gosub *nexttest
+$wantstr／$numstr　/
+printnicely $answer
+if $answer2 <> "" printnicely $answer2
+$teststr／$numstr　/
+return
+
+*skiptest
+getparam %testnum
+gosub *nexttest
+$skipstr／$numstr　/
+printnicely "[test not applicable]"
+return
+
+*nexttest
+itoa $numstr,%testnum
+len %20,$numstr: mod %20,2: if %20 == 1 add $numstr," "
+return
+
+; Erase some characters from the previous line.
+*erase
+getparam $30,$31
+getcharpos %30,%31: sub %31,1
+gosub *blacktext
+locate %30,%31
+printnicely $30
+locate %30,%31
+printnicely $31
+gosub *whitetext
+locate %30,%31
+return
+
+; Why _does_ getcursorpos use different units and a different origin
+; from locate?
+; Mion: It's actually meant for positioning a cursor sprite, not text
+*getcharpos
+getparam i%50,i%51
+getcursorpos %52,%53
+mov %%50,(%52 - WINDX) / (CHARW + TRACK)
+mov %%51,(%53 - WINDY) / (CHARH + LEAD)
+return
+
+; Both ONScripter and NScripter need special treatment to print ASCII
+; strings properly...
+*printnicely
+getparam $20
+if %NScripter == 1 skip 3
+`$20
+return
+len %20,$20: mod %20,2: if %20 == 1 add $20," "
+$20
+return
+
+; textcolor must be among the worse-designed commands... and it's
+; very annoying that NScripter requires its use in "english" mode.
+*blacktext
+if %NScripter == 0 skip 3
+textcolor #000000
+return
+#000000
+return
+*whitetext
+if %NScripter == 0 skip 3
+textcolor #ffffff
+return
+#ffffff
+return
+
+*pretext
+gettag $60,$61
+if $60 == "" return
+if $61 == "" lsp 0, ":s#FFFFFF"+$60, 20, 100 : print 1 : return
+lsp 0, ":s#FFFFFF"+$60+"--"+$61, 20, 100
+print 1
+return
+
+;; Local Variables:
+;; mode: ponscripter
+;; End:

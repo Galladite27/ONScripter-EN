@@ -1,0 +1,50 @@
+.TH ns2make 1 "January 7, 2010" "version 20100107" "USER COMMANDS"
+.SH NAME
+.HP
+.B ns2make
+\- for creating (O)NScripter NS2 archive files
+.SH SYNOPSIS
+.HP
+.B "ns2make" 
+.IB "arc_file" " -d " in_dir
+.P
+.B ns2make
+.I arc_file in_file "..."
+
+.SH DESCRIPTION
+This tool produces NS2 archives for use with NScripter or ONScripter titles
+either from a list of files given on the command line or from a directory
+of files.
+.SH OPTIONS
+.TP
+.BI "-d " in_dir
+Builds an archive from the directory
+.IR in_dir ".  "
+The top-level directory
+.I in_dir
+will not be included in pathnames stored in the archive.
+.TP
+.I in_file "..."
+A list of files and/or directories to be included in the archive.
+
+.SH EXAMPLES
+.TP
+Create an archive called "00.ns2" from a directory called "arc":
+.B ns2make
+00.ns2
+.BR -d " arc"
+
+.TP
+Create an archive called "01.ns2" with the directories "img" and "bgm" and their contents:
+.B ns2make
+01.ns2 img bgm
+.SH EXIT STATUS
+.B ns2make
+returns zero on success and a nonzero value if an error occurs.
+.SH AUTHOR
+Ogapee <ogapee@aqua.dti2.ne.jp>, "Uncle" Mion Sonozaki <UncleMion@gmail.com>
+
+http://onscripter.denpa.mobi/
+.SH SEE ALSO
+.BR ns2dec "(1), " ns2conv "(1), " sarmake "(1), " nsamake (1)
+

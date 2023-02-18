@@ -1,0 +1,25 @@
+*define
+nsa
+game
+
+*start
+
+lsp 0,":c;tr_logo.jpg",140,100
+print 99,2500,"whirl.dll/r"
+repaint
+delay 1000
+
+csp 0
+
+bg ":c;bgi1.jpg",99,3000,"whirl.dll/l"
+repaint
+delay 1000
+
+lsp 0,":c;kimikage.jpg",160,176
+bg white,99,4000,"whirl.dll/r"
+repaint
+delay 1000
+
+csp 0
+bg black,99,1500,"whirl.dll/l"
+end

@@ -1,0 +1,83 @@
+*define
+nsa
+setlayer 0,100,"snow.dll"
+windoweffect 10,500
+
+game
+
+*start
+
+setwindow 30,380,30,5,20,20,-1,1,0,1,1,#88AACC,20,370,620,460
+
+bg "bgi.jpg",10,500
+
+lsp 2,"*0"
+
+layermessage 0,"i|snow1.bmp,snow2.bmp,snow3.bmp"	;画像登録
+layermessage 0,"s|3,10,-2,16,20"
+delay 8000
+
+!sd
+レイヤー機能による牡丹雪効果。@
+このモードではやや背景に馴染ませ難いですが、軽いです。\
+止むのを待ってみます。
+（不自然な止み方だとかは気にしないとして……）
+
+*watch1
+layermessage 0,"t|3,1,-1,0,0"
+wait 100
+layermessage 0,"n"
+getret %0
+itoa $0,%0 : caption $0
+if %0>8 : goto *watch1
+
+layermessage 0,"h"	;これだと完全に止む
+
+*watch2
+wait 100
+layermessage 0,"n"
+getret %0
+itoa $0,%0 : caption $0
+if %0>0 : goto *watch2
+
+vsp 2,0
+textclear
+textoff
+
+delay 1500
+
+; 雪画像をスプライトとして読み込む
+lsph 10,":a;snowa1.bmp",0,0
+lsph 11,":a;snowa2.bmp",0,0
+lsph 12,":a;snowa3.bmp",0,0
+
+layermessage 0,"i|10,11,12"	;スプライト登録
+layermessage 0,"s|2,16,8,10,24"
+
+layermessage 0,"g"
+getret $0
+caption $0
+
+layermessage 0,"f"
+vsp 2,1
+print 10,100
+
+α合成モードで急に出現させてみたり。\
+
+layermessage 0,"p"
+
+動きを止めてみたり。\
+
+layermessage 0,"r"
+
+また動かしてみたり。\
+
+layermessage 0,"i|rain1.bmp,rain2.bmp,rain3.bmp"	;画像登録
+layermessage 0,"s|1,30,-9,0,0"
+
+効率が悪いのでお勧めはしませんが、雨。@
+加算合成は光の粒子とかやると綺麗かも。\
+
+csp -1
+print 10,800
+end

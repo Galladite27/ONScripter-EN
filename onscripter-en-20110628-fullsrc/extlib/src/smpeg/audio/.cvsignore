@@ -1,0 +1,15 @@
+Makefile.in
+Makefile
+.deps
+.libs
+bitwindow.lo
+MPEGaudio.lo
+mpeglayer1.lo
+hufftable.lo
+filter.lo
+filter_2.lo
+mpegtable.lo
+mpeglayer2.lo
+mpegtoraw.lo
+mpeglayer3.lo
+libaudio.la

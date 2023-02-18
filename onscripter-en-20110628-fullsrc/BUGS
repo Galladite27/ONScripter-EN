@@ -1,0 +1,30 @@
+BUGS OR MISFEATURES
+
+* OS X: should look for missing files (eg font) inside bundles, even
+  if the main game data is outside the bundle.
+
+* Global variables cannot be set above 4095, even if ;value is set to
+  4096 or higher.
+
+* PDA build will be broken; screen ratio isn't being set properly with
+  new custom resolutions
+
+* Right-clicking during a clickwait doesn't check for if rgosub is
+  enabled
+
+* You cannot call any menu actions that would break away from the
+  selection while in a select command (such as reset or load)
+  * I have an idea for a fix for this
+
+* Rgosub is ignored from within select command
+
+FEATURES REQUESTED
+  
+* Allow the specification of a "fallback" font to use for characters
+  missing from the main font -- this would make mix-and-match Japanese
+  and English easier.
+
+* Restore support for MOD, XM and OPUS audio
+
+* Allow the switching of font files mid-line, for example through the
+  use of a !fX command, similar to the !wX command.

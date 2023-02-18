@@ -1,0 +1,48 @@
+body {
+    font: 10pt "Lucida Grande";
+}
+
+#icon {
+    height: 48px;
+    width: 48px;
+    vertical-align: middle;
+}
+
+#pagetitle h1 {
+    font-size: 18pt;
+}
+
+.sectionlink a {
+    font-weight: bold;
+    color: #C00;
+    text-decoration: none;
+}
+
+#main {
+    margin-left: 8px;
+}
+
+#main p {
+    margin-left: 8px;
+    margin-right: 8px;
+    max-width: 600px;
+    line-height: 14pt;
+    text-align: justify;
+}
+
+#main h4 {
+    margin-left: 8px;
+    margin-bottom: 0px;
+    padding-bottom: 0px;
+}
+
+#main p.indent {
+    margin-left: 24px;
+    max-width: 584px;
+    margin-top: 0px;
+}
+
+#main p.cmd {
+    font-family: monospace;
+    margin-bottom: 0px;
+}   

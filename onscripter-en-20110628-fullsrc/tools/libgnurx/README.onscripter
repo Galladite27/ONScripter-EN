@@ -1,0 +1,6 @@
+This library code is included to allow building ONScripter Tools on
+MinGW with regular expression file-matching capability.
+
+The Makefile has been modified to produce a static library instead of
+a DLL, and some other files have been removed, but the source code itself
+is unchanged.

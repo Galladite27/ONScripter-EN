@@ -1,0 +1,189 @@
+                            ONScripter-EN
+
+           An enhanced portable open-source NScripter clone
+
+
+  HISTORY
+
+Naoki Takahashi's `NScripter' is a popular Japanese game engine used
+for both commercial and free visual novels.  It attained popularity
+due to its liberal terms of use and relative simplicity.  However, it
+is closed source software and only available for Windows.
+
+A number of cross-platform clones exist, and Ogapee's `ONScripter' is
+the most popular of these.  Due to the ease with which it can be
+modified to support languages other than Japanese, ONScripter has been
+adopted by the visual novel localisation community as the engine of
+choice for translated NScripter games; the patch to support English
+even made it into the main ONScripter source code.
+
+Nevertheless, the English-language community has found it convenient
+to maintain its own branch of the code, and to enhance it in ways best
+suited to the use we make of it.
+
+ONScripter-EN is that branch.
+
+
+  PLAYING GAMES
+
+Playing an existing game with ONScripter-EN requires two additional
+files to be added to the game directory:
+
+- `default.ttf', a TrueType font.  The free font Sazanami Gothic is
+  known to work.
+
+- Optionally, `game.id', a text file containing simply the name of the
+  game.  This is used to identify a separate directory where saved
+  data is stored; unlike the original ONScripter, which places saved
+  games in the game directory, ONScripter-EN does not require games to
+  be kept in a world-writable location.
+
+This done, the game can be played either by dropping the `onscripter'
+executable into the game directory and running it, or by running it
+with the `-r' command-line option to identify the desired game.
+
+The saved game location behaviour can be overridden with the `-s'
+command-line option if you wish for some reason to restore the default
+ONScripter behaviour or to place saves somewhere else.
+
+Please run `onscripter --help' for details of other command-line
+options.  (Note that on Windows systems, these details and all other
+console output will be placed in text files in the folder
+%ALLUSERSPROFILE%\Application Data\ONScripter-En.)
+
+
+  PACKAGING GAMES
+
+ONScripter-EN includes some features designed to make packaging new
+games or translations in a platform-appropriate fashion easier and
+neater.
+
+Firstly, `game.id' can be replaced by a line
+
+  ;gameid Your Title Here
+
+at the start of the script, or immediately after the modeline if
+present.
+
+Secondly, the saved-game location behaviour described above means that
+you do not have to worry about installing to a world-writable
+location; this should simplify matters considerably on Vista and on
+Unix-type platforms.
+
+In the latter case, the recommended approach is to store game data
+somewhere appropriate (e.g. /usr/local/share/<title>) and to create a
+shell script in an appropriate place (e.g. /usr/local/bin/<title>)
+that launches the onscripter executable with a suitable argument to
+-r.  Since there is no convenient way to distribute binaries that will
+work even on multiple Linux distributions, let alone other Unix
+platforms, it is recommended that packages instead depend on the user
+supplying a separate ONScripter-EN binary, either built from source or
+from an OS/distro-specific package.
+
+MacOS X is an exception to all this, as it's only Unix from the waist
+down.  OS X applications are typically distributed as bundles, and
+ONScripter-EN includes special code to make this possible for
+NScripter games.  Simply place the files that would normally go in the
+game directory (script, data archives, default.ttf, etc) in
+$GAME.app/Contents/Resources, and everything should Just Work; you'll
+have a native-looking OS X game that can be drag-installed and deleted
+to uninstall.  (Well, you'll have to fiddle with plists and add an
+icon and so on, but that's all standard OS X development stuff.)
+
+
+  BUILD REQUIREMENTS
+
+ONScripter is based on SDL, and should run on any platform for which
+SDL is available.  The original version has been successfully compiled
+on platforms as diverse as the Dreamcast, the PSP, and the iPod.
+
+ONScripter-EN has slightly more strict requirements, however.  Since
+ONScripter's original build system is extremely difficult to use
+(requiring the creation of a custom makefile for every minor platform
+variation), it has been replaced in this branch with a more
+conventional configure-build system; this depends on a POSIX-like
+environment with GNU make.  The code has been tested primarily with
+the GNU C++ compiler; Intel C++ 10 has also been tried successfully.
+
+The primary test environment is GNU/Linux (x86_64), and the secondary
+test environment is MacOS X (i386).  Assuming standard build tools are
+installed, the full-source distribution is likely to compile
+out-of-the-box or with only minimal changes on these and any other
+POSIX-conformant platform.  You may need to tweak the final link line
+if using static libraries -- see the configure script for examples of
+incantations that work on FreeBSD, NetBSD, and Solaris.
+
+This distribution is also supported on Windows (primarily 32-bit
+versions).  Building on Windows requires the MinGW distribution of
+g++, and the MSYS environment.  Windows users unfamiliar with the GNU
+build environment might prefer to stick with the binary distribution,
+which should work everywhere (this is one thing Microsoft has got
+right!)
+
+Please see INSTALL in the source distribution for specific build
+instructions.
+
+
+  LOCALISATION
+
+While ONScripter proper, and previous versions of ONScripter-EN,
+require English or Japanese settings to be selected at compile-time,
+this version can be run in both English and Japanese modes.
+
+In Japanese mode, the built-in menus are in Japanese, numbers are
+printed using full-width characters, and line-breaking decisions are
+based on Japanese rules (breaks are allowed in the middle of words,
+but not before or after certain special characters).
+
+In English mode, the built-in menus are in English, numbers are
+printed using half-width characters, and line-breaking decisions are
+based on English rules (breaks are only allowed between words).
+
+You can select a mode within a script by using the commands
+  language english
+and
+  language japanese
+
+It is recommended that you just set the language once at startup, but
+you can switch between them during the game if you need to.  (If you
+do, and your game uses the built-in menus, be sure to switch back to
+your primary language before any point at which the player can bring
+up a menu, or they will probably be very confused!)
+
+The default mode is determined by the name of the ONScripter binary
+(or bundle, on OS X).  If it is something like "onscripter-en" or
+"ONScripter-En.exe", the default mode will be English; otherwise it
+will be Japanese.  (This is intended to allow users to play existing
+games in an appropriate mode -- if releasing a game yourself, you
+should use an explicit language command instead of relying on this.)
+You can also use the command-line option "--english" or "--japanese"
+to specify the default mode.
+
+
+  CONTACT INFORMATION
+
+The author of ONScripter itself is Ogapee, who can be reached by email
+at the address
+
+  ogapee@aqua.dti2.ne.jp
+
+The maintainer of this branch (as of July 2009) is "Uncle" Mion Sonozaki,
+who can be reached by email at
+
+  UncleMion@gmail.com
+
+This README was written primarily by the previous maintainer, Haeleth, who
+can be reached by email at the address
+
+  haeleth@haeleth.net
+
+Correspondence in English, or regarding issues related to this branch
+in particular, should be directed to Uncle Mion, as it contains a large
+number of customisations that have nothing to do with Ogapee, and Haeleth
+is no longer actively maintaining ONScripter-EN.
+
+
+  LICENSE
+
+ONScripter and ONScripter-EN are distributed under the terms of the
+GNU General Public License.  See COPYING for details.

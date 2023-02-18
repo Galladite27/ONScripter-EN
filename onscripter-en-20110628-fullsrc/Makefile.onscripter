@@ -1,0 +1,222 @@
+# -*- makefile-gmake -*-
+#
+# Makefile.onscripter - General makefile rules for ONScripter
+#
+
+TARGET ?= onscripter-en
+
+TDIR = tools/
+TOOLS = $(TDIR)sardec$(EXESUFFIX) $(TDIR)nsadec$(EXESUFFIX)	\
+        $(TDIR)ns2dec$(EXESUFFIX) $(TDIR)nscdec$(EXESUFFIX)	\
+        $(TDIR)sarconv$(EXESUFFIX) $(TDIR)nsaconv$(EXESUFFIX)	\
+        $(TDIR)ns2conv$(EXESUFFIX) $(TDIR)batchconv$(EXESUFFIX)	\
+        $(TDIR)sarmake$(EXESUFFIX) $(TDIR)nsamake$(EXESUFFIX)	\
+        $(TDIR)ns2make$(EXESUFFIX) $(TDIR)nscmake$(EXESUFFIX)
+TOOL_INCS = -I`pwd` -Iextlib/include $(TOOL_EXTRA_INCS)
+TOOL_DEFS = $(DEFS) -DTOOLS_BUILD
+
+GUI_OBJS = ONScripterLabel$(OBJSUFFIX)					\
+	ONScripterLabel_command$(OBJSUFFIX)				\
+	ONScripterLabel_text$(OBJSUFFIX)				\
+	ONScripterLabel_effect$(OBJSUFFIX)				\
+	ONScripterLabel_effect_breakup$(OBJSUFFIX)		\
+	ONScripterLabel_effect_cascade$(OBJSUFFIX)		\
+	ONScripterLabel_effect_trig$(OBJSUFFIX)			\
+	ONScripterLabel_event$(OBJSUFFIX)				\
+	ONScripterLabel_rmenu$(OBJSUFFIX)				\
+	ONScripterLabel_animation$(OBJSUFFIX)				\
+	ONScripterLabel_sound$(OBJSUFFIX)				\
+	ONScripterLabel_file$(OBJSUFFIX)				\
+	ONScripterLabel_file2$(OBJSUFFIX)				\
+	ONScripterLabel_image$(OBJSUFFIX) AnimationInfo$(OBJSUFFIX)	\
+	FontInfo$(OBJSUFFIX) DirtyRect$(OBJSUFFIX)			\
+	graphics_routines$(OBJSUFFIX) resize_image$(OBJSUFFIX)
+DECODER_OBJS = DirectReader$(OBJSUFFIX) SarReader$(OBJSUFFIX)	\
+               NsaReader$(OBJSUFFIX)
+ONSCRIPTER_OBJS = onscripter$(OBJSUFFIX) $(DECODER_OBJS)		\
+                  ScriptHandler$(OBJSUFFIX) ScriptParser$(OBJSUFFIX)	\
+                  ScriptParser_command$(OBJSUFFIX) $(GUI_OBJS)		\
+                  sjis2utf16$(OBJSUFFIX) $(EXT_OBJS) $(OTHER_OBJS)	\
+                  DirPaths$(OBJSUFFIX) Layer$(OBJSUFFIX)
+SARDEC_OBJS   = $(TDIR)sardec$(OBJSUFFIX) $(TDIR)DirectReader$(OBJSUFFIX)	\
+                $(TDIR)SarReader$(OBJSUFFIX) $(TDIR)DirPaths$(OBJSUFFIX)
+SARMAKE_OBJS  = $(TDIR)sarmake$(OBJSUFFIX) $(TDIR)DirectReader$(OBJSUFFIX)	\
+                $(TDIR)SarReader$(OBJSUFFIX) $(TDIR)DirPaths$(OBJSUFFIX)
+SARCONV_OBJS  = $(TDIR)sarconv$(OBJSUFFIX) $(TDIR)DirectReader$(OBJSUFFIX)	\
+                $(TDIR)SarReader$(OBJSUFFIX) $(TDIR)DirPaths$(OBJSUFFIX)	\
+                $(TDIR)resize_image$(OBJSUFFIX) $(TDIR)conv_shared$(OBJSUFFIX)
+NSADEC_OBJS   = $(TDIR)nsadec$(OBJSUFFIX) $(TDIR)DirectReader$(OBJSUFFIX)	\
+                $(TDIR)SarReader$(OBJSUFFIX) $(TDIR)NsaReader$(OBJSUFFIX)	\
+                $(TDIR)DirPaths$(OBJSUFFIX)
+NSACONV_OBJS  = $(TDIR)nsaconv$(OBJSUFFIX) $(TDIR)DirectReader$(OBJSUFFIX)	\
+                $(TDIR)SarReader$(OBJSUFFIX) $(TDIR)NsaReader$(OBJSUFFIX)	\
+                $(TDIR)DirPaths$(OBJSUFFIX) $(TDIR)resize_image$(OBJSUFFIX)	\
+                $(TDIR)conv_shared$(OBJSUFFIX)
+NSAMAKE_OBJS  = $(TDIR)nsamake$(OBJSUFFIX) $(TDIR)DirectReader$(OBJSUFFIX)	\
+                $(TDIR)SarReader$(OBJSUFFIX) $(TDIR)NsaReader$(OBJSUFFIX)	\
+                $(TDIR)DirPaths$(OBJSUFFIX)
+NS2DEC_OBJS   = $(TDIR)ns2dec$(OBJSUFFIX) $(TDIR)DirectReader$(OBJSUFFIX)	\
+                $(TDIR)SarReader$(OBJSUFFIX) $(TDIR)NsaReader$(OBJSUFFIX)	\
+                $(TDIR)DirPaths$(OBJSUFFIX)
+NS2CONV_OBJS  = $(TDIR)ns2conv$(OBJSUFFIX) $(TDIR)DirectReader$(OBJSUFFIX)	\
+                $(TDIR)SarReader$(OBJSUFFIX) $(TDIR)NsaReader$(OBJSUFFIX)	\
+                $(TDIR)DirPaths$(OBJSUFFIX) $(TDIR)resize_image$(OBJSUFFIX)	\
+                $(TDIR)conv_shared$(OBJSUFFIX)
+NS2MAKE_OBJS  = $(TDIR)ns2make$(OBJSUFFIX) $(TDIR)DirectReader$(OBJSUFFIX)	\
+                $(TDIR)SarReader$(OBJSUFFIX) $(TDIR)NsaReader$(OBJSUFFIX)	\
+                $(TDIR)DirPaths$(OBJSUFFIX)
+BATCONV_OBJS  = $(TDIR)batchconv$(OBJSUFFIX) $(TDIR)resize_image$(OBJSUFFIX)	\
+                $(TDIR)conv_shared$(OBJSUFFIX)
+READER_HEADER = BaseReader.h DirectReader.h DirPaths.h
+PARSER_HEADER = $(EXTRADEPS) SarReader.h NsaReader.h DirectReader.h	\
+                $(READER_HEADER) ScriptHandler.h ScriptParser.h $(RC_HDRS)	\
+                AnimationInfo.h FontInfo.h DirtyRect.h Layer.h LUAHandler.h
+ONSCRIPTER_HEADER = ONScripterLabel.h $(PARSER_HEADER)
+
+ALL: $(TARGET)$(EXESUFFIX) tools
+
+$(TARGET)$(EXESUFFIX): $(ONSCRIPTER_OBJS)
+	$(CXX) -o $@ $(LDFLAGS) $(ONSCRIPTER_OBJS) $(LIBS)
+
+tools: $(TOOL_EXTRADEPS) $(TOOLS)
+
+$(TDIR)sardec$(EXESUFFIX): $(SARDEC_OBJS)
+	$(CXX) -o $@ $(LDFLAGS) $(SARDEC_OBJS) $(TOOL_LIBS)
+
+$(TDIR)sarconv$(EXESUFFIX): $(SARCONV_OBJS)
+	$(CXX) -o $@ $(LDFLAGS) $(SARCONV_OBJS) $(TOOL_LIBS)
+
+$(TDIR)sarmake$(EXESUFFIX): $(SARMAKE_OBJS)
+	$(CXX) -o $@ $(LDFLAGS) $(SARMAKE_OBJS) $(TOOL_LIBS)
+
+$(TDIR)nsadec$(EXESUFFIX): $(NSADEC_OBJS)
+	$(CXX) -o $@ $(LDFLAGS) $(NSADEC_OBJS) $(TOOL_LIBS)
+
+$(TDIR)nsaconv$(EXESUFFIX): $(NSACONV_OBJS)
+	$(CXX) -o $@ $(LDFLAGS) $(NSACONV_OBJS) $(TOOL_LIBS)
+
+$(TDIR)nsamake$(EXESUFFIX): $(NSAMAKE_OBJS)
+	$(CXX) -o $@ $(LDFLAGS) $(NSAMAKE_OBJS) $(TOOL_LIBS)
+
+$(TDIR)ns2dec$(EXESUFFIX): $(NS2DEC_OBJS)
+	$(CXX) -o $@ $(LDFLAGS) $(NS2DEC_OBJS) $(TOOL_LIBS)
+
+$(TDIR)ns2conv$(EXESUFFIX): $(NS2CONV_OBJS)
+	$(CXX) -o $@ $(LDFLAGS) $(NS2CONV_OBJS) $(TOOL_LIBS)
+
+$(TDIR)ns2make$(EXESUFFIX): $(NS2MAKE_OBJS)
+	$(CXX) -o $@ $(LDFLAGS) $(NS2MAKE_OBJS) $(TOOL_LIBS)
+
+$(TDIR)batchconv$(EXESUFFIX): $(BATCONV_OBJS)
+	$(CXX) -o $@ $(LDFLAGS) $(BATCONV_OBJS) $(TOOL_LIBS)
+
+$(TDIR)nscdec$(EXESUFFIX): $(TDIR)nscdec$(OBJSUFFIX)
+	$(CXX) -o $@ $(LDFLAGS) $< $(TOOL_LIBS)
+
+$(TDIR)nscmake$(EXESUFFIX): $(TDIR)nscmake$(OBJSUFFIX)
+	$(CXX) -o $@ $(LDFLAGS) $< $(TOOL_LIBS)
+
+
+pclean:
+	-$(RM) *$(OBJSUFFIX) $(CLEANUP) $(RCCLEAN)
+
+pdistclean: pclean ptoolsdistclean
+	-$(RM) $(TARGET_EXE)$(EXESUFFIX) onscripter-en$(EXESUFFIX)
+
+ptoolsclean: $(TOOL_EXTRA_CLEAN)
+	-$(RM) $(TDIR)*$(OBJSUFFIX)
+
+ptoolsdistclean: ptoolsclean
+	-$(RM) $(TOOLS)
+
+
+$(TDIR)sardec$(OBJSUFFIX): $(TDIR)arcdec.cpp
+	$(CXX) -c -o $@ $(CXXSTD) $(OSCFLAGS) $(TOOL_INCS) $(TOOL_DEFS) -DSAR $<
+
+$(TDIR)nsadec$(OBJSUFFIX): $(TDIR)arcdec.cpp
+	$(CXX) -c -o $@ $(CXXSTD) $(OSCFLAGS) $(TOOL_INCS) $(TOOL_DEFS) -DNSA $<
+
+$(TDIR)ns2dec$(OBJSUFFIX): $(TDIR)arcdec.cpp
+	$(CXX) -c -o $@ $(CXXSTD) $(OSCFLAGS) $(TOOL_INCS) $(TOOL_DEFS) -DNS2 $<
+
+$(TDIR)sarconv$(OBJSUFFIX): $(TDIR)arcconv.cpp
+	$(CXX) -c -o $@ $(CXXSTD) $(OSCFLAGS) $(TOOL_INCS) $(TOOL_DEFS) -DSAR $<
+
+$(TDIR)nsaconv$(OBJSUFFIX): $(TDIR)arcconv.cpp
+	$(CXX) -c -o $@ $(CXXSTD) $(OSCFLAGS) $(TOOL_INCS) $(TOOL_DEFS) -DNSA $<
+
+$(TDIR)ns2conv$(OBJSUFFIX): $(TDIR)arcconv.cpp
+	$(CXX) -c -o $@ $(CXXSTD) $(OSCFLAGS) $(TOOL_INCS) $(TOOL_DEFS) -DNS2 $<
+
+$(TDIR)sarmake$(OBJSUFFIX): $(TDIR)arcmake.cpp
+	$(CXX) -c -o $@ $(CXXSTD) $(OSCFLAGS) $(TOOL_INCS) $(TOOL_DEFS) -DSAR $<
+
+$(TDIR)nsamake$(OBJSUFFIX): $(TDIR)arcmake.cpp
+	$(CXX) -c -o $@ $(CXXSTD) $(OSCFLAGS) $(TOOL_INCS) $(TOOL_DEFS) -DNSA $<
+
+$(TDIR)ns2make$(OBJSUFFIX): $(TDIR)arcmake.cpp
+	$(CXX) -c -o $@ $(CXXSTD) $(OSCFLAGS) $(TOOL_INCS) $(TOOL_DEFS) -DNS2 $<
+
+$(TDIR)%$(OBJSUFFIX): $(TDIR)%.cpp
+	$(CXX) -c -o $@ $(CXXSTD) $(OSCFLAGS) $(TOOL_INCS) $(TOOL_DEFS) $<
+
+$(TDIR)%Reader$(OBJSUFFIX): %Reader.cpp
+	$(CXX) -c -o $@ $(CXXSTD) $(OSCFLAGS) $(TOOL_INCS) $(TOOL_DEFS) $<
+
+$(TDIR)DirPaths$(OBJSUFFIX): DirPaths.cpp
+	$(CXX) -c -o $@ $(CXXSTD) $(OSCFLAGS) $(TOOL_INCS) $(TOOL_DEFS) $<
+
+$(TDIR)resize_image$(OBJSUFFIX): resize_image.cpp
+	$(CXX) -c -o $@ $(CXXSTD) $(OSCFLAGS) $(TOOL_INCS) $(TOOL_DEFS) $<
+
+.cpp$(OBJSUFFIX):
+	$(CXX) -c $(CXXSTD) $(OSCFLAGS) $(INCS) $(DEFS) $<
+
+SarReader$(OBJSUFFIX):    $(READER_HEADER) SarReader.h 
+NsaReader$(OBJSUFFIX):    $(READER_HEADER) SarReader.h NsaReader.h 
+DirectReader$(OBJSUFFIX): $(READER_HEADER) DirectReader.h
+ScriptHandler$(OBJSUFFIX): ScriptHandler.h
+ScriptParser$(OBJSUFFIX): $(PARSER_HEADER)
+ScriptParser_command$(OBJSUFFIX): $(PARSER_HEADER)
+
+$(TDIR)sardec$(OBJSUFFIX): $(READER_HEADER) SarReader.h
+$(TDIR)sarconv$(OBJSUFFIX): $(READER_HEADER) SarReader.h
+$(TDIR)sarmake$(OBJSUFFIX): $(READER_HEADER) SarReader.h
+$(TDIR)nsadec$(OBJSUFFIX): $(READER_HEADER) SarReader.h NsaReader.h
+$(TDIR)nsaconv$(OBJSUFFIX): $(READER_HEADER) SarReader.h NsaReader.h
+$(TDIR)nsamake$(OBJSUFFIX): $(READER_HEADER) SarReader.h NsaReader.h
+$(TDIR)ns2dec$(OBJSUFFIX): $(READER_HEADER) SarReader.h NsaReader.h
+$(TDIR)ns2conv$(OBJSUFFIX): $(READER_HEADER) SarReader.h NsaReader.h
+$(TDIR)ns2make$(OBJSUFFIX): $(READER_HEADER) SarReader.h NsaReader.h
+$(TDIR)conv_shared$(OBJSUFFIX): resize_image.h
+$(TDIR)SarReader$(OBJSUFFIX):    $(READER_HEADER) SarReader.h 
+$(TDIR)NsaReader$(OBJSUFFIX):    $(READER_HEADER) SarReader.h NsaReader.h 
+$(TDIR)DirectReader$(OBJSUFFIX): $(READER_HEADER) DirectReader.h
+$(TDIR)DirPaths$(OBJSUFFIX): DirPaths.h 
+$(TDIR)resize_image$(OBJSUFFIX): resize_image.h
+
+onscripter$(OBJSUFFIX): $(ONSCRIPTER_HEADER) version.h
+ONScripterLabel$(OBJSUFFIX): $(ONSCRIPTER_HEADER) graphics_common.h graphics_cpu.h graphics_resize.h
+ONScripterLabel_command$(OBJSUFFIX): $(ONSCRIPTER_HEADER) graphics_common.h graphics_resize.h version.h
+ONScripterLabel_text$(OBJSUFFIX): $(ONSCRIPTER_HEADER)
+ONScripterLabel_effect$(OBJSUFFIX): $(ONSCRIPTER_HEADER)
+ONScripterLabel_effect_breakup$(OBJSUFFIX): $(ONSCRIPTER_HEADER)
+ONScripterLabel_effect_cascade$(OBJSUFFIX): $(ONSCRIPTER_HEADER)
+ONScripterLabel_effect_trig$(OBJSUFFIX): $(ONSCRIPTER_HEADER)
+ONScripterLabel_event$(OBJSUFFIX): $(ONSCRIPTER_HEADER)
+ONScripterLabel_rmenu$(OBJSUFFIX): $(ONSCRIPTER_HEADER)
+ONScripterLabel_animation$(OBJSUFFIX): $(ONSCRIPTER_HEADER)
+ONScripterLabel_sound$(OBJSUFFIX): $(ONSCRIPTER_HEADER)
+ONScripterLabel_file$(OBJSUFFIX): $(ONSCRIPTER_HEADER)
+ONScripterLabel_file2$(OBJSUFFIX): $(ONSCRIPTER_HEADER)
+ONScripterLabel_image$(OBJSUFFIX): $(ONSCRIPTER_HEADER) graphics_common.h graphics_blend.h
+AnimationInfo$(OBJSUFFIX): AnimationInfo.h graphics_common.h graphics_sum.h graphics_blend.h graphics_resize.h
+FontInfo$(OBJSUFFIX): FontInfo.h
+DirtyRect$(OBJSUFFIX) : DirtyRect.h
+DirPaths$(OBJSUFFIX): DirPaths.h
+graphics_routines$(OBJSUFFIX): graphics_common.h graphics_cpu.h graphics_sum.h graphics_blend.h graphics_resize.h resize_image.h
+resize_image$(OBJSUFFIX): resize_image.h
+Layer$(OBJSUFFIX): $(EXTRADEPS) Layer.h AnimationInfo.h graphics_common.h graphics_sum.h
+MadWrapper$(OBJSUFFIX): MadWrapper.h
+AVIWrapper$(OBJSUFFIX): AVIWrapper.h
+LUAHandler$(OBJSUFFIX): $(ONSCRIPTER_HEADER) LUAHandler.h

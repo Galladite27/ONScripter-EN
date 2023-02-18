@@ -1,0 +1,29 @@
+Tests:
+
+    00.txt
+
+This is a very basic set of tests.  Absolutely no pretence is made at
+significant coverage, as a simple glance at the code will prove.  They
+merely test things that are/were broken in either Ponscripter or
+ONScripter-En.
+
+If you wish to try them, note that you will need to supply a
+default.ttf yourself.  It needs to be a monospaced Japanese font.
+
+Each test prints two lines: an "NScr" line showing the result given by
+an up-to-date NScripter, and a "Test" line showing what the
+interpreter you're using displays.  If the two are different, you may
+have a bug.  (Some tests then print another line, which you can
+ignore.)
+
+Some differences of behaviour are expected.  In particular,
+ONScripter-En and Ponscripter will display a lot of numbers with
+regular ASCII numerals where NScripter uses double-width characters.
+This is not exactly a bug (it's by design; building ONScripter-En
+without FORCE_1BYTE_CHAR defined will give the NScripter behaviour).
+However, builds that display this behaviour will not be 100%
+compatible with some Japanese games.
+
+Other differences, like the kinsoku behaviour in test 4, are arguably
+bugs in NScripter that are fixed in ONScripter, though the test on the
+second page explains _why_ NScripter does that...

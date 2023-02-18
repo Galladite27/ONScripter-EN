@@ -1,0 +1,38 @@
+
+;gameid test
+
+*define
+
+game
+
+
+*start
+setwindow 26,344,26,5,22,22,0,0,0,1,1,#2266BB,0,320,639,479
+erasetextwindow 0
+linkcolor #FFFF22,#88FFFF
+
+; Uncomment the following for Nscripter/Japanese test
+テスト。\
+
+<テキストボタン>を使って、このように、のようなことも出来ます。@
+#FF2288ＳＴＲＳＰ命令は、複数行の文字列スプライトを作ります。\
+
+<ＳＴＲＳＰ命令>の実験も兼ねています。#FFFFFF@
+ちょっと難しいですが、うまく活用すれば<「街」>で使われているＴＩＰＳ機能のような効果も出せるはずです。\
+
+; Uncomment the following for English onscripter test
+`This is a text color test script. @
+`Be sure to use lookback mouse scroll wheel to show that colors stay after lookback. \
+
+`This is some `<`text`>` in a script with a false textbtn. @
+#FF2288`This is text of a different color. \
+
+`This should be the color we set in the last page. #FFFFFF@
+`Now it's back to the default color. \
+
+#8888FF`Now a new color, and we'll reset. \
+
+reset
+
+
+end

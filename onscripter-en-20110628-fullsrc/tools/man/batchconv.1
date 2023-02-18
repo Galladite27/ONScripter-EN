@@ -1,0 +1,96 @@
+.TH batchconv 1 "January 7, 2010" "version 20100107" "USER COMMANDS"
+.SH NAME
+.HP
+.B batchconv
+\- for batch conversion of resource files for NScripter/ONScripter titles
+.SH SYNOPSIS
+.HP
+.B batchconv
+.RB [ -r
+.IR rules_file ]
+.RB [ -n
+.IR num_cells "] "
+.RB [ -o
+.IR out_dir ]
+.I src_width dst_width
+.BI "-d " in_dir
+
+.HP
+.B batchconv
+.RB [ -r
+.IR rules_file ]
+.RB [ -n
+.IR num_cells ]
+.RB [ -o
+.IR out_dir ]
+.I src_width dst_width in_file ...
+
+.SH DESCRIPTION
+This tool is intended for converting NScripter game resources for use on
+PDAs and small screen devices (or other instances requiring resized images.) 
+It converts and resizes BMP, JPG and PNG images.
+
+First, try the appropriate conversion tool
+.RB "(" sarconv ", " nsaconv ", or " ns2conv "),"
+since these are easier to use.  If more control is required, the archive
+should be extracted with
+.BR sardec ", " nsadec ", or " ns2dec ","
+and then sets of files can be converted using 
+.BR batchconv "."
+
+.B batchconv
+takes into account the number of cells and alpha data, indicated by the
+.B -n
+option or by using the
+.BI "-r " rules_file
+option, to ensure that the images are resized correctly.
+
+It is best to run 
+.B batchconv
+on a batch of images that all have the same alpha and cell count settings, or the same
+number of "divisions" within each image, since alpha essentially doubles the number of
+cells.
+
+After batch-converting the images, create a new archive using 
+.BR sarmake ", " nsamake ", or " ns2make .
+
+.SH OPTIONS
+.TP
+.BI "-r " rules_file
+Specifies a file containing file-matching rules paired with the number of
+.R cells/alphas to use, like with the
+.B -n
+option.  See "rules.txt" for examples.
+.TP
+.BI "-n " num_cells
+Specifies the number of cells (and/or alphas) in the input images
+.TP
+.BI "-o " out_dir
+Specifies the directory where the output files should be written
+.TP
+.I src_width
+The screen width of the original title
+.TP
+.I dst_width
+The screen width of the target platform
+.TP
+.BI "-d " in_dir
+Specifies a directory of files that should be converted
+.SH EXAMPLES
+.TP
+Convert images in "arc" directory from 640x480 to 320x240, placing results in "outdir":
+
+.B batchconv -o
+outdir 640 320
+.B -d
+arc
+.SH EXIT STATUS
+.B batchconv
+returns zero on success and a nonzero value if an error occurs.
+
+.SH AUTHOR
+Ogapee <ogapee@aqua.dti2.ne.jp>, "Uncle" Mion Sonozaki <UncleMion@gmail.com>
+
+http://onscripter.denpa.mobi/
+.SH SEE ALSO
+.BR sarconv "(1), " nsaconv "(1), " ns2conv (1)

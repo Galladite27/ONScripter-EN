@@ -1,0 +1,101 @@
+.TH nsaconv 1 "January 7, 2010" "version 20100107" "USER COMMANDS"
+.SH NAME
+.HP
+.B nsaconv 
+\- resize and convert images in an (O)NScripter NSA archive file to
+produce a new NSA archive
+.SH SYNOPSIS
+.HP
+.B "nsaconv" 
+.RB [ "-offset "
+.I num
+.RB "] [" -e "] [" -p "] [" -j "] [" -q
+.IR quality "] "
+.RB [ -r
+.IR rules_file ]
+.RB [ -n
+.IR num_cells "] "
+.I src_width dst_width src_archive dst_archive
+.SH DESCRIPTION
+This tool is intended for quick conversions of NScripter or ONScripter titles
+for use on a PDA (or other small screen device).  It produces a new NSA
+archive from a provided NSA archive, with all contained BMP, JPG and PNG images
+resized and converted.
+.SH OPTIONS
+.TP
+.BI "-offset " num 
+Skips
+.I num
+bytes at the beginning of the file.  This option replaces the old
+.BR -ns2 " and " -ns3
+options (rarely needed.)
+.TP
+.B -e
+Uses enhanced compression.
+.TP
+.B -p
+Compresses bitmap images with PNG for extra space savings.
+.TP
+.B -j
+Compresses bitmap images with JPEG (has precedence over 
+.BR "-p" ".)"
+.TP
+.BI "-q " quality
+Specifies JPEG quality (0-100, where 100 is maximum quality; default is 75)
+.TP
+.BI "-r " rules_file
+Specifies a file containing file-matching rules paired with the number of
+.R cells/alphas to use, like with the
+.B -n
+option.  See "rules.txt" for examples.
+.TP
+.BI "-n " num_cells
+Assume that images contain
+.I num_cells
+cells (and alphas); default is 1.  (See 
+.BR batchconv (1)
+if this and the
+.B -r
+option are not sufficient.)
+.TP
+.I src_width
+The screen width used by the game in the original archive.
+.TP
+.I dst_width
+The desired screen width for which the new archive should be formatted.
+.TP
+.I src_archive
+Specifies the source archive.
+.TP
+.I dst_archive
+Path to where the resulting archive should be written.
+.SH EXAMPLES
+.TP
+Convert an originally 640x480 title nsa file to one for a PDA with screen
+320 pixels wide, using JPEG compression for images:
+
+.B nsaconv -j
+640 320 arc.nsa arc_pda.nsa
+.TP
+Convert an originally 800x600 title nsa file to one for a PDA with screen
+320 pixels wide, using NBZ compression for images and WAVs:
+
+.B nsaconv -e
+800 320 arc.nsa arc_pda.nsa
+.TP
+Convert an originally 640x480 title nsa file to one for a PDA with screen
+400 pixels wide, assuming 2 cells for images by default and using supplemental
+file-matching rules from "rules.txt":
+
+.B nsaconv
+.BR -n 2 -r rules.txt
+640 400 arc.nsa arc_pda.nsa
+.SH EXIT STATUS
+.B nsaconv
+returns zero on success and a nonzero value if an error occurs.
+.SH AUTHOR
+Ogapee <ogapee@aqua.dti2.ne.jp>, "Uncle" Mion Sonozaki <UncleMion@gmail.com>
+
+http://onscripter.denpa.mobi/
+.SH SEE ALSO
+.BR nsadec "(1), " nsamake "(1), " sarconv "(1), " ns2conv "(1), " batchconv (1)

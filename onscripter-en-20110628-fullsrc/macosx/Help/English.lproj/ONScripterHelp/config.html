@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+    "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+    
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" >
+<head>
+	<title>ONScripter-EN Configuration</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link href="css/onshelp.css" rel="stylesheet" media="all" />
+    <meta name="AppleIcon" content="images/onsen.png"></meta>
+    <meta name="Description" content="Using ons.cfg files for advanced
+    configuration of ONScripter-EN"></meta>
+    <meta name="robots" content="segments"/>
+</head>
+<body>
+    <!-- AppleSegStart="ONScripter-EN Configuration" -->
+    <!-- AppleSegDescription="Using ons.cfg files for advanced configuration
+    of ONScripter-EN" -->
+    <!-- AppleSegKeywords="config configuration fullscreen window-width font
+    language debug path" -->
+    <a name="config"></a>
+	<div id="pagetitle">
+        <h1><img src="images/onsen_lg.png" alt="icon" id="icon"/>
+        Configuring ONScripter-EN</h1>
+    </div>
+    <div id="main">
+        <p>
+            Many advanced options of ONScripter-EN can be controlled by
+            creating a text file called <tt>ons.cfg</tt> according to the
+            syntax described on this page.  Examples of things that can be
+            configured are custom window sizes, debugging options, save
+            directories, and fonts.
+        </p>
+
+        <h3>Creating the <tt>ons.cfg</tt> File</h3>
+        <p>
+            The <tt>ons.cfg</tt> file must be a plain text file.  To create
+            this file on Mac OS X:
+        </p>
+        <ol>
+            <li>Open TextEdit and create a new document.</li>
+            <li>Select <strong>Make Plain Text</strong> from the
+            <strong>Format</strong> menu.</li>
+            <li>Enter the options you want into the file, referencing the
+            documentation below.</li>
+            <li>Select <strong>Save As...</strong> from the
+            <strong>File</strong> menu.</li>
+            <li>Navigate to the game folder, and enter <tt>ons.cfg</tt> for
+            the file name.</li>
+            <li>Click <strong>Save</strong>.</li>
+        </ol>
+        <p>
+            Your changes will take effect the next time you start the game.
+            If you want to edit your <tt>ons.cfg</tt> file later, use the
+            <strong>Open</strong> command in TextEdit's
+            <strong>File</strong> menu, or drag the <tt>ons.cfg</tt> file to
+            TextEdit's icon.  If you double-click the <tt>ons.cfg</tt> file,
+            it probably won't open in the right program.
+        </p>
+
+        <h3>Adding Options to <tt>ons.cfg</tt></h3>
+        <p>
+            The <tt>ons.cfg</tt> file should have one option per line.  If
+            an option does not take any arguments, it should be on a line by
+            itself, e.g.:
+        </p>
+        <blockquote><pre>fullscreen</pre></blockquote>
+        <p>
+            If an option takes an argument, then the argument should appear
+            after the option, separated by an equals sign (with no spaces):
+        </p>
+        <blockquote><pre>window-width=1024</pre></blockquote>
+
+        <h3>Fonts</h3>
+
+
+        <p class="cmd">font=<i>fontfile</i></p>
+        <p class="indent">Use <i>fontfile</i> as the game font, instead of
+        <tt>default.ttf</tt>.</p>
+
+        <h3>Languages</h3>
+
+        <p class="cmd">english</p>
+        <p class="indent">Force English text mode.</p>
+        
+        <p class="cmd">japanese</p>
+        <p class="indent">Force Japanese text mode.</p>
+
+        <h3>Window Modes</h3>
+        
+        <p class="cmd">fullscreen</p>
+        <p class="indent">Always start in full screen mode.</p>
+        
+        <p class="cmd">window</p>
+        <p class="indent">Always start in windowed mode.</p>
+
+        <p class="cmd">window-width=<i>width</i></p>
+        <p class="indent">Rescales the game to have a window <i>width</i>
+        pixels wide.</p>
+
+        <h3>Paths</h3>
+        <p class="cmd">root=<i>path</i></p>
+        <p class="indent">Use <i>path</i> as the root path for game
+        resources.  The default is the bundle's Resources directory.</p>
+        
+        <p class="cmd">save=<i>path</i></p>
+        <p class="indent">Use <i>path</i> as the game's save folder.  The
+        default is a folder in the user's Application Support folder.</p>
+
+        <h3>Debugging</h3>
+
+        <p class="cmd">strict</p>
+        <p class="indent">Treat script warnings more like errors.</p>
+        
+        <p class="cmd">debug</p>
+        <p class="indent">Generate debugging output (goes to the Console
+        log.)  Use multiple times to increase verbosity.</p>
+    </div>
+    <!-- AppleSegEnd -->
+</body>
+</html>

@@ -1,0 +1,21 @@
+# This is an example rules file for *conv onscripter tools.
+# The beginning number tells the number of cells (including alphas) to assume
+# for files that match that pattern.
+# Patterns are standard regular expressions.
+# They are be checked in order for each file, stopping at the first match,
+# so it's best to put more general rules later.
+
+# This matches on 'cursor0.bmp' and such, and uses 3 cells.
+3   cursor[0-9].bmp
+
+# This matches on files under a directory ending in 'tati', using 2 cells.
+# Note the doubled backslashes.
+2   tati\\
+
+# This matches on files under the exact directory 'image\tachi', using 2 cells.
+2   ^image\\tachi\\
+
+# This is invalid (and skipped) since the number must be greater than 0.
+0   blah
+
+# End of rules.

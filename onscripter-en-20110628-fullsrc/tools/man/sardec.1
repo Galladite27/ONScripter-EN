@@ -1,0 +1,40 @@
+.TH sardec 1 "January 7, 2010" "version 20100107" "USER COMMANDS"
+.SH NAME
+.HP
+.B sardec 
+\- for extracting files from a sar archive file (e.g. "arc.sar")
+.SH SYNOPSIS
+.HP
+.B "sardec" 
+.RB [ -o
+.IR out_dir "] " arc_file
+.SH DESCRIPTION
+This tool is used to extract the files from an NScripter or ONScripter archive
+file in SAR format (typically "arc.sar").  All files are extracted and
+the directory structure within the archive is preserved.
+.SH OPTIONS
+.TP
+.BI "-o " out_dir
+Specifies that the extracted files should be placed in
+.I out_dir
+instead of the current directory.
+.SH EXAMPLES
+.TP
+Extract arc.sar to the current directory:
+
+.B sardec
+arc.sar
+.TP
+Extract arc.sar to a directory called "arc":
+
+.B sardec -o
+arc arc.sar
+.SH EXIT STATUS
+.B sardec
+returns zero on success and a nonzero value if an error occurs.
+.SH AUTHOR
+Ogapee <ogapee@aqua.dti2.ne.jp>, "Uncle" Mion Sonozaki <UncleMion@gmail.com>
+
+http://onscripter.denpa.mobi/
+.SH SEE ALSO
+.BR sarconv "(1), " sarmake "(1), " nsadec "(1), " ns2dec (1)

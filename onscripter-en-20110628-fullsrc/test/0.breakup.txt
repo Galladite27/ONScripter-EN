@@ -1,0 +1,25 @@
+*define
+nsa
+windoweffect 10,500
+game
+
+*start
+setwindow 30,380,30,5,20,20,-1,1,0,1,1,#BBAA88,20,370,620,460
+
+bg "bgi2.jpg",0
+print 99,4500,"breakup.dll/ulp"
+
+lsp 0,":mmsk.jpg;chr.jpg",208,32
+print 99,3000,"breakup.dll/ulP"
+
+!sd
+作者代理「なんだかアレですね。
+locate 5,1:某ゲームを連想させますね（笑）」\
+
+csp 0
+print 99,2000,"breakup.dll/urb"
+
+delay 1000
+bg white,0
+print 99,4000,"breakup.dll/llB"
+end

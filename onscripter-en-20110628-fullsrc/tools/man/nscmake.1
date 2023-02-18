@@ -1,0 +1,60 @@
+.TH nscmake 1 "December 26, 2009" "version 20091226" "USER COMMANDS"
+.SH NAME
+.B nscmake 
+\- for converting text (O)NScripter script file(s) to a packaged
+script file ("nscript.dat" by default)
+.SH SYNOPSIS
+.B "nscmake" 
+.RB "[" -o
+.IR nsc_file "]"
+.I in_file ...
+.SH DESCRIPTION
+This tool is used to compile one or more NScripter or ONScripter script files
+(typically "0.txt") from plain SJIS text to a compiled nscript.dat file.
+
+It can read either from one or more files or else from standard input,
+and write either to a file or else to standard output.
+
+As with the official NScripter toolchain, any '\\r' characters in the
+input will be stripped.
+.SH OPTIONS
+.TP
+.BI "-o " "nsc_file"
+Specifies where to write the output.  If not provided, defaults to
+"nscript.dat".  To write to standard output, specify - as the argument to
+.BR -o .
+.TP
+.I in_file ...
+One or more input files. - may be specified as the first file to read from
+standard input; when reading from standard input, any additional files
+on the command line will be ignored.
+.SH EXAMPLES
+.TP
+Generate nscript.dat (default output) from 0.txt:
+
+.B nscmake
+0.txt
+.TP
+Generate foo.dat from 0.txt and 1.txt:
+
+.B nscmake -o
+foo.dat 0.txt 1.txt
+.TP
+Generate nscript.dat from files in the range 00.txt to 99.txt (if UNIX-style command line):
+
+.B nscmake
+[0-9][0-9].txt
+.TP
+Reading from standard input:
+
+.B nscmake 
+- < 0.txt
+.SH EXIT STATUS
+.B nscmake
+returns zero on success and a nonzero value if an error occurs.
+.SH AUTHOR
+"Uncle" Mion Sonozaki <UncleMion@gmail.com>
+
+http://onscripter.denpa.mobi/
+.SH SEE ALSO
+.BR nscdec (1)

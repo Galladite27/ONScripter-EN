@@ -1,0 +1,24 @@
+*define
+nsa
+game
+*start
+
+click
+
+lsp 2,":c;tr_logo.jpg",140,100
+
+print 99,1500,"trvswave.dll/h"
+
+bg white,0
+lsp 2,":c;kimikage.jpg",160,176
+
+delay 1500
+print 99,3000,"trvswave.dll/h"
+
+bg black,0
+csp 2
+
+delay 2000
+print 99,1000,"trvswave.dll/h"
+
+end

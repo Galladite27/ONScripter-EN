@@ -1,0 +1,16 @@
+This folder contains a SDL 1.2.13 Win32 DLL and static libraries for
+using the DLL with MinGW compilations, but with a Makefile and sdl-config
+specifically for compiling ONScripter-EN.
+
+ This is provided for MinGW builds of ONScripter-EN, which would normally
+use all static libraries, because MinGW apparently has problems with building
+an SDL 1.2 library that can use DirectSound.
+
+ This would not normally be a problem, except that the default Windows
+audio system for SDL doesn't handle playing a quick series of short sound
+effects properly, apparently because of buffer size issues.
+
+ Luckily, the provided SDL.dll has DirectSound support, and is included to
+allow building ONScripter-EN executables that can use DirectSound.
+
+The source code for SDL 1.2.13 is provided under the "extlib" folder.

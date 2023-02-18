@@ -1,0 +1,58 @@
+.TH nsamake 1 "January 7, 2010" "version 20100107" "USER COMMANDS"
+.SH NAME
+.HP
+.B nsamake
+\- for creating (O)NScripter NSA archive files
+.SH SYNOPSIS
+.HP
+.B "nsamake" 
+.I arc_file
+.RB [ -e "] "
+.BI "-d " in_dir
+.HP
+.B nsamake
+.I arc_file
+.RB [ -e "] "
+.I in_file "..."
+
+.SH DESCRIPTION
+This tool produces NSA archives for use with NScripter, ONScripter or
+PONScripter titles either from a list of files given on the command line or
+from a directory of files.
+.SH OPTIONS
+.TP
+.B -e
+Specifies that BMP and WAV files in the archive should be compressed with NBZ encoding.
+(NOTE: archives with NBZ-compressed files will not be useable by NScripter.)
+.TP
+.BI "-d " in_dir
+Builds an archive from the directory
+.IR in_dir ".  "
+The top-level directory
+.I in_dir
+will not be included in pathnames stored in the archive.
+.TP
+.I in_file "..."
+A list of files and/or directories to be included in the archive.
+
+.SH EXAMPLES
+.TP
+Create an archive called "arc.nsa" from a directory called "arc", with images NBZ compressed:
+.B nsamake
+.RB arc.nsa -e
+.BR -d " arc"
+
+.TP
+Create an archive called "arc1.nsa" with the directories "img" and "bgm" and their contents:
+.B nsamake
+arc1.nsa img bgm
+.SH EXIT STATUS
+.B nsamake
+returns zero on success and a nonzero value if an error occurs.
+.SH AUTHOR
+Ogapee <ogapee@aqua.dti2.ne.jp>, "Uncle" Mion Sonozaki <UncleMion@gmail.com>
+
+http://onscripter.denpa.mobi/
+.SH SEE ALSO
+.BR nsadec "(1), " nsaconv "(1), " sarmake "(1), " ns2make (1)
+

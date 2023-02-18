@@ -1,0 +1,1259 @@
+2011-06-28
+
+  Bugfix to calling "getcselstr" on an out-of-range index, so that ons-en
+  will give a warning & return a null string (similar to fix in ogapee's
+  onscripter-20110619) [Mion]
+
+  Redoing automode handling to work more like NScr [Mion]
+  * Enabling automode by default (cmds "mode_ext" and "automode" are
+    unnecessary since NScr 2.82)
+  * Changing automode_time default from 3000 to 1000
+  * Storing automode_time in file "envdata" (as per NScr 2.54+)
+
+  Added cmd-line option "--automode-time <time>", to override either
+  the default time, "envdata" setting, or any "automode_time" cmds
+  in the define block [Mion]
+
+  Bugfix to avoid recursive doErrorBox calls in "errorsave" mode [Mion]
+
+
+2011-06-17
+
+  Avoid reusing string or layer sprites in lspCommand, for safety [Mion]
+
+
+2011-06-16
+
+  Fix for lsp2 sprites not displaying if flipped (for Umineko 8) [Mion]
+
+  Fix for text advancement locking up in Umineko 4, added validation
+  of default settings loaded from "envdata" [Mion]
+
+
+2011-06-14
+
+  More textwindow and effect refresh fixes prompted by checking
+  "Jinkou Megami" [Mion]
+
+
+2011-05-28
+
+  Merging changes from ogapee's onscripter releases 20110520 & 20110528,
+  with fixes to "prnum" & textwindow handling; making additional fixes
+  for the game "Jinkou Megami" [Mion]
+
+
+2011-04-23
+
+  Added "--no-movie-upscale" cmd-line option: avoids making a movie
+  display area larger than its native size (to avoid some SMPEG
+  resizing ugliness) [Mion]
+
+
+2011-04-13
+
+  Restructured parsing & handling of pretext tags (done especially for
+  Amaranto, but also emulates NScr more closely) [Mion]
+
+  Bugfix for text window refreshing after a "texthide" cmd (text cmds
+  implicitly unhide the text) [Mion]
+
+
+2011-04-05
+
+  Changed ScriptHandler::setCurrent to not errorAndExit (fixes an issue
+  with exiting at certain "lsp" calls) [Mion]
+
+  Added undocumented NScr cmd "labelexist" [Mion]
+
+
+2011-04-04
+
+  Fixes to handling 8-bit WAVs w/fmt files; more flexible fmt files [Mion]
+
+
+2011-03-31
+
+  Corrected a bug in right-click menu "Hide Text" option [Mion]
+
+  Fixes for handling 8-bit WAVs that require fmt files [Mion]
+
+
+2011-03-27
+
+  Sounds loaded with "dwaveload" could be played multiple times,
+  so we need to keep preloaded samples even after playing them [Mion]
+
+
+2011-03-25
+
+  Added errorAndExit calls for attempts to access outside the bounds of the
+  game script (line number and/or address) [Mion]
+
+
+2011-03-24
+
+  Added check for events after an image load & resize [Mion]
+
+  Added cmd-line option "--no-layers" to ignore layer-based cmds [Mion]
+
+  Bugfix for quake when in ctrl/skip mode [Mion]
+
+
+2011-03-22
+
+  Porting changes to effect and quake handling from jp onscripter, as
+  well as moving dll effect routines into subfiles [Mion]
+
+
+2011-03-21
+
+  Added fast CPU routines for pixel blending and effects [Mion]
+
+  Added & reorganized graphics utility functions and files, using a
+  namespace "ons_gfx" and removing functionality from AnimationInfo [Mion]
+
+
+2011-03-17
+
+  Bugfix for uninitialized scaled_flag [Mion]
+
+
+2011-03-16
+
+  Added options for audio settings [Mion]:
+  * (Windows) --waveout-audio : use "waveout" instead of Direct Sound
+  * --match-audiodevice-to-bgm : reset the audio device to bgm specs
+  * --nomatch-audiodevice-to-bgm : don't reset the audio device to bgm specs
+    (now the default setting)
+  * --audiodriver <dev> : use <dev> as SDL's audio driver
+  * --audiobuffer <size> : use <size> kbytes for the audiobuffer
+    (only 1,2,4,8,16 allowed; minimum is set to 8 if "waveout" driver)
+
+
+2011-03-14
+
+  Added (undocumented) NScr cmd "seteffectspeed" [Mion]
+
+
+2011-03-13
+
+  Normalizing use of resizing/positioning functions; also converted to use
+  floating-point for increased accuracy, and un-inlined [Mion]
+
+  Moving "--scale" cmd-line option from RCA_SCALE to main build process [Mion]
+
+
+2011-03-12
+
+  Converted resizing #define macros into inline functions [Mion]
+
+  Freeing some more pointer variables in ONScripterLabel & ScriptParser
+  destructors [Mion]
+
+
+2011-03-10
+
+  Bugfixes to load "envdata" and "gloval.sav" at more appropriate times,
+  only process "savedir" cmd once (before "envdata" exists) [Mion]
+
+
+2011-03-08
+
+  Redoing RCA_SCALE build option implementation, to make use of existing
+  resize functionality (and draw better when aspect ratio is changed) [Mion]
+
+  Avoid reloading an image in setupAnimationInfo if its tag was
+  not (effectively) changed by the current image-loading cmd [Mion]
+
+  Bugfix to processing text cmd _(underscore) when using "linepage" mode [Mion]
+
+  Changed "gettext" cmd to strip out ons-en locate control characters;
+  changing "locate" to insert tabs instead of fullwidth spaces;
+  added "getlogtext" cmd [Mion]
+
+  Hacky little fix for a text handling bug found in a scene in Umineko 8 [Mion]
+
+
+2011-03-05
+
+  Redid image processing: broke out alpha & resize steps into separate
+  functions (similar to recent jp onscripter changes) [Mion]
+
+  Fixed bug in btnwait with "hidden" sprite buttons (for Umineko 8) [Mion]
+
+  Updated copyright year [Mion]
+
+  Ported from jp onscripter [Mion]:
+  * Added rand() call in ScriptParser constructor
+  * Using new(std::nothrow) for image/sound buffer allocation
+  * Removed history from DirtyRect
+
+  Added 16bpp support for "lsp2add", "lsp2sub", and Layer effects
+  (except "oldmovie"); improved add/sub blending [Mion]
+
+
+2010-12-15
+
+  Initializing everything in ScriptParser & AnimationInfo cons [Mion]
+
+  Fixed a bug causing standing images to seemingly disappear
+  after "getsavestr" is called [Mion]
+
+
+2010-12-12
+
+  Initialize! Initialize! Initialize everything, especially *pointers
+  (in ONScripterLabel so far, will hit more classes soon) [Mion]
+
+  Now onscripter will run even if it fails to open an audio device [Mion]
+
+  Avoiding early release of dynamic memory in AnimationInfo, seemingly
+  caused by calling its reset() directly [Mion]
+
+  Odds & ends of code cleanup [Mion]
+
+
+2010-10-27
+
+  Made some corrections to button handling, inspired by recent
+  official onscripter changes; also added "btnnowindowerase" cmd
+  while I was at it [Mion]
+
+  Using windoweffect in more cases where NScr does, like the
+  windowerase systemcall [Mion]
+
+
+2010-10-22
+
+  Decoupled user-preferred system menu language from the "language"
+  script setting, added cmd-line options "--japanese-menu" and
+  "--english-menu" [Mion]
+
+  Changed default language script to English, removed hack to test for
+  "en" in the executable's filename (users should use the "--japanese"
+  cmd-line option if running a Japanese (O)NScripter game) [Mion]
+
+
+2010-10-18
+
+  Adjusted default behavior of PNG alpha image handling [Mion]
+
+  Code cleanup, converting #defines to enums or inline functions [Mion]
+
+  Since ONScripter-EN doesn't try to act just like standard ONScripter,
+  there's no point in creating an "onscripter.exe" either [Mion]
+
+
+2010-10-10
+
+  Folding in some recent official onscripter changes; mainly
+  removing use of iconv [Mion]
+
+
+2010-10-03
+
+  Added onscripter usage docs for Mac's Help system [Roto]
+
+
+2010-09-27
+
+  Massive revamping of DirPaths class and how it's used; attempting
+  to use more effective C++ [Mion]
+
+  Adding support for '>' at the beginning of text [Mion]
+
+  Converting more fprintfs to errmsg calls [Mion]
+
+  Removed "debugprint" cmd [Mion]
+
+  Added some support for "english" cmd and mode, but needs to be more
+  carefully integrated and hamstrung [Mion]
+
+
+2010-09-19
+
+  Cleaned up effect code and effect skip handling; made sure "texthide" and
+  "textshow" will use the windoweffect if provided [Mion]
+
+
+2010-09-15
+
+  Made nscmake & nscdec onscr-tools more tolerant of non-Windows line endings;
+  any of CRLF, CR, LF will count as 1 newline
+  (note that onscripter-en is already tolerant) [Mion]
+
+  Retooled error handling, converted more printfs to error-handler calls [Mion]
+
+
+2010-09-10
+
+  Made fullscreen 'f' toggle available outside of button wait states [Mion]
+
+  Small bugfixes and code cleanup [Mion]
+
+
+2010-09-06
+
+  A few bugfixes for screen & text refresh; also fixed a divide by
+  zero error introduced when correcting image rotation [Mion]
+
+
+2010-09-05
+
+  Added Windows and Mac OS X dialog box handling:
+  * Special & awesome ONSCocoa boxes for messages, errors, help on OS X [Roto]
+  * "yesnobox", "okcancelbox", "mesbox" cmds now fully supported with dialog
+    boxes [Mion,Roto]
+  * "Caught" errors will now produce popups, and with more information [Mion]
+  * An "About" dialog box popup will show program version information
+    when F1 is pressed on Windows [Mion]
+  * Mode-switch to windowed mode before a dialog box appears, to prevent
+    crashes due to fullscreen mode [Mion]
+
+  Restructured error handling, moved error popup code from ScriptHandler to
+  ONScripterLabel [Mion]
+
+  Noted difference between "errors" and "warnings"; added the "--strict"
+  cmd-line option, which will treat warnings as errors, except that on
+  Windows & Mac a dialog box will show the warning and allow the user
+  either to continue (Ignore) or exit (Abort) [Mion]
+
+  Added "errorsave" cmd, which saves current game state (except for global
+  variables) to save999.dat when an error is caught [Mion]
+
+
+2010-06-20
+
+  Ported additional recent changes from official onscripter
+  (those unrelated to Android/PDA) [Mion]
+  
+  Corrected drawing of rotated images [Mion]
+
+  Fixed bug in "btn" cmd causing black rectangles when "btndef" unset [Mion]
+
+  When in "textgosub" mode, giving a '_\' or '_@' text sequence to NScr
+  will cause it to finish the text cmd without doing a clickwait; now
+  ons-en will do the same thing (for "Kanashuku", which really should be
+  using "puttext" instead, but oh well) [Mion]
+
+
+2010-06-09
+
+  Ported some recent changes from official onscripter [Mion]
+
+
+2010-06-05
+
+  Fixed a bug in sprite btn reset handling [Mion]
+
+
+2010-06-03
+
+  Removed "--allow-break-outside-loop" option, since it's now default [Mion]
+
+  Added Windows message box for displaying errors on exit;
+  also using the Mac ONSCocoa alertbox [Mion,Roto]
+
+  Avoid displaying text glyphs for non-printing characters [Mion]
+
+
+2010-05-30
+
+  Switching to Cocoa for Mac OS X API calls [Roto]
+
+
+2010-05-18
+
+  Resetting the sound mixer to default values at a "reset" cmd [Mion]
+
+
+2010-05-16
+
+  Added cmd-line option "--skip-past-newline" for smoother click-to-skip
+  mode when running older onscripter games [Mion]
+
+
+2010-05-07
+
+  Redid handling of text colors (ColorChange stuff wasn't necessary) [Mion]
+
+  Small fixes; changed some code variable and function names for clarity
+  (e.g. "shadowTextDisplay" -> "displayTextWindow") [Mion]
+
+  Added music/movie playback check for WMA and AVI file header (won't
+  attempt to play such files) [Mion]
+
+  Retooling of in-text-buffer "locate" characters and "locate" cmd [Mion]
+
+
+2010-05-04
+
+  Changed basic functionality on Windows: stdout.txt & stderr.txt will
+  go under the current user's AppData instead of AllUsers' from now on [Mion]
+
+  Added cmd-line option "--ignore-textgosub-newline" which causes
+  newlines after clickwaits to be ignored when in textgosub mode -
+  this will fix some older onscripter games, notably "A Dream of Summer" [Mion]
+
+  Some corrections to window icon handling [Mion]
+
+
+2010-03-09
+
+  Fix for the enormously slow startup time for Umineko (caused by
+  unnecessarily decompressing all bitmaps to find their lengths) [Mion & Roto]
+
+  Other memory leak fixes [Mion & Andrius]
+
+
+2010-03-08
+
+  Patching up some memory leaks & uninitialized variable issues,
+  fixes for quitting gracefully and handling effects [Mion]
+
+
+2010-03-07
+
+  Added quit event checking before running each cmd (allows graceful exits
+  even when a script is looping) [Mion]
+
+  Added more explicit cpu-gfx compiler checking (per Andrius' idea) [Mion]
+
+  During "skip to next choice" mode, reduce duration of effects instead
+  of just cutting them (ctrl-skip will still cut effects) [Mion]
+
+
+2010-03-06
+
+  Fixes for gcc4.5+ compilation, added strict compilation option [Andrius]
+
+  More little bugfixes prompted by al|together2006 games [Mion]
+
+
+2010-03-05
+
+  Various corrections for building on non-gcc compilers [Andrius]
+
+  Bugfixes to handle memory leaks, uninitialized values [Mion, Roto, Andrius]
+
+  A few other fixes prompted by testing on al|together2006 games [Mion]
+
+  Preliminary corrections for text display [Mion]
+
+
+2010-02-21
+
+  Edited Mac ons-en icon to make inner spaces clickable [Roto]
+
+  Allow "systemcall" cmd in an "rgosub" routine [Mion]
+
+
+2010-02-16
+
+  Fix for non-initialized variables in AnimationInfo [Andrey]
+
+  Made corrections to "configure", mainly for "cpu gfx" compiler checking,
+  and added "--no-cpu-gpx" option [Mion]
+
+  Added icon "resource" items to "make clean" [Mion]
+
+
+2010-02-15
+
+  Bugfix to Windows caption handling - characters in the system ANSI
+  codepage will be displayed correctly (no Unicode yet) [Mion]
+
+  Added ons-en icon to Windows resources, ported "resource" handling
+  code from ponscr for icons on non-Windows and non-MacOSX systems [Mion]
+
+  Added cmd-line option "--use-app-icons" to not use "icon.png" as
+  the window icon [Mion]
+
+
+2010-02-14
+
+  Various bugfixes, including for proper handling of JP filenames
+  (on Windows) and alpha PNG images [Mion]
+
+  Added cmd-line option "--current-user-appdata" for Windows in order to
+  use the current user's AppData folder for saves instead of AllUsers [Mion]
+
+  Added "||" (or) option to "if" command, from ogapee's
+  onscripter-20100131a release [Mion]
+
+  Bugfix to onscripter tools, bad filename handling in *make [Mion]
+
+
+2010-01-30
+
+  Reduced strictness on MPEG movie checking [Mion]
+
+  Bugfix for creating files when using tmp files (oops) [Mion]
+
+
+2010-01-23
+
+  Updates suggested by changes in ogapee's onscripter-20100116a release [Mion]
+
+  Bugfix for dll effect parameter handling (fixes "cascade") [Mion]
+
+  Updates to test suite [Mion]
+
+
+2010-01-17
+
+  New ons-en icon & icns (compiled into Mac builds only, so far) [Mion, Roto]
+
+  Bugfix for handling size 0 text font (esp. for Tokihako) [Mion]
+
+  Bugfix for PNG alpha/palette image checking [Mion]
+
+  When writing to files (gloval.sav, etc.) make a tmpfile first, so
+  that original file data may be preserved in case of write error [Mion]
+
+
+2010-01-16
+
+  Bugfix to clickwait and pagewait handling in "linepage" mode [Mion]
+
+  Bugfixes to *conv tools [Mion]
+
+  Bugfix for masked images [Mion]
+
+
+2010-01-07
+
+  Added PNG image support to *conv ONScripter tools; bugfixes to
+  tools and build process. [Mion]
+
+
+2010-01-05
+
+  Added NScr commands "getcursorpos2", "getnextline" [Mion]
+
+  Sort-of support for NScr command "rubyon2" (regular ruby behavior for now)
+  [Mion]
+
+  Bugfix for fullwidth integer output in Japanese text [Mion]
+
+  Updated "AnimationInfo.cpp" affine matrix handling based on ogapee's
+  onscripter-20100103a release. [Mion]
+
+
+2010-01-02
+
+  Added text line-completion on space/enter/return (not just left-click) [Mion]
+
+  Refined keyboard handling (won't perform 'a','m','o','f','s','v','z' keypress
+  functions while CTRL is pressed) [Mion]
+
+  Added NScr effect command "flushout" [Mion]
+
+
+2009-12-31
+
+  Switched keyboard layout code to use SDL Unicode values [Mion]
+
+
+2009-12-30
+
+  Added some support for non-QWERTY Latin-based keyboards QWERTZ and
+  AZERTY on Windows, to handle alphabet letter keys [Mion]
+
+  Added "volume edit" mode, reachable by pressing 'v' [Mion]
+
+  Added commands "menu_waveon", "menu_waveoff" to complement the 'm' mute
+  feature [Mion]
+
+  Added NScr commands "bgmdownmode", "checkkey", "getskipoff" [Mion]
+
+  "Added" bgmdownmode & savedir settings to envdata (previously there,
+  but not understood) [Mion]
+
+  Fix to "menu_full" & 'f' fullscreen toggle (avoid a crash if fullscreen
+  mode unavailable) [Mion]
+
+  Corrected default volume handling [Mion]
+
+  Allow comments in 'ons.cfg' by starting a line with # [Mion]
+
+  Bugfix for ns2conv & ns2make tools [Mion]
+
+
+2009-12-27
+
+  Bugfix to "split" command to prevent buffer overrun [Mion]
+
+  Updated man pages for tools [Mion]
+
+
+2009-12-26
+
+  Bugfix for text refresh [Mion] 
+
+
+2009-12-25
+
+  Added support for file-matching rules in the "*conv" tools [Mion]
+
+  Added volume mute feature (use 'm' keystroke to toggle volume on/off) [Mion]
+
+
+2009-12-19
+
+  Added support for NS2 archives (e.g. "00.ns2") [Mion]
+
+  Made updates to tools, changed their interfaces for clarity; added
+  new tools "ns2dec", "ns2conv", "ns2make", "nsamake", "sarmake",
+  "batchconv" (note that the "*conv" and "*make" commands don't support
+  NScr's SPB and LZSS compression schemes) [Mion]
+
+  Updated man pages for tools [Roto]
+
+  Some small bugfixes to pretext tag parsing and such (prompted by
+  testing on Hotaruyuki trial and Tokihako) [Mion]
+
+  For Windows, onscripter-en will now open the save and output folders
+  in Explorer, if "debug" mode is activated [Mion]
+
+  Added "mesbox" command (prints the message to stderr) [Mion]
+
+
+2009-12-15
+
+  Added support for building "nsadec", "nsaconv", "sardec", and
+  "sarconv" tools (use 'make tools' or 'make all' to build) [Mion]
+
+  Added "nscdec", "nscmake" tools [Mion]
+
+  Bugfixes to tools; corrected how onscr handles images when
+  "disable-rescale" (pda) mode is set [Mion]
+
+  Added man pages for tools [Roto]
+
+
+2009-12-09
+
+  Added "gameid" option for command-line and 'ons.cfg', to supplement the
+  ";gameid" script directive and 'game.id' file.  New order of preference:
+  1) cmd-line '--gameid "X"', 2) 'ons.cfg' "gameid=X", 3) 'game.id' file,
+  4) ";gameid" directive [Mion]
+
+
+2009-12-08
+
+  More graphics processing cleanup [Mion]
+
+  Added support for 'f' fullscreen/window toggle during non-async movie
+  playback [Mion]
+
+
+2009-12-07
+
+  Added support for XM & MOD files (provided by SDL_Mixer) to "play" and
+  "playonce" commands [Mion]
+
+
+2009-12-06
+
+  Corrected handling of PNG images with alpha components (and no more
+  BPP16 warning!) [Mion]
+
+  Lots of code optimization and cleanup, especially for alpha blending,
+  layer effects, "monocro" mode [Mion]
+
+  Added handling to prevent resizing a (usually multicell image for animation)
+  to a width too large for SDL to handle [Mion]
+
+  Bugfixes to event timing, effect ctrl-skipping, automode unset [Mion]
+
+  Fixed most(?) causes of crashing when trying to play a non-mpeg file
+  using "movie" [Mion]
+
+
+2009-12-02
+
+  Bugfixes to textgosub text output in skip mode, mask effects [Mion]
+
+  Added profiling flags to debug build option [Mion]
+
+  Optimized code for image resizing, "trvswave" and "whirl" effects;
+  reuse for already-loaded sprites [Mion]
+
+
+2009-11-22
+
+  Corrections to "clickskippage" handling, along with other skip modes at
+  clickwaits, and clickvoice playback (especially for textgosub) [Mion]
+
+
+2009-11-21
+
+  Integrated major changes implemented via "exp-updates" branch:
+    * integrated changes from official onscripter versions 20090822, 20091011,
+      and 20091115, wherever feasible
+    * paradigm shift in event handling based on onscripter-20090822, but
+      adapted to suit features of onscripter-en
+    * support for right-click wait states (from onscripter-20090822);
+      added NScr "lrclick" command
+    * stubs for Lua handling introduced in NScr 2.92 (from onscripter-20090822)
+    * support for producing single-color rectangular area sprites
+      (from onscripter-20090822)
+    * replaced hack for right-click menu title with special title handling
+    * new buttonwait options: added NScr commands "transbtn", "getmouseover",
+      "btnarea", "getmclick"
+    * added other NScr commands: "r_trap", "rgosub", "mv", "effectskip",
+      "mousemode"
+
+
+2009-11-06
+
+  Corrected image resizing (interpolation bug with multi-cell sprites),
+  handling resized elements, and selectable sentence generation
+  when resized [Mion]
+
+  Messed around with RCA_SCALE, still needs work and consideration [Mion]
+
+  Added command-line option "--window-width width" for non-PDA systems,
+  to set a preferred window width [Mion]
+
+  Cleaned up status output messages [Mion]
+
+  Corrected handling of standing images [Mion]
+
+
+2009-11-05
+
+  Removed ENABLE_1BYTE_CHAR ifdefs (made it the default) [Mion]
+
+  Fixed a bug in convertFromSJISToUTF8 [Mion]
+
+  Adjusted refreshing of animated sprites to work more in line with
+  NScripter [Mion]
+
+  Removed remaining HAELETH ifdefs [Mion]
+
+  Corrected resizing of loaded images (e.g. for PDAs),
+  including for BPP16 [Mion]
+
+  Adjusted blending (BPP16 wasn't doing fully opaque alpha images) [Mion]
+
+
+2009-11-02
+
+  Fixed building for platforms with 32-bit color (oops) [Mion]
+
+  Fixed nsa handling and "nsadir" command, added "addnsadir" command [Mion]
+
+  Updated a ton of copyright information to finally acknowledge how much
+  ONScripter-EN has forked from Ogapee's ONScripter (not that we would mind
+  our changes being integrated into the original!); also removed the
+  HAELETH and INSANI ifdefs [Mion]
+
+
+2009-10-29
+
+  Fixed building for platforms with 16-bit color (-DBPP16) [Mion]
+
+  Added BPP16 target to Xcode project for development/testing [Roto]
+
+
+2009-10-11
+
+  Small fixes to configure file, added option "--no-werror". [Mion]
+
+  Bugfix for building on 64-bit Mac OS X (contributed by Alexander Strange)
+
+  Updated "AnimationInfo.cpp" based on ogapee's onscripter-20090921
+  release. [Mion]
+
+  Bugfix to enterTextDisplayMode() [Mion]
+
+
+2009-10-10
+
+  Added "humanpos" command [Mion]
+
+  Added command-line options: [Mion]
+    * "--fileversion ver" sets the ONS file version to assume for loading
+      unversioned save files (current default: 206)
+    * "--allow-break-outside-loop" sets syntax option that allows "break" or
+      "next" commands outside a for loop (note that the default behavior has
+      been changed to _disallow_ this, so use this option to allow it)
+    * "--allow-color-type-only" sets syntax option that only allows a COLOR type
+      argument to be a bare color type value, disallowing strings and
+      variables.  (This also happens to allow the first character of a #RRGGBB
+      to be something other than '#'.)
+    * "--set-tag-page-origin-to-1" sets syntax option for 'gettaglog' to use
+      1 as the first (current) page (default is 0)
+    * "--answer-dialog-with-yes-ok" sets syntax option for always returning
+      1 (yes/ok) to 'yesnobox' and 'okcancelbox' (default: both commands
+      unsupported)
+
+  A number of bugfixes for "clickstr" parsing (especially with "textgosub"
+  mode) and "logsp" handling [Mion]
+
+
+2009-10-07
+
+  Fix for showing Japanese-language window title using "caption". [Mion]
+
+  Fixed a segfault when running "savescreenshot" command with no screenshot
+  buffered (especially for Umineko Ep.5). [Mion]
+
+  Added "getsavestr" command. [Mion]
+
+
+2009-09-30
+
+  Added command-line option "--japanese" to force Japanese mode. [Mion]
+
+  With Mac OS X, if bundled, set English mode if the app is named
+  "onscripter-en" (case-insensitive). [Mion & Roto]
+
+  With Mac OS X, if bundled, check for "ons.cfg" in the bundle Resources
+  and application path. [Mion & Roto]
+
+
+2009-09-29
+
+  Added check to determine if default.ttf (likely) supports Japanese. [Mion]
+
+  Added command-line option "--disable-cpu-gfx" to disable using onscripter's
+  special MMX/SSE2 graphics routines. [Mion]
+
+  Added parsing optional config file, "ons.cfg", for 'command-line'
+  options, e.g. "english" or "save=." (one "--" option per line). [Mion]
+
+  Changed Mac OS X default root path: if bundled, root path is
+  <bundle>:<app-path>:<app-path-parent>; if not bundled, use .:.. [Mion & Roto]
+
+
+2009-09-15
+
+  Changed script file processing to look for game.id and 1.txt-99.txt
+  only within the directory containing the main script. [Mion]
+
+  Minor fixes to button and textwindow handling (esp. for "Secret Game") [Mion]
+
+
+2009-09-02
+
+  Added a stub for "dsound" (quiets the 'unsupported command' warning) [Mion]
+
+  Fixed ctrl-skip text refreshing. [Mion]
+
+
+2009-08-27
+
+  Allow "break" and "next" commands outside of a for-loop,
+  since NScr does so (esp. for higurashi demo). [Mion]
+
+
+2009-08-26
+
+  Bugfix for "monocro" command (timing and color "level") [Mion]
+
+  Fix to disallow images loaded for mask Effects 15 & 18 from using
+  transparency type alpha (esp. for Umineko 4). [Mion]
+
+
+2009-08-16
+
+  Added "mode_wave_demo" command directive, as well as the behavior for when
+  it is _inactive_. [Mion]
+
+  Fixed "click" command to not turn off skip-to-choice mode
+  (more in line with NScr behavior). [Mion]
+
+  Made adjustments to wait/delay behavior during skip modes. [Mion]
+
+
+2009-07-18
+
+  Bugfixes for "fchk" command, graphics_.cpp file(s) compilation. [Mion]
+
+
+2009-07-12
+
+  bugfixes for non-MMX/SSE2 graphics routines, button handling (again),
+  textwindow (non)display on CTRL-press. [Mion]
+
+  Removed drawing a z-order sprite in front of the tachie but behind
+  the textwindow in windowback mode (can use extended sprites instead). [Mion]
+
+  Removed the 2009-06-14 fix that disallowed numerals after the asterisk
+  in label names (NScr doesn't obey its own rule, why should we?) [Mion]
+
+
+2009-06-27
+
+  Button bugfix. [Mion]
+
+
+2009-06-23
+
+  Changed "wait" command to do an actual timed wait even in ctrl/skip mode,
+  just for a reduced duration. [Mion]
+
+  Added command "savedir". [Mion]
+
+
+2009-06-21
+
+  Fix for rain effect on PPC. [Mion, Roto]
+
+  Added Altivec graphics routines. [Mion, Roto]
+
+  Added SSE2 alphablend graphics routine. [Mion]
+
+
+2009-06-17
+
+  Fix for PPC ogg file playback (with bgm volume < 100). [Mion]
+
+
+2009-06-14
+
+  Moved SSE2/MMX graphics routines to separate files. [Mion]
+
+  Various bugfixes, mainly a syntax fix to disallow numerals
+  after the asterisk in label names (as it should). [Mion]
+
+
+2009-06-11
+
+  Added SSE2/MMX graphics routines and removed sdl_gfx library. [Roto, Mion]
+
+  Added additive and subtractive alpha blending modes. [Mion]
+
+  Added commands "lsp2add", "lsph2add", "lsp2sub", "lsph2sub". [Mion]
+
+
+2009-06-09
+
+  Bugfixes; added support for sdl_gfx library. [Mion]
+
+  Also experimental graphics routines using SSE2. [Roto, Mion]
+
+
+2009-05-29
+
+  Added commands "menu_click_def", "menu_click_page", "minimizewindow",
+  "strsph", "textspeeddefault"; bugfix for Mac text output. [Mion]
+
+
+2009-04-27
+
+  Support for opening non-ASCII Japanese filenames in Windows,
+  even without Japanese locale. [Mion]
+
+
+2009-04-19
+
+  Fully-functional "movie" command, including async & pos options.
+  May be buggy. [Mion]
+
+
+2009-04-17
+
+  Incorporated insani's suggested "chvol" fix, redid "mp3fadeout",
+  added "mp3fadein", "bgmfadeout", "bgmfadein" commands.
+  Also various sound/music bugfixes. [Mion]
+
+
+2009-04-15
+
+  Incorporated changes from official onscripter-20090331. [Mion]
+
+
+2009-04-14
+
+  Corrected previously-fixed bugs reintroduced by the merge. [Mion]
+
+
+2009-04-11
+
+  Merged changes from experimental-effects branch: [Mion]
+    * Emulate "trvswave", "whirl", "breakup" dll-based effects
+    * Add support for effect layers: "setlayer", "layermessage" commands
+    * Emulate "oldmovie", "snow", "hana" dll-based Layer effects
+    * Add test scripts and images for testing dll-based emulations
+    * Partial implementation of "movie" command (loop & click)
+    * Enable GCC 4.3 autovectorization option (see configure --help)
+    * Support for DirectSound on mingw builds:
+      Added official SDL.dll & build libraries,
+      Configured mingw builds to use SDL.dll by default
+    * Various bugfixes
+
+
+2009-01-10
+
+  Various bugfixes, notably CTRL-quake and mouseOverCheck stale-button
+  crashes. [Mion]
+
+
+2008-11-18
+
+  GCC 4.3 introduces a whole bunch of new warnings for ambiguous
+  parentheses and unchecked IO errors.  Applied a patch contributed by
+  Tatu Kilappa that fixes most of these, and fixed the rest
+  myself. [Haeleth]
+
+
+2008-10-18
+
+  Audio mixer now reinitializes itself when streaming audio format
+  changes. [Mion]
+
+
+2008-08-23
+
+  Fixed some potential buffer overruns; thanks to Ivan Yanikov for the
+  patches. [Haeleth]
+
+
+2008-07-04
+
+  Added return value 4 in "isskip" command for whole page mode. [Mion]
+
+  Changed refreshSurface with windowback mode to draw a z-order sprite 
+  in front of the tachie but behind the textwindow;
+  Added windowchip handling to refreshSurface. [Mion]
+
+  Added "textbtnoff" command, fixed textbtn handling & updated test.
+  [Mion]
+
+  
+2008-07-03
+
+  Fixed a bug in game loading, where if a game was running and had
+  pages in the lookback buffer, subsequently loading a saved game
+  with no pages wouldn't properly "clear" the existing lookback buffer.
+  [Mion]
+
+  
+2008-06-27
+
+  Added "textbtnstart", "linkcolor", "gettextbtnstr", "erasetextbtn",
+  and "textexbtn" commands, along with support for textbuttons
+  (using "<>"). [Mion]
+
+  Added tracking of text colors on current page. [Mion]
+
+
+2008-06-19
+
+  Added support for pretextgosub tags (using "[]") [Mion]
+
+  Added support for in-text variable assignment (using "{}"). [Mion]
+
+
+2008-06-14
+
+  Added emulation of "cascade" dll plugin effect. [Mion]
+
+
+2008-06-10
+
+  Reworked text buffer processing to do proper text placement when
+  locate commands were used. [Mion]
+
+
+2008-04-04
+
+  Added "addkinsoku" and "setkinsoku" commands [Mion]
+
+  Reworked text processing to allow a mix of 1-byte & 2-byte chars,
+  use better English space-based linebreaking and Japanese kinsoku-based
+  linebreaking. [Mion]
+
+
+2008-03-29
+
+  Add filename-based language selection: if the executable is named
+  "onscripter-en" (or "ONScripter-En", "onscripter_english", etc), it
+  will use English mode by default. [Haeleth]
+
+
+2008-03-22
+
+  Implement clickskippage, and also add a debugprint command that
+  dumps its parameters to stdout for convenient printf-style
+  debugging. [Haeleth]
+
+  Add a rudimentary test suite; this is far from complete, but will
+  hopefully help a bit in making sure future updates don't break
+  anything. [Haeleth]
+
+  Replace the FORCE_1BYTE_CHAR compile-time option with a runtime
+  "language" command.  Use "language english" to get the current
+  behaviour, or pass ONScripter-En the "--english" command-line
+  flag. [Haeleth]
+
+
+2008-03-09
+
+  Fix MPEG playback for movies with audio sampled at other than
+  44100Hz. [Mion]
+
+  Updated music playing code to be more in line with Ogapee's latest
+  release. [Mion]
+
+  Added save file version 2.05. [Mion]
+
+
+2008-03-05
+
+  Support added for extended sprite commands (lsp2, msp2, etc), and
+  improved screenshot support (screenshot, deletescreenshot). [Mion]
+
+
+2008-02-12
+
+  Support NBZ files within SAR archives, and fix the xcode
+  project. [Roine]
+
+
+2008-01-03
+
+  Numerous patches [Mion]: 
+    * Fix bugs in prnum
+    * Remove extra newlines in built-in save/load menus
+    * Modify skip-to-wait mode to fix Higurashi problems
+    * Allow multiple archive paths, to facilitate distributing patches
+    * Fix intermittent crashes with multicore processors
+    * Fix input breakage in auto mode
+
+    
+2007-11-11
+
+  Simplify handling of the click-wait enum.
+
+  Temporarily disable skip_to_wait; there's breakage somewhere that's
+  causing nasty side-effects in Higurashi.
+
+
+2007-07-20
+
+  Adjust btnwait to match NScripter behaviour more closely.  (Further
+  tests are required to confirm that this doesn't break any edge
+  cases.)
+
+
+2007-06-20
+
+  Fix an OS X bug causing bundled games to fail.
+
+
+2007-06-12
+
+  Get the build working on Solaris (a useful benchmark for how well
+  things work on less Linux-like platforms) and NetBSD (a useful step
+  towards my ultimate goal of a visual novel on every toaster).
+
+  Fix some more MinGW build errors.
+
+  Add the missing `install' target.
+
+
+2007-06-07
+
+  Fix some errors when mixing internal and system libraries.
+  Improve support for FreeBSD.
+
+
+2007-05-13
+
+  Attempt to detect when a PNG image is using an NScripter-style mask
+  area for transparency rather than a PNG alpha channel; add
+  command-line flags and compile-time options to force either
+  behaviour if auto-detection fails.  This should fix games like
+  Tsukihime which were broken by the addition of alpha channel
+  support.
+
+
+2007-05-06
+
+  Fix some bugs: parsing of arguments, saving of vertical text,
+  and compilation without INSANI defined.
+
+
+2007-05-01
+
+  Merge in some more changes from Roine designed to make life better
+  for OS X users:
+    * Include an Xcode project to simplify Mac builds.
+    * If game resources are not in the app's bundle, look for them in
+      the application path instead.
+    * Store saves and other data under Application Support, not
+      Preferences.
+
+
+2007-04-27
+
+  Merge in Roine's scaling patch.  This is considered experimental,
+  and will currently only be enabled if RCA_SCALE is defined at
+  compile-time.
+
+  Fix a silly bug in the previous mergings.
+
+
+2007-04-25
+
+  Merge in an adapted version of the `drawfix' patch to speed up
+  screen updates in windowed mode, plus a number of other patches:
+    * Support both SAR and NSA archives at the same time [zalas]
+    * Reduce flicker when sprites are changed [Roine Gustafsson]
+    * Fix gcc detection on OS X [Roine]
+    * Display missing game data error as a dialog on OS X [Roine]
+    * Support multiple games without game IDs at the same time [Roine]
+    * Fix incorrect clipping of text shadow [Roine]
+
+
+2007-04-15
+
+  Merge in useful fixes from onscripter-20070206.
+
+
+2007-04-08
+
+  Update build system to use a configure script that generates a
+  platform-appropriate makefile.  This also verifies that all required
+  dependencies are available, and provides the option of building
+  local libraries as required.  The end result is a package that can
+  reasonably be distributed in source form for Linux users.
+  In the process support for PSP, iPod, etc. has been removed; it
+  could be replaced easily enough if anyone was available to test.
+
+  Translate README.
+
+  To make life easier with existing games, add the ability to store
+  game ID in a file `game.id' as an alternative to modifying 0.txt.
+
+
+2006-11-22
+
+  Implement default data/save separation for Windows and Linux too.
+  On Windows, saves go under the global Application Data folder; on
+  Linux and other Unix-like systems, they go in a dotdir in the user's
+  home directory.  These changes enhance Vista compatibility
+  considerably, and make it possible to package Linux games in a way
+  that respects the FHS.
+
+
+2006-09-05
+
+  Fix typo in usage summary.
+  
+  Remove unnecessary diagnostics.
+
+  Make archive path and save path separately configurable.  Game data
+  no longer has to be stored in a writable directory.
+  
+  OS X: make default archive path be the Resources folder of the
+  application bundle, and default save path be a new subfolder of the
+  user's Library/Preferences.  The name of the subfolder is derived
+  from a new "game identifier" that should be specified at the top of
+  0.txt with a ";gameid Whatever" line immediately after the modeline.

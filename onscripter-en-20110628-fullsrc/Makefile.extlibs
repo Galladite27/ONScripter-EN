@@ -1,0 +1,283 @@
+# -*- makefile-gmake -*-
+# Build rules for internal libraries.
+# Do not invoke this directly; these rules are used automatically when relevant.
+
+ifndef VERBOSE # use "make VERBOSE=true" to show outputs
+REDIR = >/dev/null 2>&1
+REDSO = >/dev/null
+endif
+
+EL = extlib/lib
+EI = extlib/include
+EB = extlib/bin
+ES = extlib/src
+
+SDLSRC  = $(ES)/SDL-1.2.15
+SDLISRC = $(ES)/SDL_image-1.2.12
+ZSRC    = $(ES)/zlib-1.2.3
+PNGSRC  = $(ES)/libpng-1.6.39
+JPEGSRC = $(ES)/jpeg-6b
+SDLMSRC = $(ES)/SDL_mixer-1.2.12
+OGGSRC  = $(ES)/libogg-1.3.5
+VORBSRC = $(ES)/libvorbis-1.3.7
+SMPGSRC = $(ES)/smpeg
+BZSRC   = $(ES)/bzip2-1.0.8
+FTSRC   = $(ES)/freetype-2.13.0
+SDLTSRC = $(ES)/SDL_ttf-2.0.11
+
+LPREFIX = $(shell pwd)/extlib
+
+CLEAN_TARGETS=clean_sdl clean_sdl_image clean_sdl_mixer clean_bzip2   \
+              clean_smpeg clean_freetype clean_sdl_ttf
+DISTCLEAN_TARGETS=dclean_sdl dclean_sdl_image dclean_sdl_mixer        \
+                  dclean_smpeg dclean_freetype dclean_sdl_ttf
+
+#-- SDL -----------------------------------------------------------------------
+
+.PHONY: clean_sdl dclean_sdl
+internal_sdl = $(EB)/sdl-config
+clean_sdl:
+	@if [ -f $(SDLSRC)/Makefile ]; then $(MAKE) -C $(SDLSRC) uninstall; fi
+	@if [ -f $(SDLSRC)/Makefile ]; then $(MAKE) -C $(SDLSRC) clean; fi
+dclean_sdl: clean_sdl
+	@if [ -f $(SDLSRC)/Makefile ]; then $(MAKE) -C $(SDLSRC) distclean; fi
+
+$(SDLSRC)/Makefile: $(if $(INTERNAL_LIBPNG),$(EL)/libpng$(LIBSUFFIX))
+	@echo Configuring internal SDL...
+	@cd $(SDLSRC) && \
+	./configure --prefix="$(LPREFIX)" $(SDLOTHERCONFIG) \
+	    $(addprefix --disable-,shared joystick nas $(addprefix video-,fbcon directfb svga vgl wscons opengl)) \
+	    $(REDIR)
+	@cp $(ES)/required/libtool $(SDLSRC)/libtool # This line fixes a libtool issue by just using the copy of libtool from the old build of ONSCripter-EN. It's not pretty, but it works. -Galladite, 2022-2-9
+	@sed -i 's/$$(objects)\/SDL_dummy_main\.lo: \.\/src\/main\/dummy\/SDL_dummy_main\.c \\/$$(objects)\/SDL_dummy_main.o: .\/src\/main\/dummy\/SDL_dummy_main.c \\/g' $(SDLSRC)/build-deps # This line fixes an issue baked into SDL's configure.in whereby the wrong extension was given, changing the name of a critically important target. These externsions are given out in a generic manner, however, so I'd rather do this than try and understand whatever autoconf is doing. -Galladite, 2022-2-9
+
+$(EB)/sdl-config: $(SDLSRC)/Makefile
+	@echo Building internal SDL...
+	@$(MAKE) -C $(SDLSRC) $(REDSO)
+	@$(MAKE) -C $(SDLSRC) install $(REDSO)
+	@if [ -n "$(WIN32)" ]; then \
+	    mv $@ $@.tmp; \
+	    sed -e 's/\(-lmingw32 -lSDLmain.*\)$$/\1 -lwinmm/' $@.tmp > $@; \
+	    rm $@.tmp; \
+	fi # Fix for annoying Windows breakage
+	@cp -r $(EI)/SDL/* $(EI)
+
+#-- SDL_image -----------------------------------------------------------------
+
+.PHONY: clean_sdl_image dclean_sdl_image
+internal_sdl_image = $(EL)/libSDL_image$(LIBSUFFIX)
+clean_sdl_image:
+	@-if [ -f $(SDLISRC)/Makefile ]; then $(MAKE) -C $(SDLISRC) uninstall; fi
+	@-if [ -f $(SDLISRC)/Makefile ]; then $(MAKE) -C $(SDLISRC) clean; fi
+	@-if [ -f $(EL)/libz$(LIBSUFFIX) ]; then $(MAKE) -C $(ZSRC) uninstall prefix="$(LPREFIX)"; fi
+	@-if [ -f $(ZSRC)/libz$(LIBSUFFIX) ]; then $(MAKE) -C $(ZSRC) clean; fi
+	@-if [ -f $(PNGSRC)/Makefile ]; then $(MAKE) -C $(PNGSRC) uninstall; fi
+	@-if [ -f $(PNGSRC)/Makefile ]; then $(MAKE) -C $(PNGSRC) clean; fi
+	@-if [ -f $(JPEGSRC)/Makefile ]; then \
+	    rm -f $(EL)/libjpeg$(LIBSUFFIX) $(addprefix $(EI)/,jconfig.h jpeglib.h jmorecfg.h jerror.h); \
+	    $(MAKE) -C $(JPEGSRC) clean; \
+	fi
+dclean_sdl_image:
+	@-if [ -f $(SDLISRC)/Makefile ]; then $(MAKE) -C $(SDLISRC) distclean; fi
+	@-if [ -f $(PNGSRC)/Makefile ]; then $(MAKE) -C $(PNGSRC) distclean; fi
+	@-if [ -f $(JPEGSRC)/Makefile ]; then $(MAKE) -C $(JPEGSRC) distclean; fi
+
+$(SDLISRC)/Makefile: $(if $(INTERNAL_SDL),$(EB)/sdl-config) \
+                     $(if $(INTERNAL_LIBPNG),$(EL)/libpng$(LIBSUFFIX)) \
+                     $(if $(INTERNAL_LIBJPEG),$(EL)/libjpeg$(LIBSUFFIX))
+	@echo Configuring internal SDL_image...
+	@cd $(SDLISRC) && \
+	./configure --prefix="$(LPREFIX)" $(OTHERCONFIG) \
+	    $(addprefix --disable-,shared lbm pcx pnm tga xcf xv tif \
+	    	                   $(if $(INTERNAL_LIBPNG),png-shared) \
+                                   $(if $(INTERNAL_LIBJPEG),jpg-shared)) \
+	    $(REDIR)
+	@if grep -q 'PNG image loading disabled' $(SDLISRC)/config.log; then \
+	    echo "PNG error - check $(SDLISRC)/config.log for details"; \
+	    rm Makefile; \
+	    exit 1; \
+	fi
+
+$(EL)/libSDL_image$(LIBSUFFIX): $(SDLISRC)/Makefile
+	@echo Building internal SDL_image...
+	@$(MAKE) -C $(SDLISRC) $(REDSO)
+	@$(MAKE) -C $(SDLISRC) install $(REDSO)
+	@cp -r $(EI)/SDL/* $(EI)
+
+# First build libz, libpng, and libjpeg, if required.
+
+internal_png = $(EL)/libpng$(LIBSUFFIX)
+internal_jpeg = $(EL)/libjpeg$(LIBSUFFIX)
+
+$(PNGSRC)/Makefile: $(EL)/libz$(LIBSUFFIX)
+	@echo Configuring internal libpng...
+	@cd $(PNGSRC) && \
+	./configure --prefix="$(LPREFIX)" --disable-shared --disable-dependency-tracking $(OTHERCONFIG) $(REDIR)
+
+$(EL)/libpng$(LIBSUFFIX): $(PNGSRC)/Makefile 
+	@echo Building internal libpng...
+	@$(MAKE) -C $(PNGSRC) $(REDSO)
+	@$(MAKE) -C $(PNGSRC) install $(REDSO)
+
+$(EL)/libz$(LIBSUFFIX):
+	@echo Building internal zlib...
+	@$(MAKE) -C $(ZSRC) install prefix="$(LPREFIX)" $(REDSO)
+
+$(JPEGSRC)/Makefile:
+	@echo Configuring internal libjpeg...
+	@cd $(JPEGSRC) && \
+	./configure --prefix="$(LPREFIX)" --disable-shared --enable-static $(OTHERCONFIG) $(REDIR)
+
+$(EL)/libjpeg$(LIBSUFFIX): $(JPEGSRC)/Makefile 
+	@echo Building internal libjpeg...
+	@$(MAKE) -C $(JPEGSRC) install-lib $(REDSO)
+
+#-- SDL_mixer -----------------------------------------------------------------
+
+OGGLIBS = $(EL)/libogg$(LIBSUFFIX) $(EL)/libvorbis$(LIBSUFFIX) $(EL)/libvorbisfile$(LIBSUFFIX)
+
+.PHONY: clean_sdl_mixer dclean_sdl_mixer
+internal_sdl_mixer = $(EL)/libSDL_mixer$(LIBSUFFIX)
+clean_sdl_mixer:
+	@if [ -f $(SDLMSRC)/Makefile ]; then $(MAKE) -C $(SDLMSRC) uninstall; fi
+	@if [ -f $(VORBSRC)/Makefile ]; then $(MAKE) -C $(VORBSRC) uninstall; fi
+	@if [ -f $(OGGSRC)/Makefile  ]; then $(MAKE) -C $(OGGSRC)  uninstall; fi
+	@if [ -f $(SDLMSRC)/Makefile ]; then $(MAKE) -C $(SDLMSRC) clean; fi
+	@if [ -f $(VORBSRC)/Makefile ]; then $(MAKE) -C $(VORBSRC) clean; fi
+	@if [ -f $(OGGSRC)/Makefile  ]; then $(MAKE) -C $(OGGSRC)  clean; fi
+dclean_sdl_mixer:
+	@if [ -f $(SDLMSRC)/Makefile ]; then $(MAKE) -C $(SDLMSRC) distclean; fi
+	@if [ -f $(VORBSRC)/Makefile ]; then $(MAKE) -C $(VORBSRC) distclean; fi
+	@if [ -f $(OGGSRC)/Makefile  ]; then $(MAKE) -C $(OGGSRC)  distclean; fi
+
+$(SDLMSRC)/Makefile: $(if $(INTERNAL_SDL),$(EB)/sdl-config) \
+                     $(if $(INTERNAL_SMPEG),$(EB)/smpeg-config) \
+                     $(if $(INTERNAL_OGGLIBS),$(OGGLIBS))
+	@echo Configuring internal SDL_mixer...
+	@cd $(SDLMSRC) && \
+	./configure --prefix="$(LPREFIX)" $(SDL_MIXER_FLAGS) $(OTHERCONFIG) \
+	    $(addprefix --disable-,shared $(addprefix music-,cmd timidity-midi)) \
+	    $(REDIR)
+
+$(EL)/libSDL_mixer$(LIBSUFFIX): $(SDLMSRC)/Makefile
+	@echo Building internal SDL_mixer...
+	@$(MAKE) -C $(SDLMSRC) $(REDSO)
+	@$(MAKE) -C $(SDLMSRC) install $(REDSO)
+	@-if [ -f $(EI)/SDL_mixer.h ]; then rm $(EI)/SDL_mixer.h; fi
+	@cp -r $(EI)/SDL/* $(EI)
+
+# First build Ogg libs, if required.
+
+internal_ogglibs = $(OGGLIBS)
+
+$(OGGSRC)/Makefile:
+	@echo Configuring internal libogg...
+	@cd $(OGGSRC) && \
+	./configure --prefix="$(LPREFIX)" --disable-shared --disable-dependency-tracking $(OTHERCONFIG) $(REDIR)
+
+$(EL)/libogg$(LIBSUFFIX): $(OGGSRC)/Makefile
+	@echo Building internal libogg...
+	@$(MAKE) -C $(OGGSRC) $(REDSO)
+	@$(MAKE) -C $(OGGSRC) install $(REDSO)
+
+$(VORBSRC)/Makefile:
+	@echo Configuring internal libvorbis...
+	@cd $(VORBSRC) && \
+	./configure --prefix="$(LPREFIX)" $(addprefix --disable-,shared dependency-tracking docs) $(OTHERCONFIG) $(REDIR)
+
+$(EL)/libvorbisfile$(LIBSUFFIX): $(EL)/libvorbis$(LIBSUFFIX)
+$(EL)/libvorbis$(LIBSUFFIX): $(EL)/libogg$(LIBSUFFIX) $(VORBSRC)/Makefile
+	@echo Building internal libvorbis...
+	@$(MAKE) -C $(VORBSRC) $(REDSO)
+	@$(MAKE) -C $(VORBSRC) install $(REDSO)
+
+#-- SMPEG ---------------------------------------------------------------------
+
+.PHONY: clean_smpeg dclean_smpeg
+internal_smpeg = $(EB)/smpeg-config
+clean_smpeg:
+	@-if [ -f $(SMPGSRC)/Makefile ]; then $(MAKE) -C $(SMPGSRC) uninstall; fi
+	@-if [ -f $(SMPGSRC)/Makefile ]; then $(MAKE) -C $(SMPGSRC) clean; fi
+	@-if [ -f $(EI)/smpeg.h ]; then rm $(EI)/MPEG* $(EI)/smpeg.h; fi
+dclean_smpeg: clean_smpeg
+	@-if [ -f $(SMPGSRC)/Makefile ]; then $(MAKE) -C $(SMPGSRC) distclean; fi
+
+$(SMPGSRC)/Makefile: $(if $(INTERNAL_SDL),$(EB)/sdl-config)
+	@echo Configuring internal smpeg...
+	@cd $(SMPGSRC) && \
+	./configure --prefix="$(LPREFIX)" $(OTHERCONFIG) \
+	    $(addprefix --disable-,shared gtk-player opengl-player debug) \
+	    $(REDIR)
+	@sed -i '/hufftable\.lo: audio\/hufftable\.cpp/{n;s/$$(CXXFLAGS)/$$(CXXFLAGS) -Wno-narrowing/}' $(SMPGSRC)/Makefile # Fix for unnecessary error -Galladite 2023-2-9
+
+$(EB)/smpeg-config: $(SMPGSRC)/Makefile
+	@echo Building internal smpeg...
+	@$(MAKE) -C $(SMPGSRC) $(REDSO)
+	@$(MAKE) -C $(SMPGSRC) prefix="$(LPREFIX)" install $(REDSO)
+	@cp -r $(EI)/smpeg/* $(EI)
+
+#-- Freetype ------------------------------------------------------------------
+
+FTCONFIGURE = $(FTSRC)/builds/unix/config.status
+
+.PHONY: clean_freetype dclean_freetype
+internal_freetype = $(EB)/freetype-config
+clean_freetype:
+	@-if [ -f $(FTCONFIGURE) ]; then $(MAKE) -C $(FTSRC) uninstall; fi
+	@-if [ -f $(FTCONFIGURE) ]; then $(MAKE) -C $(FTSRC) clean; fi
+dclean_freetype:
+	@-if [ -f $(FTCONFIGURE) ]; then $(MAKE) -C $(FTSRC) distclean; fi
+
+$(FTCONFIGURE): $(if $(INTERNAL_LIBPNG),$(EL)/libz$(LIBSUFFIX))
+	@echo Configuring internal Freetype...
+	@cd $(FTSRC) && \
+	./configure --prefix="$(LPREFIX)" --disable-shared $(OTHERCONFIG) $(REDIR)
+
+$(EB)/freetype-config: $(FTCONFIGURE)
+	@echo Building internal Freetype...
+	@$(MAKE) -C $(FTSRC) $(REDSO)
+	@$(MAKE) -C $(FTSRC) install $(REDSO)
+	@-if [ -h $(EI)/freetype ]; then rm -r $(EI)/freetype; fi
+	@-if [ -f $(EI)/ft2config.h ]; then rm $(EI)/ft2config.h; fi
+	@cp -r $(EI)/freetype2/* $(EI)
+
+#-- SDL_ttf -------------------------------------------------------------------
+
+.PHONY: clean_sdl_ttf dclean_sdl_ttf
+internal_sdl_ttf = $(EL)/libSDL_ttf$(LIBSUFFIX)
+clean_sdl_ttf:
+	@if [ -f $(SDLTSRC)/Makefile ]; then $(MAKE) -C $(SDLTSRC) uninstall; fi
+	@if [ -f $(SDLTSRC)/Makefile ]; then $(MAKE) -C $(SDLTSRC) clean; fi
+dclean_sdl_ttf: clean_sdl_ttf
+	@if [ -f $(SDLTSRC)/Makefile ]; then $(MAKE) -C $(SDLTSRC) distclean; fi
+
+$(SDLTSRC)/Makefile: $(if $(INTERNAL_SDL),$(EB)/sdl-config) $(if $(INTERNAL_FREETYPE),$(EB)/freetype-config)
+	@echo Configuring internal SDL_ttf...
+	@cd $(SDLTSRC) && \
+	./configure --prefix="$(LPREFIX)" --disable-shared $(OTHERCONFIG) $(REDIR)
+
+$(EL)/libSDL_ttf$(LIBSUFFIX): $(SDLTSRC)/Makefile
+	@echo Building internal SDL_ttf...
+	@$(MAKE) -C $(SDLTSRC) $(REDSO)
+	@$(MAKE) -C $(SDLTSRC) install $(REDSO)
+	@cp -r $(EI)/SDL/* $(EI)
+
+#-- libbzip2 ------------------------------------------------------------------
+
+BZOBJS = blocksort huffman crctable randtable compress decompress bzlib
+
+.PHONY: clean_bzip2
+internal_bzip2 = $(EL)/libbz2$(LIBSUFFIX) $(EI)/bzlib.h
+clean_bzip2:
+	rm -f $(EL)/libbz2$(LIBSUFFIX) $(EI)/bzlib.h $(BZSRC)/*$(OBJSUFFIX)
+
+$(EL)/libbz2$(LIBSUFFIX): $(foreach fn,$(BZOBJS),$(BZSRC)/$(fn)$(OBJSUFFIX))
+	rm -f $@
+	$(AR) cq $@ $^
+	@if [ -f "$(RANLIB)" -o -f /usr/bin/ranlib -o \
+	    -f /bin/ranlib -o -f /usr/ccs/bin/ranlib ]; then \
+	    $(if $(RANLIB),$(RANLIB),ranlib) $@ ; \
+	fi
+
+$(EI)/bzlib.h: $(BZSRC)/bzlib.h
+	cp $< $@
