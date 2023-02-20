@@ -1,3 +1,15 @@
+2023-02-19
+
+  Commands ported from ONScripter: ;$, autosaveoff, savepoint,
+  getbgmvol, getmp3vol, getsevol, getvoicevol
+  * This includes support for custom resolutions
+
+  Semi-broken fix to allow saving game within choice selection
+
+  Dependencies updated to latest versions (but they still need stripping
+  back like before)
+
+
 2011-06-28
 
   Bugfix to calling "getcselstr" on an out-of-range index, so that ons-en
