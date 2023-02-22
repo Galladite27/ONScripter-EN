@@ -810,7 +810,7 @@ with_pic
 enable_fast_install
 with_aix_soname
 with_gnu_ld
-with_sysroot
+with_libtool_sysroot
 enable_libtool_lock
 enable_dependency_tracking
 enable_silent_rules
@@ -1478,7 +1478,8 @@ Optional Packages:
                           shared library versioning (aka "SONAME") variant to
                           provide on AIX, [default=aix].
   --with-gnu-ld           assume the C compiler uses GNU ld [default=no]
-  --with-sysroot[=DIR]    Search for dependent libraries within DIR (or the
+  --with-libtool-sysroot[=DIR]
+                          Search for dependent libraries within DIR (or the
                           compiler's sysroot if not specified).
 
 Some influential environment variables:
@@ -1711,7 +1712,7 @@ else $as_nop
 #define $2 innocuous_$2
 
 /* System header to define __stub macros and hopefully few prototypes,
-   which can conflict with char $2 (void); below.  */
+   which can conflict with char $2 (); below.  */
 
 #include <limits.h>
 #undef $2
@@ -1722,7 +1723,7 @@ else $as_nop
 #ifdef __cplusplus
 extern "C"
 #endif
-char $2 (void);
+char $2 ();
 /* The GNU C library defines this for functions which it implements
     to always fail with ENOSYS.  Some functions are actually named
     something starting with __ and the normal name is an alias.  */
@@ -2295,7 +2296,9 @@ struct stat;
 /* Most of the following tests are stolen from RCS 5.7 src/conf.sh.  */
 struct buf { int x; };
 struct buf * (*rcsopen) (struct buf *, struct stat *, int);
-static char *e (char **p, int i)
+static char *e (p, i)
+     char **p;
+     int i;
 {
   return p[i];
 }
@@ -2346,7 +2349,6 @@ extern int puts (const char *);
 extern int printf (const char *, ...);
 extern int dprintf (int, const char *, ...);
 extern void *malloc (size_t);
-extern void free (void *);
 
 // Check varargs macros.  These examples are taken from C99 6.10.3.5.
 // dprintf is used instead of fprintf to avoid needing to declare
@@ -4704,11 +4706,6 @@ else $as_nop
     lt_cv_sys_max_cmd_len=8192;
     ;;
 
-  mint*)
-    # On MiNT this can take a long time and run out of memory.
-    lt_cv_sys_max_cmd_len=8192;
-    ;;
-
   amigaos*)
     # On AmigaOS with pdksh, this test takes hours, literally.
     # So we just punt and use a minimum line length of 8192.
@@ -6434,33 +6431,33 @@ fi
 
 
 
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for sysroot" >&5
-printf %s "checking for sysroot... " >&6; }
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for libtool-sysroot" >&5
+printf %s "checking for libtool-sysroot... " >&6; }
 
-# Check whether --with-sysroot was given.
-if test ${with_sysroot+y}
+# Check whether --with-libtool-sysroot was given.
+if test ${with_libtool_sysroot+y}
 then :
-  withval=$with_sysroot;
+  withval=$with_libtool_sysroot;
 else $as_nop
-  with_sysroot=no
+  with_libtool_sysroot=no
 fi
 
 
 lt_sysroot=
-case $with_sysroot in #(
+case $with_libtool_sysroot in #(
  yes)
    if test yes = "$GCC"; then
      lt_sysroot=`$CC --print-sysroot 2>/dev/null`
    fi
    ;; #(
  /*)
-   lt_sysroot=`echo "$with_sysroot" | $SED -e "$sed_quote_subst"`
+   lt_sysroot=`echo "$with_libtool_sysroot" | $SED -e "$sed_quote_subst"`
    ;; #(
  no|'')
    ;; #(
  *)
-   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $with_sysroot" >&5
-printf "%s\n" "$with_sysroot" >&6; }
+   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $with_libtool_sysroot" >&5
+printf "%s\n" "$with_libtool_sysroot" >&6; }
    as_fn_error $? "The sysroot must be an absolute path." "$LINENO" 5
    ;;
 esac
@@ -6716,10 +6713,10 @@ s390*-*linux*|s390*-*tpf*|sparc*-*linux*)
 	  x86_64-*linux*)
 	    LD="${LD-ld} -m elf_x86_64"
 	    ;;
-	  powerpcle-*linux*|powerpc64le-*linux*)
+	  powerpcle-*linux*)
 	    LD="${LD-ld} -m elf64lppc"
 	    ;;
-	  powerpc-*linux*|powerpc64-*linux*)
+	  powerpc-*linux*)
 	    LD="${LD-ld} -m elf64ppc"
 	    ;;
 	  s390*-*linux*|s390*-*tpf*)
@@ -10747,11 +10744,11 @@ darwin* | rhapsody*)
   version_type=darwin
   need_lib_prefix=no
   need_version=no
-  library_names_spec='$libname$release$versuffix$shared_ext $libname$release$major$shared_ext $libname$shared_ext'
+  library_names_spec='$libname$release$major$shared_ext $libname$shared_ext'
   soname_spec='$libname$release$major$shared_ext'
   shlibpath_overrides_runpath=yes
   shlibpath_var=DYLD_LIBRARY_PATH
-  shrext_cmds='`test .$module = .yes && echo .bundle || echo .dylib`'
+  shrext_cmds='`test .$module = .yes && echo .so || echo .dylib`'
 
   sys_lib_search_path_spec="$sys_lib_search_path_spec /usr/local/lib"
   sys_lib_dlsearch_path_spec='/usr/local/lib /lib /usr/lib'
@@ -10777,14 +10774,7 @@ freebsd* | dragonfly* | midnightbsd*)
     *) objformat=elf ;;
     esac
   fi
-  # Handle Gentoo/FreeBSD as it was Linux
-  case $host_vendor in
-    gentoo)
-      version_type=linux ;;
-    *)
-      version_type=freebsd-$objformat ;;
-  esac
-
+  version_type=freebsd-$objformat
   case $version_type in
     freebsd-elf*)
       library_names_spec='$libname$release$shared_ext$versuffix $libname$release$shared_ext$major $libname$shared_ext'
@@ -10795,12 +10785,6 @@ freebsd* | dragonfly* | midnightbsd*)
     freebsd-*)
       library_names_spec='$libname$release$shared_ext$versuffix $libname$shared_ext$versuffix'
       need_version=yes
-      ;;
-    linux)
-      library_names_spec='${libname}${release}${shared_ext}$versuffix ${libname}${release}${shared_ext}$major ${libname}${shared_ext}'
-      soname_spec='${libname}${release}${shared_ext}$major'
-      need_lib_prefix=no
-      need_version=no
       ;;
   esac
   shlibpath_var=LD_LIBRARY_PATH
@@ -11436,14 +11420,8 @@ cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 
 /* Override any GCC internal prototype to avoid an error.
    Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.
-   The 'extern "C"' is for builds by C++ compilers;
-   although this is not generally supported in C code supporting it here
-   has little cost and some practical benefit (sr 110532).  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char dlopen (void);
+   builtin and then its argument prototype would still apply.  */
+char dlopen ();
 int
 main (void)
 {
@@ -11504,14 +11482,8 @@ cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 
 /* Override any GCC internal prototype to avoid an error.
    Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.
-   The 'extern "C"' is for builds by C++ compilers;
-   although this is not generally supported in C code supporting it here
-   has little cost and some practical benefit (sr 110532).  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char shl_load (void);
+   builtin and then its argument prototype would still apply.  */
+char shl_load ();
 int
 main (void)
 {
@@ -11554,14 +11526,8 @@ cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 
 /* Override any GCC internal prototype to avoid an error.
    Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.
-   The 'extern "C"' is for builds by C++ compilers;
-   although this is not generally supported in C code supporting it here
-   has little cost and some practical benefit (sr 110532).  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char dlopen (void);
+   builtin and then its argument prototype would still apply.  */
+char dlopen ();
 int
 main (void)
 {
@@ -11599,14 +11565,8 @@ cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 
 /* Override any GCC internal prototype to avoid an error.
    Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.
-   The 'extern "C"' is for builds by C++ compilers;
-   although this is not generally supported in C code supporting it here
-   has little cost and some practical benefit (sr 110532).  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char dlopen (void);
+   builtin and then its argument prototype would still apply.  */
+char dlopen ();
 int
 main (void)
 {
@@ -11644,14 +11604,8 @@ cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 
 /* Override any GCC internal prototype to avoid an error.
    Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.
-   The 'extern "C"' is for builds by C++ compilers;
-   although this is not generally supported in C code supporting it here
-   has little cost and some practical benefit (sr 110532).  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char dld_link (void);
+   builtin and then its argument prototype would still apply.  */
+char dld_link ();
 int
 main (void)
 {
@@ -14478,7 +14432,7 @@ esac
 
 
 
-ac_config_files="$ac_config_files Makefile src/Makefile doc/Makefile doc/libogg/Makefile include/Makefile include/ogg/Makefile include/ogg/config_types.h libogg.spec ogg.pc ogg-uninstalled.pc"
+ac_config_files="$ac_config_files Makefile src/Makefile include/Makefile include/ogg/Makefile include/ogg/config_types.h libogg.spec ogg.pc ogg-uninstalled.pc"
 
 ac_config_headers="$ac_config_headers config.h"
 
@@ -15500,8 +15454,6 @@ do
     "depfiles") CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "src/Makefile") CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
-    "doc/Makefile") CONFIG_FILES="$CONFIG_FILES doc/Makefile" ;;
-    "doc/libogg/Makefile") CONFIG_FILES="$CONFIG_FILES doc/libogg/Makefile" ;;
     "include/Makefile") CONFIG_FILES="$CONFIG_FILES include/Makefile" ;;
     "include/ogg/Makefile") CONFIG_FILES="$CONFIG_FILES include/ogg/Makefile" ;;
     "include/ogg/config_types.h") CONFIG_FILES="$CONFIG_FILES include/ogg/config_types.h" ;;

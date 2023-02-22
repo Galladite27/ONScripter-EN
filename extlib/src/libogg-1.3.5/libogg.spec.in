@@ -56,19 +56,10 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root)
-%doc AUTHORS CHANGES COPYING README
 %{_libdir}/libogg.so.*
 
 %files devel
 %defattr(-,root,root)
-%doc doc/index.html
-%doc doc/framing.html
-%doc doc/oggstream.html
-%doc doc/white-ogg.png
-%doc doc/white-xifish.png
-%doc doc/stream.png
-%doc doc/libogg/*.html
-%doc doc/libogg/style.css
 %dir %{_includedir}/ogg
 %{_includedir}/ogg/ogg.h
 %{_includedir}/ogg/os_types.h

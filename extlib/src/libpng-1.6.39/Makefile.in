@@ -144,8 +144,7 @@ CONFIG_HEADER = config.h
 CONFIG_CLEAN_FILES = libpng.pc libpng-config
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(libdir)" \
-	"$(DESTDIR)$(bindir)" "$(DESTDIR)$(man3dir)" \
-	"$(DESTDIR)$(man5dir)" "$(DESTDIR)$(pkgconfigdir)" \
+	"$(DESTDIR)$(bindir)" "$(DESTDIR)$(pkgconfigdir)" \
 	"$(DESTDIR)$(pkgincludedir)" "$(DESTDIR)$(pkgincludedir)"
 @HAVE_CLOCK_GETTIME_TRUE@am__EXEEXT_1 = timepng$(EXEEXT)
 PROGRAMS = $(bin_PROGRAMS)
@@ -328,10 +327,6 @@ am__can_run_installinfo = \
     n|no|NO) false;; \
     *) (install-info --version) >/dev/null 2>&1;; \
   esac
-man3dir = $(mandir)/man3
-man5dir = $(mandir)/man5
-NROFF = nroff
-MANS = $(dist_man_MANS)
 DATA = $(pkgconfig_DATA)
 HEADERS = $(nodist_pkginclude_HEADERS) $(pkginclude_HEADERS)
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP) \
@@ -530,11 +525,10 @@ TEST_LOGS = $(am__test_logs2:.test.log=.log)
 TEST_LOG_DRIVER = $(SHELL) $(top_srcdir)/test-driver
 TEST_LOG_COMPILE = $(TEST_LOG_COMPILER) $(AM_TEST_LOG_FLAGS) \
 	$(TEST_LOG_FLAGS)
-am__DIST_COMMON = $(dist_man_MANS) $(srcdir)/Makefile.in \
-	$(srcdir)/config.h.in $(srcdir)/libpng-config.in \
-	$(srcdir)/libpng.pc.in AUTHORS INSTALL README TODO compile \
-	config.guess config.sub depcomp install-sh ltmain.sh missing \
-	test-driver
+am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/config.h.in \
+	$(srcdir)/libpng-config.in $(srcdir)/libpng.pc.in AUTHORS \
+	INSTALL README TODO compile config.guess config.sub depcomp \
+	install-sh ltmain.sh missing test-driver
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
@@ -757,9 +751,6 @@ TESTS = \
    tests/pngunknown-sTER tests/pngunknown-save tests/pngunknown-vpAg\
    tests/pngimage-quick tests/pngimage-full
 
-
-# man pages
-dist_man_MANS = libpng.3 libpngpf.3 png.5
 EXTRA_SCRIPTS = libpng-config libpng@PNGLIB_MAJOR@@PNGLIB_MINOR@-config
 bin_SCRIPTS = @binconfigs@
 
@@ -1231,92 +1222,6 @@ clean-libtool:
 
 distclean-libtool:
 	-rm -f libtool config.lt
-install-man3: $(dist_man_MANS)
-	@$(NORMAL_INSTALL)
-	@list1=''; \
-	list2='$(dist_man_MANS)'; \
-	test -n "$(man3dir)" \
-	  && test -n "`echo $$list1$$list2`" \
-	  || exit 0; \
-	echo " $(MKDIR_P) '$(DESTDIR)$(man3dir)'"; \
-	$(MKDIR_P) "$(DESTDIR)$(man3dir)" || exit 1; \
-	{ for i in $$list1; do echo "$$i"; done;  \
-	if test -n "$$list2"; then \
-	  for i in $$list2; do echo "$$i"; done \
-	    | sed -n '/\.3[a-z]*$$/p'; \
-	fi; \
-	} | while read p; do \
-	  if test -f $$p; then d=; else d="$(srcdir)/"; fi; \
-	  echo "$$d$$p"; echo "$$p"; \
-	done | \
-	sed -e 'n;s,.*/,,;p;h;s,.*\.,,;s,^[^3][0-9a-z]*$$,3,;x' \
-	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,' | \
-	sed 'N;N;s,\n, ,g' | { \
-	list=; while read file base inst; do \
-	  if test "$$base" = "$$inst"; then list="$$list $$file"; else \
-	    echo " $(INSTALL_DATA) '$$file' '$(DESTDIR)$(man3dir)/$$inst'"; \
-	    $(INSTALL_DATA) "$$file" "$(DESTDIR)$(man3dir)/$$inst" || exit $$?; \
-	  fi; \
-	done; \
-	for i in $$list; do echo "$$i"; done | $(am__base_list) | \
-	while read files; do \
-	  test -z "$$files" || { \
-	    echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(man3dir)'"; \
-	    $(INSTALL_DATA) $$files "$(DESTDIR)$(man3dir)" || exit $$?; }; \
-	done; }
-
-uninstall-man3:
-	@$(NORMAL_UNINSTALL)
-	@list=''; test -n "$(man3dir)" || exit 0; \
-	files=`{ for i in $$list; do echo "$$i"; done; \
-	l2='$(dist_man_MANS)'; for i in $$l2; do echo "$$i"; done | \
-	  sed -n '/\.3[a-z]*$$/p'; \
-	} | sed -e 's,.*/,,;h;s,.*\.,,;s,^[^3][0-9a-z]*$$,3,;x' \
-	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,'`; \
-	dir='$(DESTDIR)$(man3dir)'; $(am__uninstall_files_from_dir)
-install-man5: $(dist_man_MANS)
-	@$(NORMAL_INSTALL)
-	@list1=''; \
-	list2='$(dist_man_MANS)'; \
-	test -n "$(man5dir)" \
-	  && test -n "`echo $$list1$$list2`" \
-	  || exit 0; \
-	echo " $(MKDIR_P) '$(DESTDIR)$(man5dir)'"; \
-	$(MKDIR_P) "$(DESTDIR)$(man5dir)" || exit 1; \
-	{ for i in $$list1; do echo "$$i"; done;  \
-	if test -n "$$list2"; then \
-	  for i in $$list2; do echo "$$i"; done \
-	    | sed -n '/\.5[a-z]*$$/p'; \
-	fi; \
-	} | while read p; do \
-	  if test -f $$p; then d=; else d="$(srcdir)/"; fi; \
-	  echo "$$d$$p"; echo "$$p"; \
-	done | \
-	sed -e 'n;s,.*/,,;p;h;s,.*\.,,;s,^[^5][0-9a-z]*$$,5,;x' \
-	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,' | \
-	sed 'N;N;s,\n, ,g' | { \
-	list=; while read file base inst; do \
-	  if test "$$base" = "$$inst"; then list="$$list $$file"; else \
-	    echo " $(INSTALL_DATA) '$$file' '$(DESTDIR)$(man5dir)/$$inst'"; \
-	    $(INSTALL_DATA) "$$file" "$(DESTDIR)$(man5dir)/$$inst" || exit $$?; \
-	  fi; \
-	done; \
-	for i in $$list; do echo "$$i"; done | $(am__base_list) | \
-	while read files; do \
-	  test -z "$$files" || { \
-	    echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(man5dir)'"; \
-	    $(INSTALL_DATA) $$files "$(DESTDIR)$(man5dir)" || exit $$?; }; \
-	done; }
-
-uninstall-man5:
-	@$(NORMAL_UNINSTALL)
-	@list=''; test -n "$(man5dir)" || exit 0; \
-	files=`{ for i in $$list; do echo "$$i"; done; \
-	l2='$(dist_man_MANS)'; for i in $$l2; do echo "$$i"; done | \
-	  sed -n '/\.5[a-z]*$$/p'; \
-	} | sed -e 's,.*/,,;h;s,.*\.,,;s,^[^5][0-9a-z]*$$,5,;x' \
-	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,'`; \
-	dir='$(DESTDIR)$(man5dir)'; $(am__uninstall_files_from_dir)
 install-pkgconfigDATA: $(pkgconfig_DATA)
 	@$(NORMAL_INSTALL)
 	@list='$(pkgconfig_DATA)'; test -n "$(pkgconfigdir)" || list=; \
@@ -1998,14 +1903,14 @@ check-am: all-am
 	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
 check: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) check-am
-all-am: Makefile $(PROGRAMS) $(LTLIBRARIES) $(SCRIPTS) $(MANS) $(DATA) \
+all-am: Makefile $(PROGRAMS) $(LTLIBRARIES) $(SCRIPTS) $(DATA) \
 		$(HEADERS) config.h
 install-binPROGRAMS: install-libLTLIBRARIES
 
 install-checkPROGRAMS: install-libLTLIBRARIES
 
 installdirs:
-	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(libdir)" "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man3dir)" "$(DESTDIR)$(man5dir)" "$(DESTDIR)$(pkgconfigdir)" "$(DESTDIR)$(pkgincludedir)" "$(DESTDIR)$(pkgincludedir)"; do \
+	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(libdir)" "$(DESTDIR)$(bindir)" "$(DESTDIR)$(pkgconfigdir)" "$(DESTDIR)$(pkgincludedir)" "$(DESTDIR)$(pkgincludedir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: $(BUILT_SOURCES)
@@ -2118,7 +2023,7 @@ info: info-am
 
 info-am:
 
-install-data-am: install-man install-nodist_pkgincludeHEADERS \
+install-data-am: install-nodist_pkgincludeHEADERS \
 	install-pkgconfigDATA install-pkgincludeHEADERS
 	@$(NORMAL_INSTALL)
 	$(MAKE) $(AM_MAKEFLAGS) install-data-hook
@@ -2138,7 +2043,7 @@ install-info: install-info-am
 
 install-info-am:
 
-install-man: install-man3 install-man5
+install-man:
 
 install-pdf: install-pdf-am
 
@@ -2204,13 +2109,10 @@ ps: ps-am
 ps-am:
 
 uninstall-am: uninstall-binPROGRAMS uninstall-binSCRIPTS \
-	uninstall-libLTLIBRARIES uninstall-man \
-	uninstall-nodist_pkgincludeHEADERS uninstall-pkgconfigDATA \
-	uninstall-pkgincludeHEADERS
+	uninstall-libLTLIBRARIES uninstall-nodist_pkgincludeHEADERS \
+	uninstall-pkgconfigDATA uninstall-pkgincludeHEADERS
 	@$(NORMAL_INSTALL)
 	$(MAKE) $(AM_MAKEFLAGS) uninstall-hook
-uninstall-man: uninstall-man3 uninstall-man5
-
 .MAKE: all check check-am install install-am install-data-am \
 	install-exec install-exec-am install-strip uninstall-am
 
@@ -2228,18 +2130,16 @@ uninstall-man: uninstall-man3 uninstall-man5
 	install-data-hook install-dvi install-dvi-am install-exec \
 	install-exec-am install-exec-hook install-html install-html-am \
 	install-info install-info-am install-libLTLIBRARIES \
-	install-man install-man3 install-man5 \
-	install-nodist_pkgincludeHEADERS install-pdf install-pdf-am \
-	install-pkgconfigDATA install-pkgincludeHEADERS install-ps \
-	install-ps-am install-strip installcheck installcheck-am \
-	installdirs maintainer-clean maintainer-clean-generic \
-	mostlyclean mostlyclean-compile mostlyclean-generic \
-	mostlyclean-libtool pdf pdf-am ps ps-am recheck tags tags-am \
-	uninstall uninstall-am uninstall-binPROGRAMS \
-	uninstall-binSCRIPTS uninstall-hook uninstall-libLTLIBRARIES \
-	uninstall-man uninstall-man3 uninstall-man5 \
-	uninstall-nodist_pkgincludeHEADERS uninstall-pkgconfigDATA \
-	uninstall-pkgincludeHEADERS
+	install-man install-nodist_pkgincludeHEADERS install-pdf \
+	install-pdf-am install-pkgconfigDATA install-pkgincludeHEADERS \
+	install-ps install-ps-am install-strip installcheck \
+	installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-compile \
+	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
+	recheck tags tags-am uninstall uninstall-am \
+	uninstall-binPROGRAMS uninstall-binSCRIPTS uninstall-hook \
+	uninstall-libLTLIBRARIES uninstall-nodist_pkgincludeHEADERS \
+	uninstall-pkgconfigDATA uninstall-pkgincludeHEADERS
 
 .PRECIOUS: Makefile
 

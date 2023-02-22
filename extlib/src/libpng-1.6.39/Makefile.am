@@ -76,9 +76,6 @@ TESTS =\
    tests/pngunknown-sTER tests/pngunknown-save tests/pngunknown-vpAg\
    tests/pngimage-quick tests/pngimage-full
 
-# man pages
-dist_man_MANS= libpng.3 libpngpf.3 png.5
-
 # generate the -config scripts if required
 binconfigs= libpng@PNGLIB_MAJOR@@PNGLIB_MINOR@-config
 EXTRA_SCRIPTS= libpng-config libpng@PNGLIB_MAJOR@@PNGLIB_MINOR@-config

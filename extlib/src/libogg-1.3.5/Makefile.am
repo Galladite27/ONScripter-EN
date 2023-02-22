@@ -5,7 +5,7 @@
 AUTOMAKE_OPTIONS = foreign 1.11 dist-zip dist-xz
 ACLOCAL_AMFLAGS = -I m4
 
-SUBDIRS = src include doc
+SUBDIRS = src include
 
 m4datadir = $(datadir)/aclocal
 m4data_DATA = ogg.m4
