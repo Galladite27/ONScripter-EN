@@ -1159,8 +1159,22 @@ int ONScripterLabel::selectCommand()
     //bool actual_rmode = rmode_flag;
     //rmode_flag = false;
     event_mode = WAIT_TEXT_MODE | WAIT_BUTTON_MODE | WAIT_TIMER_MODE;
+    select_release_required = true;
     do {
         waitEvent(-1);
+
+        // Flag will be true if an rmenu option was selected to break
+        // out of loop (e.g. load command) -Galladite 2023-2-25
+        //
+        // Note: this may be affected by rgosub being implemented
+        // for rmenu during select as user-called commands won't set
+        // this flag when required
+        if (select_release) {
+            select_release = false;
+            select_release_required = false;
+            return RET_CONTINUE;
+        }
+
         // Allows for saving during select -Galladite 2023-2-18
         // This fix allows for saving directly on the choice instead
         // of at the start of that page

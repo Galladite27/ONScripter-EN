@@ -12,10 +12,6 @@ BUGS OR MISFEATURES
 * Right-clicking during a clickwait doesn't check for if rgosub is
   enabled
 
-* You cannot call any menu actions that would break away from the
-  selection while in a select command (such as reset or load)
-  * I have an idea for a fix for this
-
 * Using rgosub causes rmenu not to be displayed during select command
 
 FEATURES REQUESTED

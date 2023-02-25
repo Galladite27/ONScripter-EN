@@ -34,6 +34,7 @@
 // Ogapee's 20091115 release source code.
 
 #include "ONScripterLabel.h"
+#include <cstdio>
 
 static const char* messages[][8] = {
     { "`%s%s    Date %s/%s    Time %s:%s",
@@ -139,13 +140,26 @@ bool ONScripterLabel::executeSystemCall()
             executeSystemSkip();
             return true;
           case SYSTEM_RESET:
-            if (executeSystemReset()) return true;
+            if (executeSystemReset()) {
+                if (select_release_required) {
+                    // flag used by select to break out of loop
+                    // (only needed for commands which do not
+                    // end up returning to select loop)
+                    select_release = true;
+                }
+                return true;
+            }
             break;
           case SYSTEM_SAVE:
             executeSystemSave();
             break;
           case SYSTEM_LOAD:
-            if (executeSystemLoad()) return true;
+            if (executeSystemLoad()) {
+                if (select_release_required) {
+                    select_release = true;
+                }
+                return true;
+            }
             break;
           case SYSTEM_LOOKBACK:
             executeSystemLookback();

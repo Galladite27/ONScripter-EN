@@ -1072,6 +1072,8 @@ private:
     /* rmenu and system call */
     bool system_menu_enter_flag;
     int  system_menu_mode;
+    bool select_release_required; // flag used for escaping select loop from rmenu
+    bool select_release; // ditto
 
     int  shelter_event_mode;
     int  shelter_display_mode;
