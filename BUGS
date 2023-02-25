@@ -16,7 +16,7 @@ BUGS OR MISFEATURES
   selection while in a select command (such as reset or load)
   * I have an idea for a fix for this
 
-* Rgosub is ignored from within select command
+* Using rgosub causes rmenu not to be displayed during select command
 
 FEATURES REQUESTED
   
