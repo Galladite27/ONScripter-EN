@@ -1,3 +1,14 @@
+2023-02-25
+
+  Changed how the fix for rmenu functionality during select command
+  to save the game's state at the beginning of that page of text,
+  instead of directly before the choice
+
+  Ironed out bugs surrounding rmenu functionality during select command
+  to allow loading of saves, script resets etc.
+
+  A little more dependency slimming
+
 2023-02-19
 
   Commands ported from ONScripter: ;$, autosaveoff, savepoint,
