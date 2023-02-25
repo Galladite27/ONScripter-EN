@@ -1155,20 +1155,25 @@ int ONScripterLabel::selectCommand()
 
     refreshMouseOverButton();
 
-    bool actual_rmode = rmode_flag;
-    rmode_flag = false;
+    // Not being able to save here was an artificial restriction
+    //bool actual_rmode = rmode_flag;
+    //rmode_flag = false;
     event_mode = WAIT_TEXT_MODE | WAIT_BUTTON_MODE | WAIT_TIMER_MODE;
     do {
         waitEvent(-1);
-        if (current_button_state.button == -1) { // Allows for saving during select -Galladite 2023-2-18
-            system_menu_mode = 7;
-            saveSaveFile(-1);
-            executeSystemCall();
-            system_menu_mode = SYSTEM_NULL;
-        }
+        // Allows for saving during select -Galladite 2023-2-18
+        // This fix allows for saving directly on the choice instead
+        // of at the start of that page
+
+        //if (current_button_state.button == -1) {
+        //    system_menu_mode = SYSTEM_MENU;
+        //    saveSaveFile(-1);
+        //    executeSystemCall();
+        //    system_menu_mode = SYSTEM_NULL;
+        //}
     } while ( !current_button_state.valid_flag ||
             (current_button_state.button <= 0) );
-    rmode_flag = actual_rmode;
+    //rmode_flag = actual_rmode;
 
     if ( selectvoice_file_name[SELECTVOICE_SELECT] )
         playSound(selectvoice_file_name[SELECTVOICE_SELECT],

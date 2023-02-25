@@ -650,6 +650,40 @@ bool ONScripterLabel::mousePressEvent( SDL_MouseButtonEvent *event )
                 system_menu_mode = SYSTEM_WINDOWERASE;
         }
     }
+#if 0
+    // Used for debugging right-click issues - Galladite 2023-2-25
+    //    ( (rmode_flag && (event_mode & WAIT_TEXT_MODE)) ||
+    //      (event_mode & (WAIT_BUTTON_MODE | WAIT_RCLICK_MODE)) )){
+    else if ( (event->button == SDL_BUTTON_RIGHT) &&
+                (event->type == SDL_MOUSEBUTTONUP) ){
+        printf("Debug: caught unreceived right-click\n");
+        printf("rmode_flag: %d\n", rmode_flag);
+        if (event_mode & WAIT_TEXT_MODE)
+            printf("event_mode: WAIT_TEXT_MODE\n");
+        if (event_mode & WAIT_BUTTON_MODE)
+            printf("event_mode: WAIT_BUTTON_MODE\n");
+        if (event_mode & WAIT_RCLICK_MODE)
+            printf("event_mode: WAIT_RCLICK_MODE\n");
+
+        if (rmode_flag && (event_mode & WAIT_TEXT_MODE))
+            printf("Cond 1: success\n");
+        else {
+            printf("Cond 1: failure - ");
+            if (!rmode_flag)
+                printf("rmode_flag failed: %d\n", rmode_flag);
+            else if (!(event_mode & WAIT_TEXT_MODE))
+                printf("event_mode failed\n");
+            else
+                printf("an unexpected error occurred\n");
+        }
+        if (event_mode & (WAIT_BUTTON_MODE | WAIT_RCLICK_MODE))
+            printf("Cond 2: success\n");
+        else
+            printf("Cond 2: failure\n");
+        printf("\n\n");
+        return false;
+    }
+#endif
     //left-click
     else if ( (event->button == SDL_BUTTON_LEFT) &&
               ((event->type == SDL_MOUSEBUTTONUP) || btndown_flag) ){
