@@ -1374,7 +1374,7 @@ void ONScripterLabel::resetFlags()
 
     system_menu_enter_flag = false;
     system_menu_mode = SYSTEM_NULL;
-    select_release = false;
+    select_release = SELECT_RELEASE_NONE;
     key_pressed_flag = false;
     shift_pressed_status = 0;
     ctrl_pressed_status = 0;

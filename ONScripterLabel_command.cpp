@@ -1159,7 +1159,7 @@ int ONScripterLabel::selectCommand()
     //bool actual_rmode = rmode_flag;
     //rmode_flag = false;
     event_mode = WAIT_TEXT_MODE | WAIT_BUTTON_MODE | WAIT_TIMER_MODE;
-    select_release_required = true;
+    select_release |= SELECT_RELEASE_REQUIRED;
     do {
         waitEvent(-1);
 
@@ -1169,9 +1169,8 @@ int ONScripterLabel::selectCommand()
         // Note: this may be affected by rgosub being implemented
         // for rmenu during select as user-called commands won't set
         // this flag when required
-        if (select_release) {
-            select_release = false;
-            select_release_required = false;
+        if (select_release & SELECT_RELEASE_ENABLED) {
+            select_release = SELECT_RELEASE_NONE;
             return RET_CONTINUE;
         }
 
@@ -1188,6 +1187,7 @@ int ONScripterLabel::selectCommand()
     } while ( !current_button_state.valid_flag ||
             (current_button_state.button <= 0) );
     //rmode_flag = actual_rmode;
+    select_release = SELECT_RELEASE_NONE;
 
     if ( selectvoice_file_name[SELECTVOICE_SELECT] )
         playSound(selectvoice_file_name[SELECTVOICE_SELECT],

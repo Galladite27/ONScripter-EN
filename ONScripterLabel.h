@@ -1072,8 +1072,13 @@ private:
     /* rmenu and system call */
     bool system_menu_enter_flag;
     int  system_menu_mode;
-    bool select_release_required; // flag used for escaping select loop from rmenu
-    bool select_release; // ditto
+
+    enum SelectReleaseFlags {
+        SELECT_RELEASE_NONE     = 0,
+        SELECT_RELEASE_REQUIRED = 1 << 0,
+        SELECT_RELEASE_ENABLED  = 1 << 1
+    };
+    int select_release; // Used to break out of "select" command loops
 
     int  shelter_event_mode;
     int  shelter_display_mode;

@@ -118,8 +118,9 @@ static void optionVersion()
     printf("ONScripter-EN version %s (%d.%02d)\n", ONS_VERSION, NSC_VERSION/100, NSC_VERSION%100 );
 #endif
     printf("Original written by Ogapee <ogapee@aqua.dti2.ne.jp>,\n");
-    printf("English fork maintained by \"Uncle\" Mion Sonozaki <UncleMion@gmail.com>\n\n");
-    printf("Copyright (c) 2001-2011 Ogapee, 2007-2011 Sonozaki\n");
+    printf("English fork previously maintained by \"Uncle\" Mion Sonozaki <UncleMion@gmail.com>\n");
+    printf("This fork currently maintained by Galladite <galladite@yandex.com>\n\n");
+    printf("Copyright (c) 2001-2011 Ogapee, 2007-2011 Sonozaki, 2023 Galladite\n");
     printf("This is free software; see the source for copying conditions.\n");
     exit(0);
 }

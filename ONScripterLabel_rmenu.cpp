@@ -141,11 +141,11 @@ bool ONScripterLabel::executeSystemCall()
             return true;
           case SYSTEM_RESET:
             if (executeSystemReset()) {
-                if (select_release_required) {
+                if (select_release & SELECT_RELEASE_REQUIRED) {
                     // flag used by select to break out of loop
                     // (only needed for commands which do not
                     // end up returning to select loop)
-                    select_release = true;
+                    select_release |= SELECT_RELEASE_ENABLED;
                 }
                 return true;
             }
@@ -155,8 +155,8 @@ bool ONScripterLabel::executeSystemCall()
             break;
           case SYSTEM_LOAD:
             if (executeSystemLoad()) {
-                if (select_release_required) {
-                    select_release = true;
+                if (select_release & SELECT_RELEASE_REQUIRED) {
+                    select_release |= SELECT_RELEASE_ENABLED;
                 }
                 return true;
             }
