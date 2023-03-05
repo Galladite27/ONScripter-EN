@@ -22,5 +22,7 @@ FEATURES REQUESTED
 
 * Restore support for MOD, XM and OPUS audio
 
+* Support inbuilt MIDI synthesis
+
 * Allow the switching of font files mid-line, for example through the
   use of a !fX command, similar to the !wX command.
