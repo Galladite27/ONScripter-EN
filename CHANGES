@@ -1,4 +1,5 @@
 2023-03-08
+  Slight bugfixes in regards to linker flags, but more work needs to be done
 
   Fix to prevent some libraries from being linked which should have
   been removed after I was done updating dependencies

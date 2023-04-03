@@ -1,7 +1,7 @@
 #define xstr(s) str(s)
 #define str(s) #s
 
-#define VER_NUMBER 20230225-en
+#define VER_NUMBER 20230308-en
 #define ONS_VERSION xstr(VER_NUMBER)
-#define ONS_CODENAME xstr(Yakitori)
+#define ONS_CODENAME xstr(Ramen)
 #define NSC_VERSION 294
