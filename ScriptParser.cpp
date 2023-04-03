@@ -468,50 +468,6 @@ int ScriptParser::open()
     script_width = script_h.screen_width;
     script_height = script_h.screen_height;
 
-//    switch ( script_h.screen_size ){
-//    //for PDA, set ratios to create a 320x240 screen
-//      case ScriptHandler::SCREEN_SIZE_800x600:
-//#ifdef PDA
-//        screen_ratio1 = 2;
-//        screen_ratio2 = 5;
-//#else
-//        screen_ratio1 = 1;
-//        screen_ratio2 = 1;
-//#endif
-//        script_width = 800;
-//        script_height = 600;
-//        break;
-//      case ScriptHandler::SCREEN_SIZE_400x300:
-//#ifdef PDA
-//        screen_ratio1 = 4;
-//        screen_ratio2 = 5;
-//#else
-//        screen_ratio1 = 1;
-//        screen_ratio2 = 1;
-//#endif
-//        script_width = 400;
-//        script_height = 300;
-//        break;
-//      case ScriptHandler::SCREEN_SIZE_320x240:
-//        screen_ratio1 = 1;
-//        screen_ratio2 = 1;
-//        script_width = 320;
-//        script_height = 240;
-//        break;
-//      case ScriptHandler::SCREEN_SIZE_640x480:
-//      default:
-//#ifdef PDA
-//        screen_ratio1 = 1;
-//        screen_ratio2 = 2;
-//#else
-//        screen_ratio1 = 1;
-//        screen_ratio2 = 1;
-//#endif
-//        script_width = 640;
-//        script_height = 480;
-//        break;
-//    }
-
 #ifndef PDA
     screen_ratio1 = 1;
     screen_ratio2 = 1;
@@ -519,16 +475,13 @@ int ScriptParser::open()
         screen_ratio1 = preferred_width;
         screen_ratio2 = script_width;
     }
-#endif
-
-#ifdef PDA
-    screen_ratio1 = 1;
-    screen_ratio2 = 1;
-    screen_width = 320;
-    screen_height = 240;
-#else
     screen_width  = script_width * screen_ratio1 / screen_ratio2;
     screen_height = script_height * screen_ratio1 / screen_ratio2;
+#else
+    screen_ratio1 = 1; // PDA build is almost certainly broken :(
+    screen_ratio2 = 1; // To be fixed, valid values for these 2 variables would have to be calculated, however if the ratio isn't 3:2 it's not going to work.
+    screen_width = 320;
+    screen_height = 240;
 #endif
 
     underline_value = script_height - 1;
