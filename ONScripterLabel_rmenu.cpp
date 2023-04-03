@@ -34,7 +34,6 @@
 // Ogapee's 20091115 release source code.
 
 #include "ONScripterLabel.h"
-#include <cstdio>
 
 static const char* messages[][8] = {
     { "`%s%s    Date %s/%s    Time %s:%s",

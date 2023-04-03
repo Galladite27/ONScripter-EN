@@ -876,7 +876,7 @@ PREFIX ?= $PREFIX
 # Extra handling for internal libraries.
 EXTRADEPS=$DEPS
 # NEWLDFLAGS was added because I wanted a quick place to put extra linker arguments while I was updating dependencies -Galladite 2023-2-11
-NEWLDFLAGS = -lpulse-simple -lpulse -lpng -lharfbuzz -lbrotlidec
+NEWLDFLAGS = -lpulse-simple -lpulse
 INTERNAL_SDL=\$(findstring true,$INTERNAL_SDL)
 INTERNAL_SMPEG=\$(findstring true,$INTERNAL_SMPEG)
 INTERNAL_LIBPNG=\$(findstring true,$INTERNAL_LIBPNG)
@@ -887,7 +887,7 @@ SDL_CONFIG=$SDL_CONFIG
 export PATH     :=   \$(shell pwd)/extlib/bin:\$(PATH)
 export CFLAGS   := -I\$(shell pwd)/extlib/include \$(CFLAGS) $VECFLAGS
 export CPPFLAGS := -I\$(shell pwd)/extlib/include \$(CPPFLAGS) $VECFLAGS
-export LDFLAGS  := -L\$(shell pwd)/extlib/lib \$(LDFLAGS) $EXTRALDFLAGS \$(NEWLDFLAGS)
+export LDFLAGS  := -L\$(shell pwd)/extlib/lib \$(LDFLAGS) $EXTRALDFLAGS
 export CSTD     := -std=c99
 export CXXSTD   := $CXXSTD
 
