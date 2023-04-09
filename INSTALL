@@ -61,9 +61,7 @@ need to include some libraries internally to make everything work.
 
 * NOTES
 
-For Windows builds, use a MinGW toolchain in the MSYS environment.
-There is no Visual Studio option; it just isn't worth the pain.
-
+(Broken advice as of 2023-4-10)
 For Mac OS X there is an XCode project file in the "macosx" directory.
 It builds a Universal binary as an application bundle.
 Either build from within XCode, or use "xcodebuild" from a shell prompt. 
