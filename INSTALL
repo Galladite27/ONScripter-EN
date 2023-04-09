@@ -11,6 +11,22 @@ This will use gcc by default; to use icc, start with
   CC=icc ./configure
 
 
+* WINDOWS COMPILATION GUIDE
+
+There is a separate makefile for use with Windows + MSYS2. To use it,
+copy the relevant makefile (32 or 64 bit) from msys2 into the main
+directory, and then follow the instructions in "msys2/README.md".
+
+It is worth noting that as of now, Windows builds cannot use the
+custom versions of libraries found in "extlib/src", however it is on
+my todo-list not only to fix this but also to integrate the custom
+Windows configure script and compilation methods into the normal
+configure script.
+
+Information in the below sections may be invalid for Windows builds.
+Thanks to Seung Park of insani.org for providing these resources.
+
+
 * DEALING WITH UNHELPFUL LIBRARIES
 
 Some system-provided libraries are not ideally configured for use with

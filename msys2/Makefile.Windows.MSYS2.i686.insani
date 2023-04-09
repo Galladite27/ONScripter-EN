@@ -1,0 +1,168 @@
+# -*- Makefile.insani for onscripter-en -*-
+#
+# This is a Makefile for onscripter-en, but with additional insanity spirit.  This Makefile is specific for Windows and MSYS2.
+# Do not use this Makefile for any other reason.  Furthermore, this Makefile has been heavily modified from the original autoconfigured
+# Makefile.  Primarily, the following has occurred:
+#
+# - All extlibs stripped out
+# - Explicitly linking the necessary system libraries
+# - Explicitly linking the necessary library dependencies
+# - Destroy 32-bit/64-bit confusion
+# - Disallow the -Werror flag
+#
+# This Makefile is not intended for true production use; it is instead made to help the *NScripter Work Group in their continued
+# explorations and optimizations of code.  Using this as a reference, it should be easily possible to make the 32-bit Windows build that
+# the *NScripter Work Group desires.
+#
+# This version of the Makefile spits out an i686 Win32 binary.  SHINING CAR OF CHAOSKAISER'S DREAMS ACHIEVED.
+
+WIN32=true
+OBJSUFFIX=.o
+LIBSUFFIX=.a
+EXESUFFIX=.exe
+
+PREFIX ?= /mingw64
+
+# Extra handling for internal libraries.
+EXTRADEPS=
+# NEWLDFLAGS was added because I wanted a quick place to put extra linker arguments while I was updating dependencies -Galladite 2023-2-11
+# Need to remove pulse audio support from whatever is using it - either that or conditionally include this based on build target
+#NEWLDFLAGS = -lpulse-simple -lpulse
+INTERNAL_SDL=$(findstring true,false)
+INTERNAL_SMPEG=$(findstring true,false)
+INTERNAL_LIBPNG=$(findstring true,false)
+INTERNAL_LIBJPEG=$(findstring true,false)
+INTERNAL_OGGLIBS=$(findstring true,false)
+SDL_CONFIG=sdl-config
+
+#export PATH     :=   $(shell pwd)/extlib/bin:$(PATH)
+#export CFLAGS   := -I$(shell pwd)/extlib/include $(CFLAGS) 
+#export CPPFLAGS := -I$(shell pwd)/extlib/include $(CPPFLAGS) 
+#export LDFLAGS  := -L$(shell pwd)/extlib/lib $(LDFLAGS) 
+export CSTD     := -std=c99
+export CXXSTD   := -std=c++98
+
+export CC      := gcc
+export CXX     := g++
+export MAKE    := make
+export GNUMAKE := makeforc
+export AR      := ar
+export RANLIB  := ranlib
+export LD      := c++ -m32 -o
+
+# ONScripter variables
+OSCFLAGSEXTRA = -Wall  -DUSE_X86_GFX $(OSCTMPFLAGS)
+INCS = $(shell $(SDL_CONFIG) --cflags)      \
+                        $(shell smpeg-config --cflags)    \
+                        $(shell pkg-config freetype2 --cflags)
+
+GNURX_DIR = tools/libgnurx
+TOOL_EXTRA_INCS = -I$(GNURX_DIR)
+TOOL_EXTRADEPS = $(GNURX_DIR)/libgnurx.a
+TOOL_EXTRA_CLEAN = clean_libgnurx
+TOOL_LIBS = -Wl,--start-group \
+            -ljpeg -lpng -lz \
+            -L$(GNURX_DIR) -lgnurx \
+            -lbz2 -Wl,--end-group
+LIBS = -static -Wl,--start-group \
+       $(shell $(SDL_CONFIG) --static-libs) \
+       -lSDL_ttf \
+       $(shell smpeg-config --libs) $(shell pkg-config freetype2 --libs) \
+       -lSDL_image -ljpeg -lpng -lz \
+       -lSDL_mixer -logg -lvorbis -lvorbisfile \
+       -lbrotlidec -lbrotlicommon -lharfbuzz -ltiff -lwebp -lmad -lgraphite2 -ljbig -lsharpyuv -lzstd -ldeflate -lLerc -llzma -liconv -ldinput -lwinmm -ldxguid -lrpcrt4 \
+       -lusp10 \
+       -lbz2 -Wl,--end-group
+
+# Remove -DUSE_MESSAGEBOX if you don't want Windows dialog boxes
+DEFS = -DWIN32 -DUSE_MESSAGEBOX -DUSE_OGG_VORBIS
+EXT_OBJS = SDL_win32_main.o win32rc.o graphics_mmx.o graphics_sse2.o
+
+
+.SUFFIXES:
+.SUFFIXES: .o .cpp .h .c
+
+ifdef DEBUG
+OSCFLAGS = -O0 -g -pg -ggdb -pipe -Wpointer-arith -Wall  $(OSCFLAGSEXTRA)
+export LDFLAGS  := -pg $(LDFLAGS)
+else
+  ifdef PROF
+  OSCFLAGS = -O3 -pg -pipe -Wpointer-arith -Wall  $(OSCFLAGSEXTRA)
+  export LDFLAGS  := -pg $(LDFLAGS)
+  else
+  OSCFLAGS = -O3 -fomit-frame-pointer -pipe -Wpointer-arith -Wall  $(OSCFLAGSEXTRA)
+  endif
+endif
+
+TARGET ?= onscripter-en
+
+binary: $(TARGET).exe
+
+.PHONY: all clean distclean tools binary
+all: $(TARGET).exe tools
+
+SDLOTHERCONFIG := 
+OTHERCONFIG := 
+
+OTHER_OBJS =
+RC_HDRS =
+
+#include Makefile.extlibs
+include Makefile.onscripter
+
+.PHONY: libtoolreplace
+libtoolreplace:
+	@cp $(ES)/required/freetype-config $(EB)
+
+clean: pclean $(CLEAN_TARGETS) libtoolreplace
+distclean: clean pdistclean $(DISTCLEAN_TARGETS)
+	rm -r -f extlib/bin extlib/lib extlib/include \
+	         extlib/share extlib/man
+	rm -f Makefile SDL.dll
+
+install-bin:
+	./install-sh -c -s $(TARGET) $(PREFIX)/bin/$(TARGET)
+install: install-bin
+uninstall:
+	rm $(PREFIX)/bin/$(TARGET)
+
+RCFILE ?= onscripter.rc
+WICONFILE ?= ons-en.ico
+RCCLEAN = $(RCFILE)
+win32rc.o: $(RCFILE) $(WICONFILE)
+	windres $< -o $@
+
+%.rc: %.rc.in version.h winres.h
+	ver=`awk '/define VER_NUMBER/ { print $$3 }' version.h`; \
+	y=`expr substr $$ver 1 4`; \
+	m=`expr substr $$ver 5 2`; mn=`expr $$m + 0`; \
+	d=`expr substr $$ver 7 2`; dn=`expr $$d + 0`; \
+	i=\"$(WICONFILE)\"; \
+	sed -e "s/@Y@/$$y/g;s/@0M@/$$m/g;s/@M@/$$mn/g;s/@0D@/$$d/g;s/@D@/$$dn/g;s%@I@%$$i%g" $< > $@
+
+SDL_win32_main.o: SDL_win32_main.c
+	$(CC) $(CSTD) $(OSCFLAGS) $(INCS) $(DEFS) -c $< -o $@
+
+$(GNURX_DIR)/libgnurx.a:
+	$(MAKE) -C $(GNURX_DIR) libgnurx.a
+
+.PHONY: clean_libgnurx
+clean_libgnurx:
+	$(MAKE) -C $(GNURX_DIR) clean
+
+
+graphics_sse2.o: graphics_sse2.cpp graphics_sse2.h graphics_common.h graphics_sum.h graphics_blend.h
+	$(CXX) $(CXXSTD) $(OSCFLAGS) $(INCS) $(DEFS) -fpermissive -msse2 -DUSE_X86_GFX -c $< -o $@
+
+graphics_mmx.o: graphics_mmx.cpp graphics_mmx.h graphics_common.h graphics_sum.h
+	$(CXX) $(CXXSTD) $(OSCFLAGS) $(INCS) $(DEFS) -fpermissive -mmmx -DUSE_X86_GFX -c $< -o $@
+
+.PHONY: dist
+dist:
+	svn export . onscripter-en-20230308
+	tar cf onscripter-en-20230308-fullsrc.tar onscripter-en-20230308
+	rm -rf onscripter-en-20230308/extlib onscripter-en-20230308/win_dll \
+			onscripter-en-20230308/tools/libgnurx
+	tar cf onscripter-en-20230308-src.tar onscripter-en-20230308
+	bzip2 -9 onscripter-en-20230308-*src.tar
+	rm -rf onscripter-en-20230308

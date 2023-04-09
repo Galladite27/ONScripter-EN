@@ -1,0 +1,1084 @@
+#! /bin/sh
+
+# Autoconf is ugly and complex. This is still ugly, but at least it's
+# simple, and should be good enough for most plausible build cases.
+# (Trying to build on Solaris crushed that belief -- it works now, but
+# this gets uglier for every platform.  I will probably be forced to
+# adopt autoconf in the end, sadly.)
+
+# ---------- Utility definitions ----------
+
+# Moderately portable echo
+case "`echo 'x\c'`" in
+'x\c') echo_n="echo -n"; nobr= ;;
+*)     echo_n="echo";    nobr="\c" ;;
+esac
+
+# Portable replacement for !
+not() {
+    if $1; then false; else true; fi
+}
+
+# ---------- Program begins here ----------
+
+# Default options
+PREFIX=/mingw64
+if [ -z "$MAKE"   ]; then MAKE=make; fi
+if [ -z "$AR"     ]; then AR=ar; fi
+if [ -z "$RANLIB" ]; then RANLIB=ranlib; fi
+UNSUPPORTED_COMPILER=false
+USE_CPU_GFX=true
+VECTORIZE=false
+VECTORIZE_LEVEL=0
+FASTMATH=-ffast-math
+WERROR="-Werror"
+CXXSTD="-std=c++98"
+STRICT=
+INTERNAL_LIBS=false
+INTERNAL_SDL=false
+INTERNAL_SDL_IMAGE=false
+INTERNAL_SDL_MIXER=false
+INTERNAL_SDL_TTF=false
+
+INTERNAL_BZIP2=false
+INTERNAL_SMPEG=false
+INTERNAL_FREETYPE=false
+INTERNAL_LIBPNG=false
+INTERNAL_LIBJPEG=false
+INTERNAL_OGGLIBS=false
+EXPLICIT_OGGLIBS=false
+
+SDL_CONFIG=sdl-config
+SMPEG_CONFIG=smpeg-config
+FREETYPE_CONFIG=freetype-config
+
+VERSION=`awk '/define VER_NUMBER/ {print $3}' version.h | sed s/-en$//`
+
+DISTCLEAN_OTHER=
+
+# Parse options
+prev=
+for opt
+do
+  if test -n "$prev"; then
+    eval "$prev=\$opt"
+    prev=
+    continue
+  fi
+  arg=`expr "x$opt" : 'x[^=]*=\(.*\)'`
+  case $opt in
+      --prefix=* | -prefix=*)
+        PREFIX=$arg ;;
+      --prefix | -prefix)
+        prev=PREFIX
+        ;;
+      --platform=* | -platform=*)
+        PLATFORM=$arg ;;
+      --platform | -platform)
+        prev=PLATFORM
+        ;;
+      --make=* | -make=*)
+        MAKE=$arg ;;
+      --make | -make)
+        prev=MAKE
+        ;;
+      --std=* | -std=*)
+        CXXSTD=-std=$arg ;;
+      --strict | -strict)
+        STRICT="-Wall -Wextra -Wno-unused-parameter -Wvla" ;;
+      --pedantic | -pedantic)
+        STRICT+=" -pedantic" ;;
+      --no-werror | -no-werror)
+        WERROR=""
+        ;;
+      --unsupported-compiler | -unsupported-compiler)
+        UNSUPPORTED_COMPILER=true ;;
+      --unsupported-compiler=* | -unsupported-compiler=*)
+        UNSUPPORTED_COMPILER=$arg
+        ;;
+      --no-cpu-gfx | -no-cpu-gfx)
+        USE_CPU_GFX=false ;;
+      --novectorize | -novectorize)
+        VECTORIZE=false ;;
+      --vectorize | -vectorize)
+        VECTORIZE=true ;;
+      --vectorize-verbose | -vectorize-verbose)
+        VECTORIZE_LEVEL=3 ;;
+      --vectorize-verbose=* | -vectorize-verbose=*)
+        VECTORIZE_LEVEL=$arg
+        ;;
+      --enable-internal-libs | -enable-internal-libs | --with-internal-libs | -with-internal-libs)
+        INTERNAL_LIBS=true ;;
+      --disable-internal-libs | -disable-internal-libs | --without-internal-libs | -without-internal-libs | --no-internal-libs | -no-internal-libs)
+        INTERNAL_LIBS=false ;;
+      --internal-libs=* | -internal-libs=*)
+        INTERNAL_LIBS=$arg ;;
+      --internal-libs | -internal-libs)
+        prev=INTERNAL_LIBS
+        ;;
+      --enable-internal-sdl | -enable-internal-sdl | --with-internal-sdl | -with-internal-sdl)
+        INTERNAL_SDL=true ;;
+      --disable-internal-sdl | -disable-internal-sdl | --without-internal-sdl | -without-internal-sdl | --no-internal-sdl | -no-internal-sdl)
+        INTERNAL_SDL=false ;;
+      --internal-sdl=* | -internal-sdl=*)
+        INTERNAL_SDL=$arg ;;
+      --internal-sdl | -internal-sdl)
+        prev=INTERNAL_SDL
+        ;;
+      --enable-internal-sdl?image | -enable-internal-sdl?image | --with-internal-sdl?image | -with-internal-sdl?image | --enable-internal-sdlimage  | -enable-internal-sdlimage  | --with-internal-sdlimage  | -with-internal-sdlimage)
+        INTERNAL_SDL_IMAGE=true ;;
+      --disable-internal-sdl?image | -disable-internal-sdl?image | --without-internal-sdl?image | -without-internal-sdl?image | --no-internal-sdl?image | -no-internal-sdl?image | --disable-internal-sdlimage  | -disable-internal-sdlimage  | --without-internal-sdlimage  | -without-internal-sdlimage  | --no-internal-sdlimage  | -no-internal-sdlimage)
+        INTERNAL_SDL_IMAGE=false ;;
+      --internal-sdl?image=* | -internal-sdl?image=* | --internal-sdlimage=* | -internal-sdlimage=*)
+        INTERNAL_SDL_IMAGE=$arg ;;
+      --internal-sdl?image | -internal-sdl?image | --internal-sdlimage | -internal-sdlimage)
+        prev=INTERNAL_SDL_IMAGE
+        ;;
+      --internal-all-images)
+        INTERNAL_SDL_IMAGE=true
+        INTERNAL_LIBPNG=true
+        INTERNAL_LIBJPEG=true
+        ;;
+      --enable-internal-sdl?mixer | -enable-internal-sdl?mixer | --with-internal-sdl?mixer | -with-internal-sdl?mixer | --enable-internal-sdlmixer  | -enable-internal-sdlmixer  | --with-internal-sdlmixer  | -with-internal-sdlmixer)
+        INTERNAL_SDL_MIXER=true ;;
+      --disable-internal-sdl?mixer | -disable-internal-sdl?mixer | --without-internal-sdl?mixer | -without-internal-sdl?mixer | --no-internal-sdl?mixer | -no-internal-sdl?mixer | --disable-internal-sdlmixer  | -disable-internal-sdlmixer  | --without-internal-sdlmixer  | -without-internal-sdlmixer  | --no-internal-sdlmixer  | -no-internal-sdlmixer)
+        INTERNAL_SDL_MIXER=false ;;
+      --internal-sdl?mixer=* | -internal-sdl?mixer=* | --internal-sdlmixer=* | -internal-sdlmixer=*)
+        INTERNAL_SDL_MIXER=$arg ;;
+      --internal-sdl?mixer | -internal-sdl?mixer | --internal-sdlmixer | -internal-sdlmixer)
+        prev=INTERNAL_SDL_MIXER
+        ;;
+      --internal-all-mixers)
+        INTERNAL_SDL_MIXER=true
+        INTERNAL_OGGLIBS=true
+        ;;
+      --enable-internal-bz* | -enable-internal-bz* | --with-internal-bz* | -with-internal-bz*)
+        INTERNAL_BZIP2=true ;;
+      --disable-internal-bz* | -disable-internal-bz* | --without-internal-bz* | -without-internal-bz* | --no-internal-bz* | -no-internal-bz*)
+        INTERNAL_BZIP2=false ;;
+      --internal-bz*=* | -internal-bz*=*)
+        INTERNAL_BZIP2=$arg ;;
+      --internal-bz* | -internal-bz*)
+        prev=INTERNAL_BZIP2
+        ;;
+      --enable-internal-smpeg | -enable-internal-smpeg | --with-internal-smpeg | -with-internal-smpeg)
+        INTERNAL_SMPEG=true ;;
+      --disable-internal-smpeg | -disable-internal-smpeg | --without-internal-smpeg | -without-internal-smpeg | --no-internal-smpeg | -no-internal-smpeg)
+        INTERNAL_SMPEG=false ;;
+      --internal-smpeg=* | -internal-smpeg=*)
+        INTERNAL_SMPEG=$arg ;;
+      --internal-smpeg | -internal-smpeg)
+        prev=INTERNAL_SMPEG
+        ;;
+      --enable-internal-freetype | -enable-internal-freetype | --with-internal-freetype | -with-internal-freetype)
+        INTERNAL_FREETYPE=true ;;
+      --disable-internal-freetype | -disable-internal-freetype | --without-internal-freetype | -without-internal-freetype | --no-internal-freetype | -no-internal-freetype)
+        INTERNAL_FREETYPE=false ;;
+      --internal-freetype=* | -internal-freetype=*)
+        INTERNAL_FREETYPE=$arg ;;
+      --internal-freetype | -internal-freetype)
+        prev=INTERNAL_FREETYPE
+        ;;
+      
+      --enable-internal-sdl?ttf | -enable-internal-sdl?ttf | --with-internal-sdl?ttf | -with-internal-sdl?ttf | --enable-internal-sdlttf  | -enable-internal-sdlttf  | --with-internal-sdlttf  | -with-internal-sdlttf)
+        INTERNAL_SDL_TTF=true ;;
+      --disable-internal-sdl?ttf | -disable-internal-sdl?ttf | --without-internal-sdl?ttf | -without-internal-sdl?ttf | --no-internal-sdl?ttf | -no-internal-sdl?ttf | --disable-internal-sdlttf  | -disable-internal-sdlttf  | --without-internal-sdlttf  | -without-internal-sdlttf  | --no-internal-sdlttf  | -no-internal-sdlttf)
+        INTERNAL_SDL_TTF=false ;;
+      --internal-sdl?ttf=* | -internal-sdl?ttf=* | --internal-sdlttf=* | -internal-sdlttf=*)
+        INTERNAL_SDL_TTF=$arg ;;
+      --internal-sdl?ttf | -internal-sdl?ttf | --internal-sdlttf | -internal-sdlttf)
+        prev=INTERNAL_SDL_TTF
+        ;;
+
+    -\? | -h | -help | --help)
+      cat <<-__ENDHELP
+	Usage: $0 <options>
+	
+	Options:
+	  --help                   display this message
+	  --prefix=DIR             install in prefix DIR (default is /usr/local)
+	  --make=NAME              use GNU make executable with the given name
+	  --std=STD                c++ compiles with -std=STD (default is c++98)
+	  --strict                 compile with -Wall -Wextra -Wvla
+	                           (note: g++ already uses -Wall)
+	  --pedantic               compile with -pedantic
+	  --unsupported-compiler   don't check for known compilers
+	  --no-werror              don't compile with -Werror
+	  --no-cpu-gfx             don't compile with custom intrinsic graphics
+	                           routines (normally compiled for x86/PPC if GCC 4.3+)
+	  --vectorize              try to use compiler vectorization (requires GCC 4+)
+	  --novectorize            don't use compiler vectorization (default)
+	  --vectorize-verbose[=(1-5)] set vectorization verbosity level (def 0)
+	
+	Library options (force compilation of included dependencies):
+	  --with-internal-libs        don't check for any system libraries
+	  --with-internal-sdl         skip check for system libSDL
+	  --with-internal-sdl-image   skip check for system libSDL_image
+	  --with-internal-sdl-mixer   skip check for system libSDL_mixer
+	  --with-internal-sdl-ttf     skip check for system libSDL_ttf
+	  --with-internal-bzip2       skip check for system libbz2
+	  --with-internal-smpeg       skip check for system libsmpeg
+	  --with-internal-freetype    skip check for system libfreetype
+	__ENDHELP
+      exit 0
+      ;;
+    *)
+      echo "Ignoring unknown option $opt"
+      ;;
+  esac
+done
+if test -n "$prev"; then
+  opt=--`echo $prev | tr '[A-Z]_' '[a-z]-'`
+  echo "Error: missing argument to $opt" >&2
+  exit 2
+fi
+
+internalise_SDL() {
+    INTERNAL_SDL=true	
+    INTERNAL_SDL_IMAGE=true
+    INTERNAL_SDL_MIXER=true
+    INTERNAL_SDL_TTF=true
+    INTERNAL_SMPEG=true
+    SDL_CONFIG=./extlib/bin/sdl-config
+    SMPEG_CONFIG=./extlib/bin/smpeg-config
+}
+
+if $INTERNAL_LIBS
+then
+    internalise_SDL
+    INTERNAL_BZIP2=true
+    INTERNAL_FREETYPE=true
+    INTERNAL_LIBPNG=true
+    INTERNAL_LIBJPEG=true
+    INTERNAL_OGGLIBS=true
+elif $INTERNAL_SDL
+then
+    # If the main SDL is internal, the subsidiary libraries must be
+    # too.
+    internalise_SDL
+fi
+
+if $INTERNAL_FREETYPE
+then
+    # If Freetype is internal, SDL_ttf must be too.
+    INTERNAL_SDL_TTF=true
+fi
+
+echo "Configuring ONScripter-EN $VERSION"
+
+# Platform
+$echo_n "Checking platform type... ${nobr}"
+if [ -n "$PLATFORM" ]
+then 
+    PLATFORM=`$echo_n "$PLATFORM${nobr}" | tr '[:upper:]' '[:lower:]'`
+    if ./config.sub $PLATFORM >/dev/null 2>&1; then PLATFORM=`./config.sub $PLATFORM`; fi
+else
+    PLATFORM=`./config.guess`
+fi
+SYS=Posix
+POSIX=Vanilla
+case "$PLATFORM" in
+*mingw*)   echo "MinGW";    SYS=MinGW ;;
+*darwin*)  echo "Mac OS X"; SYS=MacOSX ;;
+*linux*)   echo "Linux";    POSIX=Linux ;;
+*solaris*) echo "Solaris";  POSIX=Solaris ;;
+*freebsd*) echo "FreeBSD";  POSIX=FreeBSD ;;
+*netbsd*)  echo "NetBSD";   POSIX=NetBSD ;;
+*openbsd*) echo "OpenBSD";  POSIX=OpenBSD ;;
+*)         echo "$PLATFORM (unsupported; using vanilla Posix build instructions)" ;;
+esac
+
+$echo_n "         cpu type...      ${nobr}"
+ARCH=
+case "$PLATFORM" in
+*86_64*)   echo "x86_64";   ARCH=x86_64;;
+*86*)      ARCH=`expr "x$PLATFORM" : 'x\(.*86\).*'`; \
+           echo "$ARCH";;
+*powerpc*) echo "PowerPC";  ARCH=ppc;;
+*)         echo "unknown";;
+esac
+
+# Compiler (gcc, g++, icpc)
+if [ -z "$CC" ]; then CC=gcc; fi
+if $UNSUPPORTED_COMPILER
+then
+    echo "Unsupported compiler requested; please don't complain if anything doesn't work!"
+else
+    $echo_n "Checking C compiler... ${nobr}"
+    CC_TMP=`($CC --version) 2>/dev/null | head -1`
+    case "$CC_TMP" in
+    gcc* | *apple*gcc*) CC_VER=`expr "x$CC_TMP" : 'x.* \(.*\)$'`; echo "gcc $CC_VER" ;;
+    icc*) echo icc ;;
+    *)  echo "error"
+        cat <<-_ERR
+
+	Compiler not recognised, or no compiler found.
+	Please install a supported C compiler (e.g. gcc). If you already have one installed, try setting the environment variable CC appropriately.
+	If you want to use an unsupported compiler, set CC appropriately and run configure with the --unsupported-compiler option; you will be on your own if anything doesn't work.
+	_ERR
+        exit 1 ;;
+    esac
+fi
+
+if [ -z "$CXX" ]
+then case "x$CC" in
+xgcc | x) CXX=g++ ;;
+xicc) CXX=icpc ;;
+*) CXX=$CC ;;
+esac
+fi
+
+CXX_TMP=`($CXX --version) 2>/dev/null | head -1`
+if not $UNSUPPORTED_COMPILER 
+then
+    $echo_n "Checking C++ compiler... ${nobr}"
+    case "$CXX_TMP" in
+    g++* | *apple*g++*) CXX_VER=`expr "x$CXX_TMP" : 'x.* \(.*\)$'`; echo "g++ $CXX_VER" ;;
+    icpc*) echo icpc ;;
+    *)  echo "error"
+        cat <<-_ERR
+
+	Compiler not recognised, or no compiler found.
+	Please install a supported C++ compiler (e.g. g++). If you already have one installed, try setting the environment variable CXX appropriately.
+	If you want to use an unsupported compiler, set CXX appropriately and run configure with the --unsupported-compiler option; you will be on your own if anything doesn't work.
+	_ERR
+        exit 1 ;;
+    esac
+fi
+
+case "$CXX_TMP" in
+g++* | *apple*g++*) CFLAGSEXTRA=-Wall ;;
+esac
+
+# Auto-vectorization
+
+VECFLAGS=
+if $VECTORIZE
+then
+    case "x$ARCH" in
+    xx86_64) VECFLAGS="-msse2 -mfpmath=sse";;
+    x*86)    VECFLAGS="-msse -mfpmath=sse";;
+    xppc)    VECFLAGS=-maltivec ;;
+    esac
+
+    case "x$CC_VER" in
+    x4.*) VECFLAGS="$FASTMATH -ftree-vectorize $VECFLAGS"
+          if [ $VECTORIZE_LEVEL != 0 ]
+          then
+              VECFLAGS="$VECFLAGS -ftree-vectorizer-verbose=$VECTORIZE_LEVEL"
+          fi
+          echo "     Auto-vectorization, verbosity level $VECTORIZE_LEVEL"
+          ;;
+    *) echo "     Not GCC 4+, won't try auto-vectorization"
+    esac
+fi
+CFLAGSEXTRA="$CFLAGSEXTRA $VECFLAGS"
+
+# Custom graphics using intrinsics (most likely requires GCC 4.3+)
+
+rm -rf .configtest
+mkdir .configtest
+cd .configtest
+
+if $USE_CPU_GFX
+then
+    $echo_n "Checking for compiler cpuid support... ${nobr}"
+    cat > test.cc <<-_EOF
+	#include <cpuid.h>
+	unsigned int eax, ebx, ecx, edx; int main(int argc, char**argv){return __get_cpuid(1, &eax, &ebx, &ecx, &edx);}
+	_EOF
+    $CXX test.cc -o ctest >/dev/null 2>&1
+    case $? in
+    0) echo "yes" ;;
+    *) echo "no"; USE_CPU_GFX=false ;;
+    esac
+    if not $USE_CPU_GFX
+    then
+        echo "     Won't compile custom graphics routines"
+    fi
+fi
+
+if $USE_CPU_GFX
+then
+    USE_X86_GFX=false;
+    USE_PPC_GFX=false;
+
+    case "x$ARCH" in
+    xx86_64) USE_X86_GFX=true ;;
+    x*86)    USE_X86_GFX=true ;;
+    xppc)    USE_PPC_GFX=true ;;
+    *)       GFX_EXT_OBJS=
+             USE_CPU_GFX=false
+             echo "     No custom graphics routines available for the given architecture"
+             ;;
+    esac
+fi
+
+if $USE_CPU_GFX
+then
+    if $USE_X86_GFX
+    then
+        $echo_n "Checking for compiler x86 MMX & SSE2 intrinsics support... ${nobr}"
+        cat > test.cc <<-_EOF
+	#include <mmintrin.h>
+	#include <emmintrin.h>
+	int main(int argc, char**argv){__m64 mmxchk = _mm_set1_pi8(0); __m128i sse2chk = _mm_set1_epi8(0); return 0;}
+	_EOF
+        $CXX -msse2 -mmmx test.cc -o gtest >/dev/null 2>&1
+        case $? in
+        0)  echo "yes"
+            GFX_MMX_FLAGS="-mmmx -DUSE_X86_GFX"
+            GFX_SSE2_FLAGS="-msse2 -DUSE_X86_GFX"
+            GFX_EXT_OBJS="graphics_mmx.o graphics_sse2.o"
+            CFLAGSEXTRA="$CFLAGSEXTRA -DUSE_X86_GFX"
+            echo "     Compiling with x86 MMX/SSE2 custom graphics routines"
+            ;;
+        *) echo "no"; USE_X86_GFX=false; USE_CPU_GFX=false ;;
+        esac
+
+    elif $USE_PPC_GFX
+    then
+        $echo_n "Checking for compiler PPC Altivec intrinsics support... ${nobr}"
+        cat > test.cc <<-_EOF
+	#include <altivec.h>
+	int main(int argc, char**argv){vector unsigned char altichk = vec_splat_u8(0);}
+	_EOF
+        $CXX -maltivec test.cc -o gtest >/dev/null 2>&1
+        case $? in
+        0)  echo "yes"
+            GFX_MALTIVEC_FLAGS="-maltivec -DUSE_PPC_GFX"
+            GFX_EXT_OBJS="graphics_maltivec.o"
+            CFLAGSEXTRA="$CFLAGSEXTRA -DUSE_PPC_GFX"
+            echo "     Compiling with PPC custom graphics routines"
+            ;;
+        *) echo "no"; USE_PPC_GFX=false; USE_CPU_GFX=false ;;
+        esac
+    fi
+
+    if not $USE_CPU_GFX
+    then
+        echo "     Won't compile custom graphics routines"
+    fi
+fi
+
+cd ..
+rm -rf .configtest
+
+# Make (must be GNU)
+
+$echo_n "Checking for GNU make... ${nobr}"
+case "`($MAKE -v) 2>/dev/null | head -1`" in
+GNU?Make*)
+    echo "$MAKE" ;;
+*)
+    case "`(gmake -v) 2>/dev/null | head -1`" in
+    GNU?Make*)
+	MAKE=gmake
+	echo "gmake" ;;
+    *)  echo "no"
+	cat <<-_ERR
+
+	Unable to locate GNU make.
+	Please install GNU make. If it's installed, try setting the environment variable MAKE appropriately, or use the --make option to configure.
+	_ERR
+	exit 1 ;;
+    esac ;;
+esac
+
+# ar, ranlib (for simplicity's sake we assume that these are ar and
+# ranlib if make is make)
+if [ "x$MAKE" != "xmake" ]
+then
+    $echo_n "Checking for ar... ${nobr}"
+    if ($AR -V >/dev/null) 2>/dev/null
+    then
+	echo $AR
+    else
+	AR=gar
+	if ($AR -V >/dev/null) 2>/dev/null
+	then echo $AR
+	else echo "not found"
+	     echo "Unable to locate ar. If it's installed, try setting the environment variable AR appropriately."
+	     exit 1
+	fi
+    fi
+
+    $echo_n "Checking for ranlib... ${nobr}"
+    if ($RANLIB -V >/dev/null) 2>/dev/null
+    then
+	echo $RANLIB
+    else
+	RANLIB=granlib
+	if ($RANLIB -V >/dev/null) 2>/dev/null
+	then echo $RANLIB
+	else echo "not found"
+	     echo "Unable to locate ranlib. If it's installed, try setting the environment variable RANLIB appropriately. (If your platform does not need ranlib, just set RANLIB=true.)"
+	     exit 1
+	fi
+    fi
+fi
+
+# Libraries
+
+if $INTERNAL_SDL
+then
+    SDL_CONFIG=./extlib/bin/sdl-config
+else
+    $echo_n "Checking for system SDL... ${nobr}"
+    case "$SYS" in
+        MinGW)  SDL_CONFIG=`pwd`/extlib
+                cd win_dll; make prefix=$SDL_CONFIG > /dev/null 2>&1; cd ..
+                SDL_CONFIG=`pwd`/extlib/bin/sdl-config
+                DISTCLEAN_OTHER=SDL.dll $DISTCLEAN_OTHER
+                cp -p ./win_dll/SDL.dll `pwd`;;
+        esac
+    VER=`($SDL_CONFIG --version) 2>/dev/null`
+    if [ -n "$VER" ]
+    then
+	eval `echo $VER | awk -F. '{ print "MAJ=" $1 "; MIN=" $2 "; REL=" $3; }'`
+	if [ $MAJ -gt 1 -o $MAJ -eq 1 -a $MIN -gt 2 -o $MAJ -eq 1 -a $MIN -eq 2 -a $REL -ge 8 ]
+	then echo "yes"
+	else echo "too old"
+	    internalise_SDL
+	fi
+    else
+	echo "no"
+	internalise_SDL
+    fi
+fi
+
+if $INTERNAL_SDL
+then
+    case "$SYS" in
+        MinGW)  echo "Using internal SDL - might not work with DirectX" ;;
+        esac
+fi
+
+rm -rf .configtest
+mkdir .configtest
+cd .configtest
+
+if not $INTERNAL_SDL_IMAGE
+then
+#    $echo_n "Checking for system SDL_image... ${nobr}"
+#    cat > test.cc <<-_EOF
+	#include "SDL.h"
+	#include "SDL_image.h"
+#	unsigned char jpeg[]={255,216,255,224,0,16,74,70,73,70,0,1,1,1,0,72,0,72,0,0,255,225,0,22,69,120,105,102,0,0,77,77,0,42,0,0,0,8,0,0,0,0,0,0,255,219,0,67,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,255,219,0,67,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,255,192,0,17,8,0,1,0,1,3,1,34,0,2,17,1,
+#	3,17,1,255,196,0,21,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,10,255,196,0,20,16,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,255,196,0,20,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,255,196,0,20,17,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,255,218,0,12,3,1,0,2,17,3,17,0,63,0,191,128,1,255,217};unsigned char png[]={137,80,78,71,13,10,26,10,0,0,0,13,73,72,68,82,0,0,0,1,0,0,0,1,8,2,0,0,0,144,119,83,222,0,0,0,12,73,68,65,84,8,215,99,248,255,255,63,0,5,254,2,254,220,204,89,231,0,0,0,0,73,69,78,68,174,66,96,130};
+#	int main(int argc, char**argv){bool j=IMG_Load_RW(SDL_RWFromConstMem(jpeg,309),1),p=IMG_Load_RW(SDL_RWFromConstMem(png,69),1);return j&&p?0:(j?1:(p?2:3));}
+#	_EOF
+#    INTERNAL_SDL_IMAGE=true
+#    $CXX `$SDL_CONFIG --cflags` `$SDL_CONFIG --libs` -lSDL_image test.cc -o itest >/dev/null 2>&1
+#    ./itest 2>/dev/null
+#    case $? in
+#    0) echo "yes"; INTERNAL_SDL_IMAGE=false ;;
+#    1) echo "no PNG" ;; 2) echo "no JPEG" ;; 3) echo "no PNG or JPEG" ;;
+#    *) echo "no" ;;
+#    esac
+  INTERNAL_SDL_IMAGE=false
+fi
+
+if $INTERNAL_SDL_IMAGE && not $INTERNAL_LIBPNG
+then
+    $echo_n "Checking for system libpng... ${nobr}"
+    cat > test.cc <<-_EOF
+	#include <png.h>
+	unsigned char png[]={137,80,78,71,13,10,26,10};int main(int argc, char**argv){return png_sig_cmp(png,0,8);}
+	_EOF
+    INTERNAL_LIBPNG=true
+    $CXX -lpng -lz test.cc -o ptest >/dev/null 2>&1
+    ./ptest 2>/dev/null
+    case $? in
+    0) echo "yes"; INTERNAL_LIBPNG=false ;;
+    1) echo "broken" ;;
+    *) echo "no" ;;
+    esac
+fi
+
+if $INTERNAL_SDL_IMAGE && not $INTERNAL_LIBJPEG
+then
+    $echo_n "Checking for system libjpeg... ${nobr}"
+    cat > test.cc <<-_EOF
+	#include <stdio.h>
+	#include <jpeglib.h>
+	int main(int argc, char**argv){struct jpeg_decompress_struct cinfo;struct jpeg_error_mgr jerr;cinfo.err=jpeg_std_error(&jerr);jpeg_create_decompress(&cinfo);return 0;}
+	_EOF
+    INTERNAL_LIBJPEG=true
+    $CXX -ljpeg test.cc -o jtest >/dev/null 2>&1
+    ./jtest 2>/dev/null
+    case $? in
+    0) echo "yes"; INTERNAL_LIBJPEG=false ;;
+    1) echo "broken" ;;
+    *) echo "no" ;;
+    esac
+fi
+
+write_ogg() {
+    cat > test.cc <<-_EOF
+	unsigned char o[]={79,103,103,83,0,2,0,0,0,0,0,0,0,0,137,109,229,31,0,0,0,0,255,229,22,156,1,30,1,118,111,114,98,105,115,0,0,0,0,2,68,172,0,0,0,0,0,0,128,181,1,0,0,0,0,0,184,1,79,103,103,83,0,0,0,0,0,0,0,0,0,0,137,109,229,31,1,0,0,0,232,117,220,177,17,45,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,7,3,118,111,114,98,105,115,29,0,0,0,88,105,112,104,46,79,114,103,32,108,105,98,86,111,114,98,105,115,32,73,32,50,48,48,53,48,51,48,52,0,0,0,0,1,5,118,111,114,98,105,
+	115,37,66,67,86,1,0,64,0,0,36,115,24,42,70,165,115,22,132,16,26,66,80,25,227,28,66,206,107,236,25,66,76,17,130,28,50,76,91,203,37,115,144,33,164,160,66,136,91,40,129,208,144,85,0,0,64,0,0,135,65,120,20,132,138,65,8,33,132,37,61,88,146,131,39,61,8,33,132,136,57,120,20,132,105,65,8,33,132,16,66,8,33,132,16,66,8,33,132,69,57,104,146,131,39,65,8,29,132,227,48,56,12,131,229,56,248,28,132,69,57,88,16,131,39,65,232,32,132,15,66,184,154,131,172,57,8,33,132,36,53,72,80,131,6,57,232,
+	28,132,194,44,40,138,130,196,48,184,22,132,4,53,40,140,130,228,48,200,212,131,11,66,136,154,131,73,53,248,26,132,103,65,120,22,132,105,65,8,33,132,36,65,72,144,131,6,65,200,24,132,70,65,88,146,131,6,57,184,20,132,203,65,168,26,132,42,57,8,31,132,32,52,100,21,0,144,0,0,160,162,40,138,162,40,10,16,26,178,10,0,200,0,0,16,64,81,20,199,113,28,201,145,28,201,177,28,11,8,13,89,5,0,0,1,0,8,0,0,160,72,138,164,72,142,228,72,146,36,89,146,37,89,146,37,89,146,230,137,170,44,203,178,44,
+	203,178,44,203,50,16,26,178,10,0,72,0,0,80,81,12,69,113,20,7,8,13,89,5,0,100,0,0,8,160,56,138,165,88,138,165,104,138,231,136,142,8,132,134,172,2,0,128,0,0,4,0,0,16,52,67,83,60,71,148,68,207,84,85,215,182,109,219,182,109,219,182,109,219,182,109,219,182,109,91,150,101,25,8,13,89,5,0,64,0,0,16,210,105,102,169,6,136,48,3,25,6,66,67,86,1,0,8,0,0,128,17,138,48,196,128,208,144,85,0,0,64,0,0,128,24,74,14,162,9,173,57,223,156,227,160,89,14,154,74,177,57,29,156,72,181,121,146,155,138,185,
+	57,231,156,115,206,201,230,156,49,206,57,231,156,162,156,89,12,154,9,173,57,231,156,196,160,89,10,154,9,173,57,231,156,39,177,121,208,154,42,173,57,231,156,113,206,233,96,156,17,198,57,231,156,38,173,121,144,154,141,181,57,231,156,5,173,105,142,154,75,177,57,231,156,72,185,121,82,155,75,181,57,231,156,115,206,57,231,156,115,206,57,231,156,234,197,233,28,156,19,206,57,231,156,168,189,185,150,155,208,197,57,231,156,79,198,233,222,156,16,206,57,231,156,115,206,57,231,156,115,
+	206,57,231,156,32,52,100,21,0,0,4,0,64,16,134,141,97,220,41,8,210,231,104,32,70,17,98,26,50,233,65,247,232,48,9,26,131,156,66,234,209,232,104,164,148,58,8,37,149,113,82,74,39,8,13,89,5,0,0,2,0,64,8,33,133,20,82,72,33,133,20,82,72,33,133,20,98,136,33,134,24,114,202,41,167,160,130,74,42,169,168,162,140,50,203,44,179,204,50,203,44,179,204,58,236,172,179,14,59,12,49,196,16,67,43,173,196,82,83,109,53,214,88,107,238,57,231,154,131,180,86,90,107,173,181,82,74,41,165,148,82,10,66,
+	67,86,1,0,32,0,0,4,66,6,25,100,144,81,72,33,133,20,98,136,41,167,156,114,10,42,168,128,208,144,85,0,0,32,0,128,0,0,0,0,79,242,28,209,17,29,209,17,29,209,17,29,209,17,29,209,241,28,207,17,37,81,18,37,81,18,45,211,50,53,211,83,69,85,117,101,215,150,117,89,183,125,91,216,133,93,247,125,221,247,125,221,248,117,97,88,150,101,89,150,101,89,150,101,89,150,101,89,150,101,89,150,32,52,100,21,0,0,2,0,0,32,132,16,66,72,33,133,20,82,72,41,198,24,115,204,57,232,36,148,16,8,13,89,5,0,0,2,
+	0,8,0,0,0,112,20,71,113,28,201,145,28,73,178,36,75,210,36,205,210,44,79,243,52,79,19,61,81,20,69,211,52,85,209,21,93,81,55,109,81,54,101,211,53,93,83,54,93,85,86,109,87,150,109,91,182,117,219,151,101,219,247,125,223,247,125,223,247,125,223,247,125,223,247,125,93,7,66,67,86,1,0,18,0,0,58,146,35,41,146,34,41,146,227,56,142,36,73,64,104,200,42,0,64,6,0,64,0,0,138,226,40,142,227,56,146,36,73,146,37,105,146,103,121,150,168,153,154,233,153,158,42,170,64,104,200,42,0,0,16,0,64,0,0,
+	0,0,0,0,138,166,120,138,169,120,138,168,120,142,232,136,146,104,153,150,168,169,154,43,202,166,236,186,174,235,186,174,235,186,174,235,186,174,235,186,174,235,186,174,235,186,174,235,186,174,235,186,174,235,186,174,235,186,174,235,186,174,11,132,134,172,2,0,36,0,0,116,36,71,114,36,71,82,36,69,82,36,71,114,128,208,144,85,0,128,12,0,128,0,0,28,195,49,36,69,114,44,203,210,52,79,243,52,79,19,61,209,19,61,211,83,69,87,116,129,208,144,85,0,0,32,0,128,0,0,0,0,0,0,12,201,176,20,203,
+	209,28,77,18,37,213,82,45,85,83,45,213,82,69,213,83,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,77,211,52,77,19,8,13,89,9,0,144,1,0,144,16,83,45,45,198,154,9,139,36,98,210,106,171,160,99,12,82,236,165,177,72,42,103,181,183,202,49,133,24,181,94,26,135,148,81,16,123,169,36,99,138,65,204,45,164,208,41,38,173,214,84,66,133,20,164,152,99,42,21,82,14,82,32,52,100,133,0,16,154,1,224,112,28,64,178,44,64,178,44,0,0,0,0,0,0,0,144,
+	52,13,208,60,15,176,52,15,0,0,0,0,0,0,0,36,77,3,44,79,3,52,207,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,64,210,52,64,243,60,64,243,60,0,0,0,0,0,0,0,208,60,15,240,60,17,240,68,17,0,0,0,0,0,0,0,44,207,3,52,209,3,60,81,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,64,210,52,64,243,60,64,243,60,0,0,
+	0,0,0,0,0,176,60,15,240,68,17,208,60,17,0,0,0,0,0,0,0,44,207,3,60,81,4,60,209,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,16,0,0,16,224,0,0,16,96,33,20,26,178,34,0,136,19,0,112,72,18,36,9,146,4,205,3,72,150,5,77,131,166,193,52,1,146,101,65,211,160,105,48,
+	77,0,0,0,0,0,0,0,0,0,0,36,77,131,166,65,211,32,138,0,73,211,160,105,208,52,136,34,0,0,0,0,0,0,0,0,0,0,146,166,65,211,160,105,16,69,128,164,105,208,52,104,26,68,17,0,0,0,0,0,0,0,0,0,0,207,52,33,138,16,69,152,38,192,51,77,136,34,68,17,166,9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8,0,0,24,112,0,0,8,48,161,12,20,26,178,34,0,136,19,0,112,56,138,101,1,0,128,227,56,150,5,0,0,142,227,88,22,0,0,88,150,37,138,0,0,96,89,154,40,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8,0,0,24,112,0,0,8,48,161,12,20,26,178,18,0,136,2,0,112,40,138,101,1,199,177,44,224,56,150,5,36,201,178,0,150,5,208,60,128,166,1,68,17,0,8,0,0,40,112,0,0,8,176,65,83,98,113,128,66,67,86,2,0,81,0,0,6,197,177,44,77,19,69,146,164,105,154,39,138,36,73,211,60,79,20,105,154,231,121,158,105,194,243,60,207,52,33,138,162,104,154,16,69,81,52,77,152,166,105,170,42,48,77,85,21,0,0,80,224,0,0,16,96,131,166,196,226,
+	0,133,134,172,4,0,66,2,0,28,138,98,89,154,230,121,158,39,138,166,169,154,36,73,211,60,79,20,69,209,52,77,83,85,73,146,166,121,158,40,138,162,105,154,166,170,178,44,77,243,60,81,20,69,211,84,85,85,133,166,121,158,40,138,162,105,170,170,234,194,243,60,79,20,69,209,52,85,213,117,225,121,158,39,138,162,104,154,170,234,186,16,69,81,52,77,211,84,77,85,117,93,32,138,166,105,154,170,170,170,174,11,68,79,20,77,83,85,93,215,117,129,231,137,162,105,170,170,171,186,46,16,77,211,84,85,85,
+	117,93,89,6,152,166,105,170,170,235,202,50,64,85,85,213,117,93,87,150,1,170,170,170,174,235,186,178,12,80,85,215,117,93,89,150,101,0,174,235,186,178,44,203,2,0,0,14,28,0,0,2,140,160,147,140,42,139,176,209,132,11,15,64,161,33,43,2,128,40,0,0,192,24,166,20,83,202,48,38,33,164,16,26,198,36,132,20,66,38,37,165,210,82,170,32,164,82,82,41,21,132,84,74,42,37,163,148,82,106,41,85,16,82,41,169,148,10,66,42,37,149,82,0,0,216,129,3,0,216,129,133,80,104,200,74,0,32,15,0,128,48,70,41,198,
+	24,115,78,34,164,20,99,206,57,39,17,82,138,49,231,156,147,74,49,230,156,115,206,73,41,25,115,204,57,231,164,148,206,57,231,156,115,82,74,230,156,115,206,57,41,165,115,206,57,231,156,148,82,74,231,156,115,78,74,41,37,132,206,65,39,165,148,210,57,231,156,19,0,0,84,224,0,0,16,96,163,200,230,4,35,65,133,134,172,4,0,82,1,0,12,142,99,89,154,230,121,162,104,154,150,36,105,154,231,121,158,40,154,166,38,73,154,230,121,158,39,138,170,201,243,60,79,20,69,209,52,85,149,231,121,158,40,138,
+	162,105,170,42,215,21,69,211,52,77,85,85,93,178,44,138,166,105,154,170,234,186,48,77,211,84,85,215,117,93,152,166,105,170,170,235,186,46,108,91,85,85,213,117,101,25,182,173,170,170,234,186,178,12,92,215,117,101,217,150,129,44,187,174,236,218,178,0,0,240,4,7,0,160,2,27,86,71,56,41,26,11,44,52,100,37,0,144,1,0,64,24,131,144,66,8,33,101,16,66,10,33,132,148,82,8,9,0,0,24,112,0,0,8,48,161,12,20,26,178,18,0,72,5,0,0,140,177,214,90,107,173,181,214,64,103,173,181,214,90,107,173,
+	128,204,90,107,173,181,214,90,107,173,181,214,90,107,173,181,214,82,107,173,181,214,90,107,173,181,214,90,107,173,181,214,90,107,173,181,214,90,107,173,181,214,90,107,173,181,214,90,107,173,181,214,90,107,173,181,214,90,107,173,181,214,90,107,173,181,214,90,107,45,165,148,82,74,41,165,148,82,74,41,165,148,82,74,41,165,148,82,74,5,0,250,85,56,0,248,63,216,176,58,194,73,209,88,96,161,33,43,1,128,112,0,0,192,24,165,24,115,12,66,41,165,84,8,49,230,156,116,84,90,139,177,66,136,49,
+	231,36,164,212,90,108,197,115,206,65,40,33,149,214,98,44,158,115,14,66,41,41,197,86,99,81,41,132,82,82,74,45,182,88,139,74,161,163,146,82,74,173,213,88,140,49,169,164,214,90,139,173,198,98,140,73,41,180,212,90,139,49,22,35,108,77,169,181,216,106,171,177,24,99,107,42,45,180,24,99,140,197,8,95,100,108,45,166,218,106,13,198,8,35,91,44,45,213,90,107,48,198,24,221,91,139,165,182,154,139,49,62,248,218,82,44,49,214,92,0,0,119,131,3,0,68,130,141,51,172,36,157,21,142,6,23,26,178,18,0,
+	8,9,0,32,16,82,138,49,198,24,115,206,57,231,164,82,140,57,230,156,115,14,66,8,161,84,138,49,198,156,115,14,66,8,33,148,140,49,230,156,115,16,66,8,33,132,82,74,198,156,115,16,66,8,33,132,144,82,234,156,115,16,66,8,33,132,16,74,41,157,115,14,66,8,33,132,16,66,41,165,131,16,66,8,33,132,16,74,40,165,164,20,66,8,33,132,16,66,8,169,164,148,66,8,33,132,82,66,40,33,149,148,82,8,33,132,16,66,41,37,164,148,82,10,33,132,82,66,8,161,132,148,82,74,41,133,16,66,8,165,148,146,82,74,41,165,
+	18,74,9,37,132,18,82,41,41,165,20,74,8,33,148,82,74,74,41,165,84,74,9,161,132,18,74,41,37,165,148,82,74,33,132,16,74,41,5,0,0,28,56,0,0,4,24,65,39,25,85,22,97,163,9,23,30,128,66,67,86,2,0,100,0,0,144,162,148,82,41,45,69,130,34,165,24,164,24,75,70,21,115,80,90,138,168,114,12,82,205,169,82,206,32,230,36,150,136,49,132,148,147,84,50,230,20,66,12,66,234,28,117,76,41,6,45,149,24,66,198,24,164,216,114,75,161,115,14,0,0,0,65,0,128,128,144,0,0,3,4,5,51,0,192,224,0,225,115,16,116,2,
+	4,71,27,0,128,32,68,102,136,68,195,66,112,120,80,9,16,17,83,1,64,98,130,66,46,0,84,88,92,164,93,92,64,151,1,46,232,226,174,3,33,4,33,8,65,44,14,160,128,4,28,156,112,195,19,111,120,194,13,78,208,41,42,117,32,0,0,0,0,0,13,0,240,0,0,144,92,0,17,17,209,204,97,100,104,108,112,116,120,124,128,132,136,140,144,8,0,0,0,0,0,25,0,124,0,0,36,37,64,68,68,52,115,24,25,26,27,28,29,30,31,32,33,34,35,36,1,0,128,0,2,0,0,0,0,32,128,0,4,4,4,0,0,0,0,0,2,0,0,0,4,4,79,103,103,83,0,4,0,0,0,0,0,0,0,0,
+	137,109,229,31,2,0,0,0,123,25,191,226,1,1,0};
+	_EOF
+}
+
+if not $INTERNAL_SDL_MIXER
+then
+  INTERNAL_SDL_MIXER=false
+fi
+
+if $INTERNAL_SDL_MIXER && not $INTERNAL_OGGLIBS
+then
+  INTERNAL_OGGLIBS=false
+elif not $INTERNAL_OGGLIBS
+then
+    $echo_n "Checking whether Ogg libs need to be linked explicitly... ${nobr}"
+    write_ogg
+    cat >> test.cc <<-_EOF
+	#include <cstdio>
+	#include "SDL.h"
+	#include "SDL_mixer.h"
+	#include <vorbis/codec.h>
+	#include <vorbis/vorbisfile.h>
+	const int ol=4008;
+	int main(int argc, char**argv){using namespace std;FILE*f=fopen("o.ogg","wb");if(!f||fwrite(o,1,ol,f)!=ol)return 127;fclose(f);
+	OggVorbis_File vf;f=fopen("o.ogg","rb");int n=ov_open(f,&vf,0,0)<0;fclose(f);return n;}
+	_EOF
+    EXPLICIT_OGGLIBS=true
+    $CXX `$SDL_CONFIG --cflags` `$SDL_CONFIG --libs` -lSDL_mixer test.cc -o mtest >/dev/null 2>&1
+    case $? in
+    0) echo "no"; EXPLICIT_OGGLIBS=false ;;
+    *) echo "yes" ;;
+    esac
+fi
+
+if not $INTERNAL_BZIP2
+then
+  INTERNAL_BZIP2=false
+fi
+
+if $INTERNAL_SMPEG
+then
+    SMPEG_CONFIG=./extlib/bin/smpeg-config
+else
+    $echo_n "Checking for system libsmpeg... ${nobr}"
+    VER=`($SMPEG_CONFIG --version) 2>/dev/null`
+    if [ -n "$VER" ]
+    then echo "yes"
+    else echo "no"
+	INTERNAL_SMPEG=true
+	SMPEG_CONFIG=./extlib/bin/smpeg-config
+    fi
+fi
+
+if not $INTERNAL_FREETYPE
+then
+    $echo_n "Checking for system Freetype... ${nobr}"
+    VER=`($FREETYPE_CONFIG --ftversion) 2>/dev/null`
+    if [ -z "$VER" ]; then
+	FREETYPE_CONFIG=freetype2-config
+	VER=`($FREETYPE_CONFIG --ftversion) 2>/dev/null`
+	if [ -z "$VER" ]; then
+	    FREETYPE_CONFIG="pkg-config freetype2"
+	    VER=`($FREETYPE_CONFIG --modversion) 2>/dev/null`
+	    if [ -n "$VER" ]; then VER=2; fi
+	fi
+    fi
+    if [ -n "$VER" ]
+    then
+	if [ `echo $VER | awk -F. '{ print $1; }'` -ge 2 ]
+	then echo "yes"
+	else echo "too old"
+	    INTERNAL_FREETYPE=true
+	fi
+    else
+	echo "no"
+	INTERNAL_FREETYPE=true
+    fi
+fi
+
+if $INTERNAL_FREETYPE
+then
+    INTERNAL_SDL_TTF=true
+    FREETYPE_CONFIG=./extlib/bin/freetype-config
+elif not $INTERNAL_SDL_TTF
+then
+  INTERNAL_SDL_TTF=false
+fi
+
+cd ..
+rm -rf .configtest
+
+DEPS=
+MLIB=
+require() {
+    if $1
+    then
+        DEPS="$DEPS \$($2)"
+	[ -n "$MLIB" ] && MLIB="$MLIB, "
+	MLIB="$MLIB$3"
+    fi
+}
+require $INTERNAL_SDL       internal_sdl       SDL
+require $INTERNAL_LIBPNG    internal_png       libpng
+require $INTERNAL_LIBJPEG   internal_jpeg      libjpeg
+require $INTERNAL_SDL_IMAGE internal_sdl_image SDL_image
+require $INTERNAL_OGGLIBS   internal_ogglibs   "libogg, libvorbis"
+require $INTERNAL_SDL_MIXER internal_sdl_mixer SDL_mixer
+require $INTERNAL_BZIP2     internal_bzip2     libbz2
+require $INTERNAL_SMPEG     internal_smpeg     libsmpeg
+require $INTERNAL_FREETYPE  internal_freetype  Freetype
+require $INTERNAL_SDL_TTF   internal_sdl_ttf   SDL_ttf
+
+genlink() {
+    if $1
+    then
+        eval "LINK$2=\"extlib/lib/lib$2\\\$(LIBSUFFIX)\""
+    else
+        eval "LINK$2=-l$2"
+    fi
+}
+genlink $INTERNAL_LIBPNG    z
+genlink $INTERNAL_LIBPNG    png
+genlink $INTERNAL_LIBJPEG   jpeg
+genlink $INTERNAL_SDL_IMAGE SDL_image
+genlink $INTERNAL_OGGLIBS   ogg
+genlink $INTERNAL_OGGLIBS   vorbis
+genlink $INTERNAL_OGGLIBS   vorbisfile
+genlink $INTERNAL_SDL_MIXER SDL_mixer
+genlink $INTERNAL_BZIP2     bz2
+genlink $INTERNAL_SDL_TTF   SDL_ttf
+
+if [ -n "$MLIB" -a ! -d extlib ]
+then
+    cat <<_EOF
+
+Unable to locate the following dependencies:
+
+  $MLIB
+
+The simplest way to solve this problem is to download the dependencies
+pack from the same place that you acquired this source code.
+Alternatively, you could install the appropriate development packages
+for your operating system.
+_EOF
+    exit
+fi
+
+
+$echo_n "Writing Makefile... ${nobr}"
+
+case "$SYS" in
+Posix)  EXE=     ; OBJ=.o ; LIB=.a ; W32= ;;
+MacOSX) EXE=     ; OBJ=.o ; LIB=.a ; W32=
+        CFLAGSEXTRA="-fpascal-strings $CFLAGSEXTRA";;
+MinGW)  EXE=.exe ; OBJ=.o ; LIB=.a ; W32=true ;;
+*) echo "error: unsupported system";
+   exit 1 ;;
+esac
+
+cat > Makefile <<_EOF
+# -*- makefile-gmake -*-
+#
+# THIS IS A GENERATED FILE - changes will not be kept if configure is
+# run again.  If you wish to customise it, please be sure to give your
+# version a different filename.
+#
+# Makefile for ONScripter-EN
+
+WIN32=$W32
+OBJSUFFIX=$OBJ
+LIBSUFFIX=$LIB
+EXESUFFIX=$EXE
+
+PREFIX ?= $PREFIX
+
+# Extra handling for internal libraries.
+EXTRADEPS=$DEPS
+# NEWLDFLAGS was added because I wanted a quick place to put extra linker arguments while I was updating dependencies -Galladite 2023-2-11
+# Need to remove pulse audio support from whatever is using it - either that or conditionally include this based on build target
+NEWLDFLAGS = -lpulse-simple -lpulse
+INTERNAL_SDL=\$(findstring true,$INTERNAL_SDL)
+INTERNAL_SMPEG=\$(findstring true,$INTERNAL_SMPEG)
+INTERNAL_LIBPNG=\$(findstring true,$INTERNAL_LIBPNG)
+INTERNAL_LIBJPEG=\$(findstring true,$INTERNAL_LIBJPEG)
+INTERNAL_OGGLIBS=\$(findstring true,$INTERNAL_OGGLIBS)
+SDL_CONFIG=$SDL_CONFIG
+
+export PATH     :=   \$(shell pwd)/extlib/bin:\$(PATH)
+export CFLAGS   := -I\$(shell pwd)/extlib/include \$(CFLAGS) $VECFLAGS
+export CPPFLAGS := -I\$(shell pwd)/extlib/include \$(CPPFLAGS) $VECFLAGS
+export LDFLAGS  := -L\$(shell pwd)/extlib/lib \$(LDFLAGS) $EXTRALDFLAGS
+export CSTD     := -std=c99
+export CXXSTD   := $CXXSTD
+
+export CC      := $CC
+export CXX     := $CXX
+export MAKE    := $MAKE
+export GNUMAKE := $MAKE
+export AR      := $AR
+export RANLIB  := $RANLIB
+
+# ONScripter variables
+OSCFLAGSEXTRA = $CFLAGSEXTRA \$(OSCTMPFLAGS)
+INCS = -Iextlib/include \$(shell \$(SDL_CONFIG) --cflags)      \\
+                        \$(shell $SMPEG_CONFIG --cflags)    \\
+                        \$(shell $FREETYPE_CONFIG --cflags) \\
+       \$(shell [ -d extlib/include/SDL ] && echo -Iextlib/include/SDL)
+_EOF
+
+
+case "$SYS" in 
+MinGW)
+
+if $INTERNAL_SDL
+then
+  MY_SDL_LIBS="\$(filter-out -lSDLmain,\$(shell \$(SDL_CONFIG) --static-libs))"
+else
+  MY_SDL_LIBS="\$(shell \$(SDL_CONFIG) --static-libs)"
+fi
+
+#cp -p tools/libgnurx/libgnurx*.dll tools
+
+cat >> Makefile <<_EOF
+
+GNURX_DIR = tools/libgnurx
+TOOL_EXTRA_INCS = -I\$(GNURX_DIR)
+TOOL_EXTRADEPS = \$(GNURX_DIR)/libgnurx.a
+TOOL_EXTRA_CLEAN = clean_libgnurx
+TOOL_LIBS = -Lextlib/lib \\
+            -static -Wl,--start-group \\
+            $LINKjpeg $LINKpng $LINKz \\
+            -L\$(GNURX_DIR) -lgnurx \\
+            $LINKbz2 -Wl,--end-group
+LIBS = -Lextlib/lib \\
+       -static -Wl,--start-group \\
+       $MY_SDL_LIBS \\
+       $LINKSDL_ttf \\
+       \$(shell $SMPEG_CONFIG --libs) \$(shell $FREETYPE_CONFIG --libs) \\
+       $LINKSDL_image $LINKjpeg $LINKpng $LINKz \\
+       $LINKSDL_mixer $LINKogg $LINKvorbis $LINKvorbisfile \\
+       $LINKbz2 -Wl,--end-group
+
+# Remove -DUSE_MESSAGEBOX if you don't want Windows dialog boxes
+DEFS = -DWIN32 -DUSE_MESSAGEBOX -DUSE_OGG_VORBIS
+EXT_OBJS = SDL_win32_main.o win32rc.o $GFX_EXT_OBJS
+
+_EOF
+
+;;
+MacOSX)
+cat >> Makefile <<_EOF
+
+TOOL_LIBS = -Lextlib/lib \\
+            $LINKjpeg $LINKpng \\
+            $LINKbz2 -lm
+LIBS = -Lextlib/lib \\
+       \$(shell \$(SDL_CONFIG) --static-libs)         \\
+       \$(shell $SMPEG_CONFIG --libs)              \\
+       $LINKSDL_ttf \$(shell $FREETYPE_CONFIG --libs) \\
+       $LINKSDL_image $LINKjpeg $LINKpng              \\
+       $LINKSDL_mixer $LINKogg $LINKvorbis $LINKvorbisfile \\
+       $LINKbz2 -lm -framework QuickTime -framework CoreFoundation
+
+DEFS = -DMACOSX -DUTF8_CAPTION -DUTF8_FILESYSTEM -DUSE_OGG_VORBIS
+NO_DEFAULT_ICON = true
+EXT_OBJS = $GFX_EXT_OBJS
+
+_EOF
+;;
+Posix)
+case "$POSIX" in
+Linux)   INTERNAL_LDFLAGS="-ldl -lasound" ;;
+FreeBSD) INTERNAL_LDFLAGS="-L/usr/X11R6/lib -lX11 -lXi -lXrandr -liconv"
+         EXTRA_DEPS="-DCONST_ICONV" ;;
+NetBSD)  INTERNAL_LDFLAGS="\$(foreach x,11 i randr ext render,/usr/X11R6/lib/libX\$(x).a) -lossaudio" ;;
+OpenBSD) INTERNAL_LDFLAGS="-L/usr/X11R6/lib -lX11 -lXi -lXrandr -lossaudio" ;;
+Solaris) INTERNAL_LDFLAGS="-lX11 -lXext"
+         EXTRA_DEPS="-DCONST_ICONV" ;;
+esac
+cat >> Makefile <<_EOF
+
+TOOL_LIBS = -Lextlib/lib \\
+            $LINKjpeg $LINKpng $LINKz \\
+            $LINKbz2
+LIBS = -Lextlib/lib \\
+       $LINKSDL_image \$(if \$(findstring true,$INTERNAL_SDL_IMAGE),$LINKjpeg $LINKpng $LINKz) \\
+       $LINKSDL_mixer \$(if \$(or \$(findstring true,$INTERNAL_SDL_MIXER),\$(findstring true,$EXPLICIT_OGGLIBS)),$LINKvorbisfile $LINKvorbis $LINKogg) \\
+       \$(shell \$(SDL_CONFIG) --libs)      \\
+       \$(shell $SMPEG_CONFIG --libs)    \\
+       $LINKSDL_ttf \$(shell $FREETYPE_CONFIG --libs) \\
+       $LINKbz2 \$(if \$(findstring true,$INTERNAL_SDL),$INTERNAL_LDFLAGS)
+
+DEFS = -DLINUX -DUSE_OGG_VORBIS $EXTRA_DEPS
+EXT_OBJS = $GFX_EXT_OBJS
+_EOF
+;; esac
+if [ "$POSIX" = "Linux" ]
+then cat >> Makefile <<_EOF
+
+SDL_MIXER_FLAGS = --enable-music-native-midi-gpl
+_EOF
+fi
+
+cat >> Makefile <<_EOF
+
+.SUFFIXES:
+.SUFFIXES: $OBJ .cpp .h .c
+
+ifdef DEBUG
+OSCFLAGS = -O0 -g -pg -ggdb -pipe -Wpointer-arith $WERROR $STRICT \$(OSCFLAGSEXTRA)
+export LDFLAGS  := -pg \$(LDFLAGS)
+else
+  ifdef PROF
+  OSCFLAGS = -O3 -pg -pipe -Wpointer-arith $WERROR $STRICT \$(OSCFLAGSEXTRA)
+  export LDFLAGS  := -pg \$(LDFLAGS)
+  else
+  OSCFLAGS = -O3 -fomit-frame-pointer -pipe -Wpointer-arith $WERROR $STRICT \$(OSCFLAGSEXTRA)
+  endif
+endif
+
+TARGET ?= onscripter-en
+
+binary: \$(TARGET)$EXE
+
+.PHONY: all clean distclean tools binary
+all: \$(TARGET)$EXE tools
+
+SDLOTHERCONFIG := $SDLOTHERCONFIG
+OTHERCONFIG := $OTHERCONFIG
+
+OTHER_OBJS =
+RC_HDRS =
+_EOF
+
+if [ "$SYS" != "MinGW" ] && [ "$SYS" != "MacOSX" ]; then
+cat >> Makefile <<_EOF
+
+ICONFILE ?= ons-en.png
+RESOURCES ?= \$(ICONFILE) =icon.png
+OTHER_OBJS = resources\$(OBJSUFFIX)
+RC_HDRS = resources.h
+RCCLEAN = resources.cpp embed$EXE \$(OTHER_OBJS)
+
+resources\$(OBJSUFFIX): \$(RC_HDRS)
+
+resources.cpp: embed$EXE \$(filter-out =%,\$(RESOURCES))
+	./embed$EXE \$(patsubst =%,%,\$(RESOURCES)) > \$@
+
+embed$EXE: embed.cpp
+	\$(CXX) \$(CXXSTD) \$< -o \$@
+_EOF
+fi
+
+cat >> Makefile <<_EOF
+
+include Makefile.extlibs
+include Makefile.onscripter
+
+.PHONY: libtoolreplace
+libtoolreplace:
+	@cp \$(ES)/required/freetype-config \$(EB)
+
+clean: pclean \$(CLEAN_TARGETS) libtoolreplace
+distclean: clean pdistclean \$(DISTCLEAN_TARGETS)
+	rm -r -f extlib/bin extlib/lib extlib/include \\
+	         extlib/share extlib/man
+	rm -f Makefile $DISTCLEAN_OTHER
+
+install-bin:
+	./install-sh -c -s \$(TARGET) \$(PREFIX)/bin/\$(TARGET)
+install: install-bin
+uninstall:
+	rm \$(PREFIX)/bin/\$(TARGET)
+_EOF
+
+if [ "$SYS" = "MinGW" ]
+then
+cat >> Makefile <<_EOF
+
+RCFILE ?= onscripter.rc
+WICONFILE ?= ons-en.ico
+RCCLEAN = \$(RCFILE)
+win32rc.o: \$(RCFILE) \$(WICONFILE)
+	windres \$< -o \$@
+
+%.rc: %.rc.in version.h winres.h
+	ver=\`awk '/define VER_NUMBER/ { print $\$3 }' version.h\`; \\
+	y=\`expr substr $\$ver 1 4\`; \\
+	m=\`expr substr $\$ver 5 2\`; mn=\`expr $\$m + 0\`; \\
+	d=\`expr substr $\$ver 7 2\`; dn=\`expr $\$d + 0\`; \\
+	i=\"\$(WICONFILE)\"; \\
+	sed -e "s/@Y@/$\$y/g;s/@0M@/$\$m/g;s/@M@/$\$mn/g;s/@0D@/$\$d/g;s/@D@/$\$dn/g;s%@I@%$\$i%g" \$< > \$@
+
+SDL_win32_main.o: SDL_win32_main.c
+	\$(CC) \$(CSTD) \$(OSCFLAGS) \$(INCS) \$(DEFS) -c \$< -o \$@
+
+\$(GNURX_DIR)/libgnurx.a:
+	\$(MAKE) -C \$(GNURX_DIR) libgnurx.a
+
+.PHONY: clean_libgnurx
+clean_libgnurx:
+	\$(MAKE) -C \$(GNURX_DIR) clean
+
+_EOF
+fi
+
+if $USE_X86_GFX
+then
+cat >> Makefile <<_EOF
+
+graphics_sse2.o: graphics_sse2.cpp graphics_sse2.h graphics_common.h graphics_sum.h graphics_blend.h
+	\$(CXX) \$(CXXSTD) \$(OSCFLAGS) \$(INCS) \$(DEFS) $GFX_SSE2_FLAGS -c \$< -o \$@
+
+graphics_mmx.o: graphics_mmx.cpp graphics_mmx.h graphics_common.h graphics_sum.h
+	\$(CXX) \$(CXXSTD) \$(OSCFLAGS) \$(INCS) \$(DEFS) $GFX_MMX_FLAGS -c \$< -o \$@
+_EOF
+elif $USE_PPC_GFX
+then
+cat >> Makefile <<_EOF
+
+graphics_maltivec.o: graphics_maltivec.cpp graphics_maltivec.h graphics_common.h graphics_sum.h
+	\$(CXX) \$(CXXSTD) \$(OSCFLAGS) \$(INCS) \$(DEFS) $GFX_MALTIVEC_FLAGS -c \$< -o \$@
+_EOF
+fi
+
+
+cat >> Makefile <<_EOF
+
+.PHONY: dist
+dist:
+	svn export . onscripter-en-$VERSION
+	tar cf onscripter-en-$VERSION-fullsrc.tar onscripter-en-$VERSION
+	rm -rf onscripter-en-$VERSION/extlib onscripter-en-$VERSION/win_dll \\
+			onscripter-en-$VERSION/tools/libgnurx
+	tar cf onscripter-en-$VERSION-src.tar onscripter-en-$VERSION
+	bzip2 -9 onscripter-en-$VERSION-*src.tar
+	rm -rf onscripter-en-$VERSION
+_EOF
+
+echo "done"
+echo "Now run \"$MAKE\" to build ONScripter-EN."

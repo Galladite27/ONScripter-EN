@@ -15,7 +15,8 @@ BUGS OR MISFEATURES
 * Using rgosub causes rmenu not to be displayed during select command.
   (high on priority list)
 
-* The windows build is failing. Working on this.
+* The windows build uses system libraries (but can still build a
+  portable executable)
 
 FEATURES REQUESTED
   
