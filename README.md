@@ -12,7 +12,9 @@ A number of cross-platform clones exist, and Ogapee's [ONScripter](https://onscr
 - ONScripter-EN no longer worked on modern macOS
 - ONScripter-EN accrued a set of bugs on Windows related to the initial libraries becoming outdated, *etc*.
 
-For a long time, chaoskaiser72 of [kaisernet](https://kaisernet.org/) had been offering cash bounties related to updating and maintenance of ONScripter-EN.  In 2023, [@Galladite27](https://github.com/Galladite27) took on the task of maintaining ONScripter-EN going forward.  Independently of this, on 1 April 2023 [insani](http://insani.org) came out of its 14-year retirement, and began contributing to the ONScripter-EN codebase shortly thereafter.
+In addition, there was one major bug remaining which prevented saving during choice selections, and there were several missing commands which had been implemented into ONScripter after the English fork's abandonment.
+
+For a long time, chaoskaiser72 of [kaisernet](https://kaisernet.org/) had been offering cash bounties related to updating and maintenance of ONScripter-EN.  On 8 February 2023, [@Galladite27](https://github.com/Galladite27) took on the task of maintaining ONScripter-EN going forward.  Independently of this, on 1 April 2023 [insani](http://insani.org) came out of its 14-year retirement, and began contributing to the ONScripter-EN codebase shortly thereafter.
 
 We have now come full circle.  In the words of *True Remembrance*:
 
