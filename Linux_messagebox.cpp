@@ -1,8 +1,27 @@
-/* See LICENSE file for copyright and license details.
+/* -*- C++ -*-
  *
- * TODO: replace the code to unselect when leaving by code
- * to unselect when window focus is lost.
- * Make pointer selection possible.
+ *  Linux_messagebox.cpp - yesnobox and okaycancelbox implementation for Linux systems (and maybe other systems which use X11)
+ *
+ *  Modified from https://github.com/flimberger/smessage
+ *
+ *  Copyright (c) 2012, Florian Limberger <flo@snakeoilproductions.net>
+ *
+ *  Permission to use, copy, modify, and/or distribute this software for any
+ *  purpose with or without fee is hereby granted, provided that the above
+ *  copyright notice and this permission notice appear in all copies.
+ *
+ *  THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+ *  WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+ *  MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ *  ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+ *  WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ *  ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+ *  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ *
+ *  Copyright (c) 2023 Galladite
+ *
+ *  galladite@yandex.com
+ *
  */
 #include <errno.h>
 #include <locale.h>
