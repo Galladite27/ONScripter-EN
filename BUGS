@@ -30,3 +30,19 @@ FEATURES REQUESTED
 
 * Allow the switching of font files mid-line, for example through the
   use of a !fX command, similar to the !wX command.
+
+TODO LIST
+
+* Continue working on Windows support with insani
+  - Building with internal libraries
+  - Integrating custom configure and Makefile into main ones
+    * Start by buxfixing the failing checks and tests, primarily
+      checks for system libraries
+    * Fix the 32/64bit assumptions - broken config.guess?
+    * Use -Wall instead of -Werror - there are many "errors" which
+      don't end up breaking anything
+* rmenu-related bugfixing
+* Porting additional commands from nscripter?
+* "Requested features"
+* Implement a fix for the PDA build for the sake of completion
+* Redo the "dist" target to make building releases easier
