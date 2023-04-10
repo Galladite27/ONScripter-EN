@@ -31,7 +31,7 @@ USE_CPU_GFX=true
 VECTORIZE=false
 VECTORIZE_LEVEL=0
 FASTMATH=-ffast-math
-WERROR="-Werror"
+WERROR=""
 CXXSTD="-std=c++98"
 STRICT=
 INTERNAL_LIBS=false
@@ -88,6 +88,9 @@ do
         STRICT="-Wall -Wextra -Wno-unused-parameter -Wvla" ;;
       --pedantic | -pedantic)
         STRICT+=" -pedantic" ;;
+      --werror | -werror)
+        WERROR="-Werror"
+        ;;
       --no-werror | -no-werror)
         WERROR=""
         ;;
