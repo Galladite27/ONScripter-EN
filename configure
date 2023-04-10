@@ -880,7 +880,7 @@ PREFIX ?= $PREFIX
 EXTRADEPS=$DEPS
 # NEWLDFLAGS was added because I wanted a quick place to put extra linker arguments while I was updating dependencies -Galladite 2023-2-11
 # Need to remove pulse audio support from whatever is using it - either that or conditionally include this based on build target
-NEWLDFLAGS = -lpulse-simple -lpulse -lX11
+NEWLDFLAGS = -lpulse-simple -lpulse
 INTERNAL_SDL=\$(findstring true,$INTERNAL_SDL)
 INTERNAL_SMPEG=\$(findstring true,$INTERNAL_SMPEG)
 INTERNAL_LIBPNG=\$(findstring true,$INTERNAL_LIBPNG)
@@ -972,7 +972,7 @@ _EOF
 ;;
 Posix)
 case "$POSIX" in
-Linux)   INTERNAL_LDFLAGS="-ldl -lasound" ;;
+Linux)   INTERNAL_LDFLAGS="-ldl -lasound -lX11" ;;
 FreeBSD) INTERNAL_LDFLAGS="-L/usr/X11R6/lib -lX11 -lXi -lXrandr -liconv"
          EXTRA_DEPS="-DCONST_ICONV" ;;
 NetBSD)  INTERNAL_LDFLAGS="\$(foreach x,11 i randr ext render,/usr/X11R6/lib/libX\$(x).a) -lossaudio" ;;
@@ -1035,12 +1035,16 @@ OTHER_OBJS =
 RC_HDRS =
 _EOF
 
+if [ "$POSIX" = "Linux" ]; then
+    OTHER_OBJS="Linux_messagebox\$(OBJSUFFIX)"
+fi
+
 if [ "$SYS" != "MinGW" ] && [ "$SYS" != "MacOSX" ]; then
 cat >> Makefile <<_EOF
 
 ICONFILE ?= ons-en.png
 RESOURCES ?= \$(ICONFILE) =icon.png
-OTHER_OBJS = resources\$(OBJSUFFIX)
+OTHER_OBJS = resources\$(OBJSUFFIX) $OTHER_OBJS
 RC_HDRS = resources.h
 RCCLEAN = resources.cpp embed$EXE \$(OTHER_OBJS)
 
