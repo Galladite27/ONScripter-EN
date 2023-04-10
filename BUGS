@@ -18,6 +18,9 @@ BUGS OR MISFEATURES
 * The windows build uses system libraries (but can still build a
   portable executable)
 
+* Still need to disable pulse audio support on whatever is requiring
+  it for the Linux build
+
 FEATURES REQUESTED
   
 * Allow the specification of a "fallback" font to use for characters

@@ -62,15 +62,16 @@
 
 extern SDL_TimerID timer_bgmfade_id;
 extern "C" Uint32 SDLCALL bgmfadeCallback( Uint32 interval, void *param );
+int message_main(int argc, char **argv);
 
 int ONScripterLabel::yesnoboxCommand()
 {
 //Mion: Currently we only support dialog boxes on Windows and Mac OS X.
 //      Any ideas on making dialog boxes for Linux etc.?
-#if !defined(MACOSX) && !(defined(WIN32) && defined(USE_MESSAGEBOX))
-    if (!answer_dialog_with_yes_ok)
-        return RET_NOMATCH;
-#endif
+//#if !defined(MACOSX) && !(defined(WIN32) && defined(USE_MESSAGEBOX))
+//    if (!answer_dialog_with_yes_ok)
+//        return RET_NOMATCH;
+//#endif
 
     bool is_yesnobox = false;
     if (script_h.isName( "yesnobox" )){
@@ -83,7 +84,7 @@ int ONScripterLabel::yesnoboxCommand()
     script_h.readVariable();
     script_h.pushVariable();
     const char *buf = script_h.readStr();
-    char *msg = new char[strlen(buf)+1];
+    char *msg = new char[strlen(buf)+2]; // Changed from +1 to +2 to accommodate for Linux fix
     sprintf(msg,"%s",buf);
     const char *title = script_h.readStr();
     int res = 1;
@@ -111,11 +112,20 @@ int ONScripterLabel::yesnoboxCommand()
             pwin = info.window;
         res = MessageBox(pwin, msg, title, mb_type);
         res = ((res == IDYES) || (res == IDOK)) ? 1 : 0;
+#elif defined(LINUX)
+        strncat(msg, "\n", 1); // May cause undefined behaviour? How large is msg?
+                               // This is used in order to prevent a... wierd... bug -Galladite 2023-4-10
+        char *flag = (char *)(is_yesnobox ? "-y" : "-o");
+        char *args[3] = {(char *)title, flag, (char *)msg}; // Preparing args - the reason it is done like this is that the message box system is adapted from a command-line application. It could be made simpler, but it works for now.
+        res = message_main(2, args);
+
+        printf("Result: %d\n", res);
+        printf("Debug note: a segfault will probably occur after the script closes successfully. This is expected behaviour.\n");
 #endif
     }
     script_h.setInt( &script_h.pushed_variable, res );
-    fprintf(stderr,"Got dialog '%s': '%s', returned value of %d\n",
-            title, msg, res);
+    //fprintf(stderr,"Got dialog '%s': '%s', returned value of %d\n",
+    //        title, msg, res);
     delete[] msg;
 
     return RET_CONTINUE;
