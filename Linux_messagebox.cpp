@@ -100,7 +100,7 @@ static uint margin = 10;
 /* appearance */
 static char *selbgcolor   = "#770000";
 static char *selfgcolor   = "#eeeeee";
-static char *normbgcolor  = "#eeeeee";
+static char *normbgcolor  = "#ffbbbb";
 static char *normfgcolor  = "#000000";
 static char *pressbgcolor = "#770000";
 static char *pressfgcolor = "#eeeeee";

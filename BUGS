@@ -21,6 +21,9 @@ BUGS OR MISFEATURES
 * Still need to disable pulse audio support on whatever is requiring
   it for the Linux build
 
+* Various bugs related to the new Linux pop-ups (plus the backend
+  code isn't nice to look at)
+
 FEATURES REQUESTED
   
 * Allow the specification of a "fallback" font to use for characters
@@ -33,6 +36,8 @@ FEATURES REQUESTED
 
 * Allow the switching of font files mid-line, for example through the
   use of a !fX command, similar to the !wX command.
+
+* Red borders for the Linux pop-ups
 
 TODO LIST
 
