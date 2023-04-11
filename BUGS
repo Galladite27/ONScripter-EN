@@ -39,6 +39,8 @@ FEATURES REQUESTED
 
 * Red borders for the Linux pop-ups
 
+* UTF-8 suport bringing in from onscripter-insani
+
 TODO LIST
 
 * Continue working on Windows support with insani
@@ -54,3 +56,11 @@ TODO LIST
 * "Requested features"
 * Implement a fix for the PDA build for the sake of completion
 * Redo the "dist" target to make building releases easier
+* Bring over UTF-8 suport from onscripter-insani
+
+COMPLETED
+
+* Updated dependencies
+* Fix to allow saving and loading game during choice selections
+* Windows builds, plus some compilation changes
+* yesnobox and okcancelbox implementation for Linux
