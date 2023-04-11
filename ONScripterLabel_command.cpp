@@ -121,14 +121,7 @@ int ONScripterLabel::yesnoboxCommand()
 #elif defined(LINUX)
         strncat(msg, "\n", 1); // This is used in order to prevent a... wierd... bug -Galladite 2023-4-10
 
-        if (strlen(msg) < 4096) { // Current buffer size in Linux_messagebox.cpp
-            res = message_main(is_yesnobox, (char *)title, (char *)msg);
-        } else {
-            fprintf(stderr, "Error: message box could not be created: message larger than 4094 characters");
-            if (!answer_dialog_with_yes_ok) {
-                return RET_NOMATCH;
-            }
-        }
+        res = message_main(is_yesnobox, (char *)title, (char *)msg);
 
         printf("Debug note: a segfault will probably occur after the script closes successfully. This is expected behaviour.\n");
 #endif

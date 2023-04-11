@@ -44,7 +44,7 @@ enum {
 	CANCEL,
 	BUTTONS,
 
-	BUFSIZE = 4096
+	BUFSIZE = 2048
 };
 
 typedef unsigned int	uint;

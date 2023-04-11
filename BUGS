@@ -23,6 +23,8 @@ BUGS OR MISFEATURES
 
 * Potential bugs related to the new Linux pop-ups? This feature needs
   a good dose of "testing" ;)
+  \--> One interesting point is that UTF-8 characters are already
+       displayed properly by this.
 
 FEATURES REQUESTED
   
