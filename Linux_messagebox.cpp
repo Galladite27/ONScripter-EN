@@ -145,43 +145,39 @@ static Bool	windowactive;
 static Atom	wmdelmsg;
 
 int
-message_main(int argc, char *argv[])
+message_main(int mode, char *title_pre, char *message_pre)
 {
 	int	i;
 	FILE	*fin;
 
-	title = argv[0];
-        argv++;
+        title = title_pre;
+	message = (char *) malloc(BUFSIZE);
+	strcpy(message, message_pre);
 
-	/* TODO options:
-	 * options to force geometry
-         */
-	for (i = 0; i < argc; i++) {
-		if (!strcmp(argv[i], "-m")) {   /* message box mode */
-			yestext = "OK";
-			selfgcolor   = "#000000";
-		}
-		else if (!strcmp(argv[i], "-o")) {   /* okay / cancel mode */
+	// Modes: 0 = okaycancelbox
+	//        1 = yesnobox
+	//        2 = messagebox
+
+	switch (mode) {
+		case 0:
 			yestext = "OK";
 			notext = "Cancel";
 			confirm = True;
-		}
-		else if (!strcmp(argv[i], "-y")) {   /* yes / no mode */
+		case 1:
 			yestext = "Yes";
 			notext = "No";
 			confirm = True;
-		}
-		else
-			break;
+		case 2:
+			yestext = "OK";
+			selfgcolor   = "#000000";
 	}
 
-	message = (char *) malloc(BUFSIZE);
-        strcpy(message, argv[i]);
 
+        printf("Mode: %d Title: %s Message: %s\n", mode, title, message);
 	setup();
-        int final_return = run();
-        cleanup();
-        return(final_return);
+	int final_return = run();
+	cleanup();
+	return(final_return);
 
 	/* not reached */
 	return 0;
@@ -599,15 +595,15 @@ run(void)
 				break;
 		case KeyPress:
 			if(int handlekey_return = handlekey(&e))
-                            return(handlekey_return - 1);
+				return(handlekey_return - 1);
 			break;
 		case ButtonPress:
 			buttonpress(&e);
 			break;
 		case ButtonRelease:
-                        if(int handlekey_return = buttonrelease(&e)) {
-			    return((handlekey_return - 1) ? 0 : 1);
-                        }
+			if(int handlekey_return = buttonrelease(&e)) {
+				return((handlekey_return - 1) ? 0 : 1);
+			}
 			break;
 		case MotionNotify:
 			buttonhover(&e);

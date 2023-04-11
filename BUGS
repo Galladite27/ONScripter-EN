@@ -21,8 +21,8 @@ BUGS OR MISFEATURES
 * Still need to disable pulse audio support on whatever is requiring
   it for the Linux build
 
-* Various bugs related to the new Linux pop-ups (plus the backend
-  code isn't nice to look at)
+* Potential bugs related to the new Linux pop-ups? This feature needs
+  a good dose of "testing" ;)
 
 FEATURES REQUESTED
   
