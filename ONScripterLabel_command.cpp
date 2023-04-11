@@ -57,6 +57,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #include <errno.h>
+int message_main(int argc, char **argv);
 #endif
 
 #define DEFAULT_CURSOR_WAIT    ":l/3,160,2;cursor0.bmp"
@@ -66,7 +67,6 @@
 
 extern SDL_TimerID timer_bgmfade_id;
 extern "C" Uint32 SDLCALL bgmfadeCallback( Uint32 interval, void *param );
-int message_main(int argc, char **argv);
 
 int ONScripterLabel::yesnoboxCommand()
 {
@@ -117,8 +117,7 @@ int ONScripterLabel::yesnoboxCommand()
         res = MessageBox(pwin, msg, title, mb_type);
         res = ((res == IDYES) || (res == IDOK)) ? 1 : 0;
 #elif defined(LINUX)
-        strncat(msg, "\n", 1); // May cause undefined behaviour? How large is msg?
-                               // This is used in order to prevent a... wierd... bug -Galladite 2023-4-10
+        strncat(msg, "\n", 1); // This is used in order to prevent a... wierd... bug -Galladite 2023-4-10
         char *flag = (char *)(is_yesnobox ? "-y" : "-o");
         char *args[3] = {(char *)title, flag, (char *)msg}; // Preparing args - the reason it is done like this is that the message box system is adapted from a command-line application. It could be made simpler, but it works for now.
         res = message_main(2, args);
