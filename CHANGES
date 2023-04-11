@@ -1,3 +1,8 @@
+2023-04-11
+  Linux now has pop-up message boxes for the yesnobox and okcancelbox
+  commands, to a point where I'm happy with their implementation and
+  stability.
+
 2023-04-09
   The numbering scheme for releases is slightly off, but the next time
   I publish a release I'll make sure they're all right.
