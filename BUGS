@@ -27,6 +27,8 @@ BUGS OR MISFEATURES
        displayed properly by this.
   \--> Backtick (used for english text) not removed
        \--> Also seems to be the case in Windows
+  \--> Still don't know why it causes a segfault, but only after the
+       script exits successfully??
 
 FEATURES REQUESTED
   

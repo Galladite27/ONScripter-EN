@@ -878,9 +878,6 @@ PREFIX ?= $PREFIX
 
 # Extra handling for internal libraries.
 EXTRADEPS=$DEPS
-# NEWLDFLAGS was added because I wanted a quick place to put extra linker arguments while I was updating dependencies -Galladite 2023-2-11
-# Need to remove pulse audio support from whatever is using it - either that or conditionally include this based on build target
-NEWLDFLAGS = -lpulse-simple -lpulse
 INTERNAL_SDL=\$(findstring true,$INTERNAL_SDL)
 INTERNAL_SMPEG=\$(findstring true,$INTERNAL_SMPEG)
 INTERNAL_LIBPNG=\$(findstring true,$INTERNAL_LIBPNG)
