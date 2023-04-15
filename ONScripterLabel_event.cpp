@@ -541,6 +541,7 @@ bool ONScripterLabel::waitEvent( int count )
         if ( rgosub_label ) {
             system_menu_mode = SYSTEM_NULL;
             char *tmp = script_h.rgosub_wait_pos[script_h.cur_rgosub_wait];
+            // This breaks if using rgosub and entering the menu from a choice selection
             gosubReal( rgosub_label, tmp, false, clickstr_state,
                        script_h.rgosub_wait_1byte[script_h.cur_rgosub_wait]);
             script_h.cur_rgosub_wait = script_h.num_rgosub_waits = 0;

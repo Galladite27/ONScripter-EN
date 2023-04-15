@@ -22,9 +22,11 @@ BUGS OR MISFEATURES
   it for the Linux build
 
 * Potential bugs related to the new Linux pop-ups? This feature needs
-  a good dose of "testing" ;)
+  a good dose of testing
   \--> One interesting point is that UTF-8 characters are already
        displayed properly by this.
+  \--> Backtick (used for english text) not removed
+       \--> Also seems to be the case in Windows
 
 FEATURES REQUESTED
   
