@@ -18,9 +18,6 @@ BUGS OR MISFEATURES
 * The windows build uses system libraries (but can still build a
   portable executable)
 
-* Still need to disable pulse audio support on whatever is requiring
-  it for the Linux build
-
 * Potential bugs related to the new Linux pop-ups? This feature needs
   a good dose of testing
   \--> One interesting point is that UTF-8 characters are already
