@@ -514,7 +514,6 @@ int ScriptParser::returnCommand()
     // variable like "returnMoreCount"?
     if(returnMoreFlag) {
         int line = current_label_info.start_line + current_line - 1;
-        printf("Line: %d\n", line);
 
         char *buf = script_h.getAddressByLine( line );
         current_label_info = script_h.getLabelByAddress( buf );

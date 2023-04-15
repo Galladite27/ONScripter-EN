@@ -1,3 +1,6 @@
+2023-05-16
+  New fix for select command, allowing it to use rgosub-defined rmenus
+
 2023-04-11
   Linux now has pop-up message boxes for the yesnobox and okcancelbox
   commands, to a point where I'm happy with their implementation and

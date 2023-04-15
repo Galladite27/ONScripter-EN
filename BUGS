@@ -9,23 +9,12 @@ BUGS OR MISFEATURES
 * PDA build will be broken; screen ratio cannot be set properly when
   using custom resolutions
 
-* Right-clicking during a clickwait doesn't check for if rgosub is
-  enabled.
-
-* Using rgosub causes rmenu not to be displayed during select command.
-  (high on priority list)
-
 * The windows build uses system libraries (but can still build a
   portable executable)
 
-* Potential bugs related to the new Linux pop-ups? This feature needs
-  a good dose of testing
-  \--> One interesting point is that UTF-8 characters are already
-       displayed properly by this.
-  \--> Backtick (used for english text) not removed
-       \--> Also seems to be the case in Windows
-  \--> Still don't know why it causes a segfault, but only after the
-       script exits successfully??
+* Linux pop-ups cause a segfault, but only after the script exits
+  successfully. This behaviour is the same even when running several
+  pop-ups one after another.
 
 FEATURES REQUESTED
   
@@ -54,7 +43,6 @@ TODO LIST
     * Fix the 32/64bit assumptions - broken config.guess?
     * Use -Wall instead of -Werror - there are many "errors" which
       don't end up breaking anything
-* rmenu-related bugfixing
 * Porting additional commands from nscripter?
 * "Requested features"
 * Implement a fix for the PDA build for the sake of completion
@@ -65,5 +53,6 @@ COMPLETED
 
 * Updated dependencies
 * Fix to allow saving and loading game during choice selections
+* Fix for this fix to allow rgosub to be used in such situations
 * Windows builds, plus some compilation changes
 * yesnobox and okcancelbox implementation for Linux
