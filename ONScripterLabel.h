@@ -11,6 +11,10 @@
  *
  *  UncleMion@gmail.com
  *
+ *  Copyright (c) 2023 Galladite
+ *
+ *  galladite@yandex.com
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
@@ -1076,7 +1080,8 @@ private:
     enum SelectReleaseFlags {
         SELECT_RELEASE_NONE     = 0,
         SELECT_RELEASE_REQUIRED = 1 << 0,
-        SELECT_RELEASE_ENABLED  = 1 << 1
+        SELECT_RELEASE_ENABLED  = 1 << 1,
+        SELECT_RELEASE_RGOSUB   = 1 << 2
     };
     int select_release; // Used to break out of "select" command loops
 

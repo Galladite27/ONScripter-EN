@@ -897,6 +897,7 @@ void ScriptHandler::setCurrent(char *pos, bool nowarn)
 
 void ScriptHandler::pushCurrent( char *pos )
 {
+    printf("Pushed\n");
     // push to use a temporary address for quick buffer parsing
     pushed_current_script = current_script;
     pushed_next_script = next_script;
@@ -906,6 +907,7 @@ void ScriptHandler::pushCurrent( char *pos )
 
 void ScriptHandler::popCurrent()
 {
+    printf("Popped\n");
     current_script = pushed_current_script;
     next_script = pushed_next_script;
 }

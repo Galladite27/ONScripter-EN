@@ -163,7 +163,7 @@ public:
     int roffCommand();
     int rmenuCommand();
     int rgosubCommand();
-    int returnCommand();
+    int returnCommand(); bool returnMoreFlag;
     int pretextgosubCommand();
     int pagetagCommand();
     int numaliasCommand();

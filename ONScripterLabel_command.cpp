@@ -1168,9 +1168,8 @@ int ONScripterLabel::selectCommand()
 
     refreshMouseOverButton();
 
-    // Not being able to save here was an artificial restriction
-    //bool actual_rmode = rmode_flag;
-    //rmode_flag = false;
+    // Not being able to save and here was an artificial restriction;
+    // it was super buggy and so someone disabled it.
     event_mode = WAIT_TEXT_MODE | WAIT_BUTTON_MODE | WAIT_TIMER_MODE;
     select_release |= SELECT_RELEASE_REQUIRED;
     do {
@@ -1185,22 +1184,33 @@ int ONScripterLabel::selectCommand()
         if (select_release & SELECT_RELEASE_ENABLED) {
             select_release = SELECT_RELEASE_NONE;
             return RET_CONTINUE;
+        } else if (select_release & SELECT_RELEASE_RGOSUB) {
+            break;
         }
 
-        // Allows for saving during select -Galladite 2023-2-18
-        // This fix allows for saving directly on the choice instead
-        // of at the start of that page
-
-        //if (current_button_state.button == -1) {
-        //    system_menu_mode = SYSTEM_MENU;
-        //    saveSaveFile(-1);
-        //    executeSystemCall();
-        //    system_menu_mode = SYSTEM_NULL;
-        //}
     } while ( !current_button_state.valid_flag ||
             (current_button_state.button <= 0) );
-    //rmode_flag = actual_rmode;
-    select_release = SELECT_RELEASE_NONE;
+    if (select_release & SELECT_RELEASE_RGOSUB) {
+        // List of what needs to happen:
+        // Remove the select_release flags
+        select_release = SELECT_RELEASE_NONE;
+        // Clean up buttons
+        deleteButtonLink();
+
+        // Call to gosubReal
+        returnMoreFlag = true; // Makes the return shift back 1 line
+                               // to the selection
+        gosubReal( rgosub_label, select_label_info.next_script );
+
+        // Final cleanup
+        deleteSelectLink();
+        newPage( true );
+        // return
+        return RET_CONTINUE;
+
+    } else {
+        select_release = SELECT_RELEASE_NONE;
+    }
 
     if ( selectvoice_file_name[SELECTVOICE_SELECT] )
         playSound(selectvoice_file_name[SELECTVOICE_SELECT],
