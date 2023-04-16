@@ -545,12 +545,10 @@ bool ONScripterLabel::waitEvent( int count )
         if ( rgosub_label ) {
             system_menu_mode = SYSTEM_NULL;
             char *tmp = script_h.rgosub_wait_pos[script_h.cur_rgosub_wait];
-            // This breaks if using rgosub and entering the menu from a choice selection
             if(select_release & SELECT_RELEASE_REQUIRED) {
                 select_release |= SELECT_RELEASE_RGOSUB;
-                /* This tells the loop to break and call the gosubReal
-                 * manually, among other things
-                 */
+                // This tells the loop to break and call the gosubReal
+                // manually, among other things
                 return true;
             } else {
             gosubReal( rgosub_label, tmp, false, clickstr_state,
