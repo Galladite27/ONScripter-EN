@@ -16,6 +16,9 @@ BUGS OR MISFEATURES
   successfully. This behaviour is the same even when running several
   pop-ups one after another.
 
+* Rgosub+select: rmenu within rmenu triggers the returnMore
+  prematurely - some sort of rgosub queueing system / stack needed
+
 FEATURES REQUESTED
   
 * Allow the specification of a "fallback" font to use for characters
