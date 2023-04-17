@@ -1167,6 +1167,32 @@ int ONScripterLabel::init()
                 fclose(fp);
                 break;
             }
+            else
+            {
+#if defined(WIN32)
+                fclose(fp);
+                free(font_file);
+                font_file = new char[ strlen("C:\\Windows\\Fonts\\msgothic.ttc") + 1 ];
+                strcpy(font_file, "C:\\Windows\\Fonts\\msgothic.ttc");
+                if ((fp = std::fopen(font_file, "rb")) == NULL)
+                {
+                    fclose(fp);
+                    fp = NULL;
+                    delete font_file;
+                    font_file = new char[ strlen("C:\\Windows\\Fonts\\msgothic.ttf") + 1 ];
+                    strcpy(font_file, "C:\\Windows\\Fonts\\msgothic.ttf");
+                    if ((fp = std::fopen(font_file, "rb")) == NULL)
+                    {
+                        fclose(fp);
+                        fp = NULL;
+                    }
+                    fclose(fp);
+                    break;
+                }
+                fclose(fp);
+                break;
+#endif
+            }
         }
         //sprintf( font_file, "%s%s", archive_path->get_path(0), FONT_FILE );
         setStr(&default_font, FONT_FILE);
