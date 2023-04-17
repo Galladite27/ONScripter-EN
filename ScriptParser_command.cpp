@@ -510,6 +510,7 @@ int ScriptParser::returnCommand()
     // Moves back 1 line, to reach the select command again
     // Set in ONScripterLabel_command.cpp before calling gosubReal
     if(last_nest_info->rgosub_jumpback) {
+        last_nest_info->rgosub_jumpback = false;
         int line = current_label_info.start_line + current_line - 1;
 
         char *buf = script_h.getAddressByLine( line );
