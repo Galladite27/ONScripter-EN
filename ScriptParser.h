@@ -163,7 +163,7 @@ public:
     int roffCommand();
     int rmenuCommand();
     int rgosubCommand();
-    int returnCommand(); bool returnMoreFlag;
+    int returnCommand();
     int pretextgosubCommand();
     int pagetagCommand();
     int numaliasCommand();
@@ -277,12 +277,14 @@ protected:
         bool textgosub_flag; // used in textgosub and pretextgosub
         int  rgosub_click_state; // used for rgosub
         bool rgosub_1byte_mode; // used for rgosub
+        bool rgosub_jumpback; // used for rgosub / select
 
         NestInfo()
         : previous(NULL), next(NULL), nest_mode(LABEL),
           next_script(NULL), var_no(0), to(0), step(0),
           textgosub_flag(false),
-          rgosub_click_state(CLICK_NONE), rgosub_1byte_mode(false) {}
+          rgosub_click_state(CLICK_NONE), rgosub_1byte_mode(false),
+          rgosub_jumpback(false) {}
         //pointers previous, next, & next_script do not need to be freed
     } last_tilde;
 

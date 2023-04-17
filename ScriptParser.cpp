@@ -453,7 +453,6 @@ void ScriptParser::resetDefineFlags()
     root_effect_link.duration = 0;
 
     current_mode = DEFINE_MODE;
-    returnMoreFlag = false;
 }
 
 int ScriptParser::open()

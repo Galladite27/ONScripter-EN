@@ -1198,8 +1198,8 @@ int ONScripterLabel::selectCommand()
         deleteButtonLink();
 
         // Call to gosubReal
-        returnMoreFlag = true; // Makes the return shift back 1 line
-                               // to the selection
+        last_nest_info->rgosub_jumpback = true; // Makes the return shift back 1 line
+                                                // to the selection
         gosubReal( rgosub_label, select_label_info.next_script );
 
         // Final cleanup

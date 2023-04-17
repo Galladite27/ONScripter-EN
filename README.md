@@ -2,7 +2,7 @@
 *An enhanced portable open-source NScripter implementation*
 
 ## Last Updated
-15 April 2023
+17 April 2023
 
 ## History
 Naoki Takahashi's [NScripter](https://nscripter.com/) is a popular Japanese game engine used for both commercial and free novel games.  It attained popularity due to its liberal terms of use and relative simplicity.  However, it is closed source software and only available for Windows.

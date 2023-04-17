@@ -506,13 +506,10 @@ int ScriptParser::returnCommand()
             return RET_CONTINUE | RET_EOT;
     }
 
-    // My custom doodads for rmenu -Galladite 2023-5-15
+    // My custom doodads for rmenu -Galladite 2023-4-15
     // Moves back 1 line, to reach the select command again
-    // Breaks minorly if rgosub called within rgosub, but it's really
-    // up to the game's dev to disable right-click during that point
-    // Could possibly be fixed anyway by some sort of cumulative
-    // variable like "returnMoreCount"?
-    if(returnMoreFlag) {
+    // Set in ONScripterLabel_command.cpp before calling gosubReal
+    if(last_nest_info->rgosub_jumpback) {
         int line = current_label_info.start_line + current_line - 1;
 
         char *buf = script_h.getAddressByLine( line );
@@ -520,8 +517,6 @@ int ScriptParser::returnCommand()
         current_line = script_h.getLineByAddress( buf );
         
         script_h.setCurrent( buf );
-        returnMoreFlag = false;
-        printf("Returned more\n");
     }
 
     return RET_CONTINUE;
@@ -1153,6 +1148,7 @@ void ScriptParser::gosubReal( const char *label, char *next_script,
 
     setCurrentLabel( label );
 }
+
 
 int ScriptParser::gosubCommand()
 {

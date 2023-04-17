@@ -1,3 +1,13 @@
+2023-04-17
+  New fix for select + rgosub, meaning that nested calls to the rgosub
+  label no longer cause the select to be skipped
+
+  Put -lpulse and -lpulse-simple back in configure for Linux - I don't
+  know what is depending on them, but it's only happening on my laptop
+
+  Also I changed the date in version.h - I don't know why I thought it
+  was May
+
 2023-05-16
   New fix for select command, allowing it to use rgosub-defined rmenus
 
