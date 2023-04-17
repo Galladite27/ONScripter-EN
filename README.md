@@ -31,6 +31,7 @@ Playing an existing game with ONScripter-EN requires two additional files to be 
   - [Genjyuu Gothic X Monospace/Monospace Bold](http://jikasei.me/font/genjyuu/)
   - [Migu 2M/2M Bold](http://mix-mplus-ipa.osdn.jp/)
   - [Sazanami Gothic](https://osdn.net/projects/efont/releases/)
+  - On Windows Vista+ (and on Windows 2000+ when your default ANSI codepage is set to Japanese/CP932), MS Gothic is used as a fallback font in the case that no default.ttf is detected -- which is to say that if you completely fail to ship a ```default.ttf``` at all with your translation project, you will wind up with MS Gothic on Windows
 
 - Optionally, ```game.id```, a text file containing simply the name of the game.  This is used to identify a separate directory where saved data is stored; unlike the original ONScripter, which places saved games in the game directory, ONScripter-EN does not require games to be kept in a world-writable location.
 
@@ -87,7 +88,7 @@ language japanese
 
 It is recommended that you just set the language once at startup, but you can switch between them during the game if you need to (if you do, and your game uses the built-in menus, be sure to switch back to your primary language before any point at which the player can bring up a menu, or they will probably be very confused).
 
-The default mode is determined by the name of the ONScripter binary (or app bundle, on macOS).  If it is something like ```onscripter-en``` or ```ONScripter-EN.exe```, the default mode will be English; otherwise it will be Japanese (this is intended to allow users to play existing games in an appropriate mode -- if releasing a game yourself, you should use an explicit language command instead of relying on this).  You can also use the command-line option ```--english``` or ```--japanese``` to specify the default mode.\
+The default mode is determined by the name of the ONScripter binary (or app bundle, on macOS).  If it is something like ```onscripter-en``` or ```ONScripter-EN.exe```, the default mode will be English; otherwise it will be Japanese (this is intended to allow users to play existing games in an appropriate mode -- if releasing a game yourself, you should use an explicit language command instead of relying on this).  You can also use the command-line option ```--english``` or ```--japanese``` to specify the default mode.
 
 ## Contact Information
 The author of ONScripter itself is Ogapee, who can be reached through his ONScripter project website:
