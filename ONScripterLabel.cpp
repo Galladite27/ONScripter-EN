@@ -1151,6 +1151,7 @@ int ONScripterLabel::init()
     // ----------------------------------------
     // Initialize font
     delete[] font_file;
+
     if ( default_font ){
         font_file = new char[ strlen(default_font) + 1 ];
         sprintf( font_file, "%s", default_font );
@@ -1172,19 +1173,29 @@ int ONScripterLabel::init()
 #if defined(WIN32)
                 fclose(fp);
                 free(font_file);
-                font_file = new char[ strlen("C:\\Windows\\Fonts\\msgothic.ttc") + 1 ];
-                strcpy(font_file, "C:\\Windows\\Fonts\\msgothic.ttc");
+                font_file = new char[ strlen("default.ttf") + 1 ];
+                strcpy(font_file, "default.ttf");
                 if ((fp = std::fopen(font_file, "rb")) == NULL)
                 {
                     fclose(fp);
                     fp = NULL;
-                    delete font_file;
-                    font_file = new char[ strlen("C:\\Windows\\Fonts\\msgothic.ttf") + 1 ];
-                    strcpy(font_file, "C:\\Windows\\Fonts\\msgothic.ttf");
+                    delete(font_file);
+                    font_file = new char[ strlen("C:\\Windows\\Fonts\\msgothic.ttc") + 1 ];
+                    strcpy(font_file, "C:\\Windows\\Fonts\\msgothic.ttc");
                     if ((fp = std::fopen(font_file, "rb")) == NULL)
                     {
                         fclose(fp);
                         fp = NULL;
+                        delete(font_file);
+                        font_file = new char[ strlen("C:\\Windows\\Fonts\\msgothic.ttf") + 1 ];
+                        strcpy(font_file, "C:\\Windows\\Fonts\\msgothic.ttf");
+                        if ((fp = std::fopen(font_file, "rb")) == NULL)
+                        {
+                            fclose(fp);
+                            fp = NULL;
+                        }
+                        fclose(fp);
+                        break;
                     }
                     fclose(fp);
                     break;
