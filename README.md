@@ -31,7 +31,7 @@ Playing an existing game with ONScripter-EN requires two additional files to be 
   - [Genjyuu Gothic X Monospace/Monospace Bold](http://jikasei.me/font/genjyuu/)
   - [Migu 2M/2M Bold](http://mix-mplus-ipa.osdn.jp/)
   - [Sazanami Gothic](https://osdn.net/projects/efont/releases/)
-  - On Windows Vista+ (and on Windows 2000+ when your default ANSI codepage is set to Japanese/CP932), MS Gothic is used as a fallback font in the case that no default.ttf is detected -- which is to say that if you completely fail to ship a ```default.ttf``` at all with your translation project, you will wind up with MS Gothic on Windows
+  - On Windows Vista+ (and on Windows 2000+ when your default ANSI codepage is set to Japanese/CP932), MS Gothic is used as a fallback font in the case that no ```default.ttf``` is detected -- which is to say that if you completely fail to ship a ```default.ttf``` at all with your translation project, you will wind up with MS Gothic on Windows
 
 - Optionally, ```game.id```, a text file containing simply the name of the game.  This is used to identify a separate directory where saved data is stored; unlike the original ONScripter, which places saved games in the game directory, ONScripter-EN does not require games to be kept in a world-writable location.
 
