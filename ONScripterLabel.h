@@ -76,6 +76,18 @@
 #define MIX_LOOPBGM_CHANNEL0 (ONS_MIX_CHANNELS+3)
 #define MIX_LOOPBGM_CHANNEL1 (ONS_MIX_CHANNELS+4)
 
+#define FONT_DEFAULT_TTF 0
+#define FONT_DEFAULT_TTC 1
+#define FONT_DEFAULT_OTF 2
+#define FONT_DEFAULT_OTC 3
+#define FONT_ARCHIVE_TTF 4
+#define FONT_ARCHIVE_TTC 5
+#define FONT_ARCHIVE_OTF 6
+#define FONT_ARCHIVE_OTC 7
+#define FONT_WIN32_MSGOTHIC_TTC 8
+#define FONT_WIN32_MSGOTHIC_TTF 9
+#define FONT_MACOS_HIRAGINO 10
+
 #if defined(PDA) && !defined(PSP)
 #define DEFAULT_AUDIO_RATE 22050
 #else
@@ -404,6 +416,10 @@ protected:
     //Since some very old onscripters didn't stop at newlines,
     // setting skip_past_newline will help when playing older onscripter games.
     bool skip_past_newline; // don't leave 'click to skip' mode at a newline in text cmds
+
+    // helper function declarations for fonts
+    bool file_exists(const char *fileName);
+    char* create_filepath(DirPaths archive_path, const char* filename);
 
     SDL_keysym transKey(SDL_keysym key, bool isdown);
     void variableEditMode( SDL_KeyboardEvent *event );
