@@ -1,3 +1,8 @@
+2023-04-18
+  Added the ability to load OpenType fonts and TrueType/OpenType font
+  collections.  Also added last-resort fallback system font detection 
+  for Windows (MS Gothic) and macOS (Hiragino Maru Gothic).
+
 2023-04-17
   New fix for select + rgosub, meaning that nested calls to the rgosub
   label no longer cause the select to be skipped
