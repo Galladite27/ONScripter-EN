@@ -27,12 +27,7 @@ As of April 2023, [onscripter-insani](https://github.com/insani-org/onscripter-i
 ## Playing Games
 Playing an existing game with ONScripter-EN requires two additional files to be added to the game directory:
 
-- ```default.ttf```, a monospaced TrueType font.  If you wish to be maximally compatible with Japanese-only NScripter titles, this font must support Japanese glyphs.  The following are canonical options:
-  - [Genjyuu Gothic X Monospace/Monospace Bold](http://jikasei.me/font/genjyuu/)
-  - [Migu 2M/2M Bold](http://mix-mplus-ipa.osdn.jp/)
-  - [Sazanami Gothic](https://osdn.net/projects/efont/releases/)
-  - On Windows Vista+ (and on Windows 2000+ when your default ANSI codepage is set to Japanese/CP932), MS Gothic is used as a fallback font in the case that no ```default.ttf``` is detected -- which is to say that if you completely fail to ship a ```default.ttf``` at all with your translation project, you will wind up with MS Gothic on Windows
-
+- A default font.  See [Fonts](#fonts) subsection below.
 - Optionally, ```game.id```, a text file containing simply the name of the game.  This is used to identify a separate directory where saved data is stored; unlike the original ONScripter, which places saved games in the game directory, ONScripter-EN does not require games to be kept in a world-writable location.
 
 This done, the game can be played either by dropping the onscripter-en executable into the game directory and running it, or by running it with the ```-r``` command-line option to identify the desired game.
@@ -40,6 +35,27 @@ This done, the game can be played either by dropping the onscripter-en executabl
 The saved game location behaviour can be overridden with the ```-s``` command-line option if you wish for some reason to restore the default ONScripter behaviour or to place saves somewhere else.
 
 Please run ```onscripter-en --help``` for details of other command-line options (note that on Windows systems, these details and all other console output will be placed in text files in the folder ```%ALLUSERSPROFILE%\Application Data\ONScripter-EN```).
+
+### Fonts
+ONScripter-EN relies upon having a default font file available to it.  Historically, this had to be a monospaced TrueType font named ```default.ttf``` which was placed in the game directory, or, in the case of macOS App Bundles, the Contents/Resources subdirectory of the App Bundle in question.  As of April 2023, though, we have added support for OpenType and for OpenType/TrueType font collections, so ONScripter-EN now looks for, in order:
+
+- ```default.ttf```
+- ```default.ttc```
+- ```default.otf```
+- ```default.otc```
+
+If none of these are found, ONScripter-EN will attempt the following fallback fonts:
+
+- *macOS:* [Hiragino Maru Gothic](https://en.wikipedia.org/wiki/Hiragino)
+- *Windows:* [MS Gothic](https://learn.microsoft.com/en-us/typography/font-list/ms-gothic)
+
+These two fonts are pre-installed on their respective operating systems.  MS Gothic has come pre-installed on Windows since Vista, and Hiragino Maru Gothic has come pre-installed on macOS since macOS was a wee little thing named MacOS X, and also code-named after big cats at that.
+
+For *maximum compatibility with Japanese language games*, you will want a default font file that is (a) monospaced and (b) capable of CJK glyphs.  Our traditional recommendations are:
+
+- [Genjyuu Gothic X Monospace/Monospace Bold](http://jikasei.me/font/genjyuu/)
+- [Migu 2M/2M Bold](http://mix-mplus-ipa.osdn.jp/)
+- [Sazanami Gothic](https://osdn.net/projects/efont/releases/)
 
 ## Packaging Games
 ONScripter-EN includes some features designed to make packaging new games or translations in a platform-appropriate fashion easier and neater.
