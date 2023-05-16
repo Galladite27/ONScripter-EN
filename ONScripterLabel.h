@@ -834,6 +834,9 @@ private:
     void processEOT();
     bool processText();
 
+    // UTF-8 related
+    int  u8strlen(const char *s);
+
     //Mion: variables & functions for special text processing
     bool *string_buffer_breaks;  // can it break before a particular offset?
     char *string_buffer_margins; // where are the ruby margins, how long (in pixels)

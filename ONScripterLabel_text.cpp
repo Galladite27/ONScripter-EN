@@ -1488,3 +1488,13 @@ void ONScripterLabel::textbtnColorChange()
     setColor(sentence_font.color, tmpcolor);
     setColor(ruby_font.color, tmpcolor);
 }
+
+int ONScripter::u8strlen(const char *s)
+{
+    int len = 0;
+    while (*s) {
+        if ((*s & 0xC0) != 0x80) len++;
+        s++;
+    }
+    return len;
+}
