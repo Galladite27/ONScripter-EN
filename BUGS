@@ -1,3 +1,11 @@
+INDEX
+* BUGS OR MISFEATURES
+* FEATURES REQUESTED
+* DOCUMENTATION UPDATING LIST
+* TODO LIST
+* COMPLETED
+
+
 BUGS OR MISFEATURES
 
 * OS X: should look for missing files (eg font) inside bundles, even
@@ -16,6 +24,10 @@ BUGS OR MISFEATURES
   successfully. This behaviour is the same even when running several
   pop-ups one after another.
 
+* The freetype-config replacement needs to check that it is being
+  executed from the correct folder
+
+
 FEATURES REQUESTED
   
 * Allow the specification of a "fallback" font to use for characters
@@ -33,6 +45,25 @@ FEATURES REQUESTED
 
 * UTF-8 suport bringing in from onscripter-insani
 
+
+DOCUMENTATION UPDATING LIST
+* This section contains changes which need to be made to the
+  *NScripter API reference
+
+* Commands in onsen 2023-02-20: ;$ autosaveoff savepoint getbgmvol
+  getmp3vol getsevol getvoicevol
+
+* Under ;$: add notes about onsen-specific behaviour - the letters
+  can be lower case, v option is useless (due to extended variable
+  data), note the bug about g option being set above 4095 removing
+  global variables, the l option is unimplemented (does it even
+  matter? Does onsen have a label limit?)
+
+* Under rgosub: in onsen systemcall DOES work if rgosub is defined
+
+* Under rgosub: please add a reminder to disable rclick within rgosub
+
+
 TODO LIST
 
 * Continue working on Windows support with insani
@@ -48,6 +79,7 @@ TODO LIST
 * Implement a fix for the PDA build for the sake of completion
 * Redo the "dist" target to make building releases easier
 * Bring over UTF-8 suport from onscripter-insani
+
 
 COMPLETED
 
