@@ -8,9 +8,9 @@ elif test "$1" = "--libs"; then
 else
     echo "This is a hacky fix for the new freetype version seemingly not generating freetype-config. Hopefully it doesn't break too easily."
     echo "Accepted options:"
-    echo "\t--ftversion"
-    echo "\t--cflags"
-    echo "\t--libs"
+    echo -e "\t--ftversion"
+    echo -e "\t--cflags"
+    echo -e "\t--libs"
     echo
     echo "-Galladite 2023-5-16"
 fi
