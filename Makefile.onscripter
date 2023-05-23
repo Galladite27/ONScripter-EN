@@ -37,7 +37,8 @@ ONSCRIPTER_OBJS = onscripter$(OBJSUFFIX) $(DECODER_OBJS)		\
                   ScriptHandler$(OBJSUFFIX) ScriptParser$(OBJSUFFIX)	\
                   ScriptParser_command$(OBJSUFFIX) $(GUI_OBJS)		\
                   sjis2utf16$(OBJSUFFIX) $(EXT_OBJS) $(OTHER_OBJS)	\
-                  DirPaths$(OBJSUFFIX) Layer$(OBJSUFFIX)
+                  DirPaths$(OBJSUFFIX) Layer$(OBJSUFFIX)		\
+                  Encoding$(OBJSUFFIX)
 SARDEC_OBJS   = $(TDIR)sardec$(OBJSUFFIX) $(TDIR)DirectReader$(OBJSUFFIX)	\
                 $(TDIR)SarReader$(OBJSUFFIX) $(TDIR)DirPaths$(OBJSUFFIX)
 SARMAKE_OBJS  = $(TDIR)sarmake$(OBJSUFFIX) $(TDIR)DirectReader$(OBJSUFFIX)	\
@@ -178,6 +179,7 @@ DirectReader$(OBJSUFFIX): $(READER_HEADER) DirectReader.h
 ScriptHandler$(OBJSUFFIX): ScriptHandler.h
 ScriptParser$(OBJSUFFIX): $(PARSER_HEADER)
 ScriptParser_command$(OBJSUFFIX): $(PARSER_HEADER)
+Encoding$(OBJSUFFIX): Encoding.h
 
 $(TDIR)sardec$(OBJSUFFIX): $(READER_HEADER) SarReader.h
 $(TDIR)sarconv$(OBJSUFFIX): $(READER_HEADER) SarReader.h

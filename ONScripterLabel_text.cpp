@@ -35,6 +35,7 @@
 // Ogapee's 20091115 release source code.
 
 #include "ONScripterLabel.h"
+#include "Encoding.h"
 
 extern unsigned short convSJIS2UTF16( unsigned short in );
 
@@ -760,9 +761,26 @@ int ONScripterLabel::textCommand()
         return RET_CONTINUE;
     }
 
+    // So it appears that there is no line-wrapping algorithm
+    // currently... so is it even necessary for monospaced fonts?
+    // -Galladite
+
+    // Testing:
+    //bool utf8_check = false;
+    //if(script_h.enc.getEncoding() == Encoding::CODE_UTF8) utf8_check = true;
+
+    // Todo:
+    //
+    // Fix the segfault... why is this happening? I changed
+    //   practically nothing :sob:
+    // Confirm facts with gp32
+    // Work in file types and encoding checking
+    // Keep adding other features from onani
+
     refresh_window_text_mode = REFRESH_NORMAL_MODE | REFRESH_WINDOW_MODE | REFRESH_TEXT_MODE;
     enterTextDisplayMode();
 
+    // Use an enum, for crying out loud!! What does this mean?? -Galladite 2023-5-23
     line_enter_status = 2;
     if (pagetag_flag) page_enter_status = 1;
 
@@ -1489,7 +1507,7 @@ void ONScripterLabel::textbtnColorChange()
     setColor(ruby_font.color, tmpcolor);
 }
 
-int ONScripter::u8strlen(const char *s)
+int ONScripterLabel::u8strlen(const char *s)
 {
     int len = 0;
     while (*s) {

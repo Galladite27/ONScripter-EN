@@ -11368,3 +11368,25 @@ int convUTF16ToUTF8( unsigned char dst[4], unsigned short src )
 
     return 1;
 }
+
+unsigned short convUTF8ToUTF16( const char **src )
+{
+    unsigned short utf16 = 0;
+
+    if (**src & 0x80){
+        if (**src & 0x20){
+            utf16 |= ((unsigned short)((*(*src)++)&0x0f)) << 12;
+            utf16 |= ((unsigned short)((*(*src)++)&0x3f)) << 6;
+            utf16 |= ((unsigned short)((*(*src)++)&0x3f));
+        }
+        else{
+            utf16 |= ((unsigned short)((*(*src)++)&0x1f)) << 6;
+            utf16 |=  (unsigned short)((*(*src)++)&0x3f);
+        }
+    }
+    else{
+        utf16 |= (unsigned short)(*(*src)++);
+    }
+
+    return utf16;
+}

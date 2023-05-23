@@ -835,7 +835,7 @@ private:
     bool processText();
 
     // UTF-8 related
-    int  u8strlen(const char *s);
+    int u8strlen(const char *s);
 
     //Mion: variables & functions for special text processing
     bool *string_buffer_breaks;  // can it break before a particular offset?

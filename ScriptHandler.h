@@ -47,6 +47,7 @@
 #include <string.h>
 #include "BaseReader.h"
 #include "DirPaths.h"
+#include "Encoding.h"
 
 #define VARIABLE_RANGE 4096
 
@@ -312,6 +313,7 @@ public:
                        bool is_simple=false );
 
     BaseReader *cBR;
+    Encoding enc;
 
     enum LanguageScript {
         NO_SCRIPT_PREF  = 0,
