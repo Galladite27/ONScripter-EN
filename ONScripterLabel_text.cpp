@@ -761,10 +761,6 @@ int ONScripterLabel::textCommand()
         return RET_CONTINUE;
     }
 
-    // So it appears that there is no line-wrapping algorithm
-    // currently... so is it even necessary for monospaced fonts?
-    // -Galladite
-
     // Testing:
     //bool utf8_check = false;
     //if(script_h.enc.getEncoding() == Encoding::CODE_UTF8) utf8_check = true;
