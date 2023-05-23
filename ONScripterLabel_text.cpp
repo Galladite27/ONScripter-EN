@@ -769,7 +769,7 @@ int ONScripterLabel::textCommand()
     //bool utf8_check = false;
     //if(script_h.enc.getEncoding() == Encoding::CODE_UTF8) utf8_check = true;
 
-    // Todo:
+    // TODO:
     //
     // Fix the segfault... why is this happening? I changed
     //   practically nothing :sob:
