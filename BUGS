@@ -66,6 +66,12 @@ DOCUMENTATION UPDATING LIST
 
 TODO LIST
 
+* Bring over UTF-8 suport from onscripter-insani
+  - Fix current segfault
+  - File extension rules with encoding
+  - Update Windows makefiles
+  - Make a version of the current linewrap algorithm for use with
+    proportional fonts
 * Continue working on Windows support with insani
   - Building with internal libraries
   - Integrating custom configure and Makefile into main ones
@@ -78,7 +84,6 @@ TODO LIST
 * "Requested features"
 * Implement a fix for the PDA build for the sake of completion
 * Redo the "dist" target to make building releases easier
-* Bring over UTF-8 suport from onscripter-insani
 
 
 COMPLETED
