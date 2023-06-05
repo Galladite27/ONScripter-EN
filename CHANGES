@@ -1,3 +1,11 @@
+2023-06-05
+  OpenType fonts and TrueType/OpenType font collections now actually
+  work. Segfault fixed.
+
+  Some functions brought over from onani. Script_h now contains an
+  Encoding object. Encoding.cpp brought in, and necessary changes made
+  to Makefile.onscripter.
+
 2023-04-18
   Added the ability to load OpenType fonts and TrueType/OpenType font
   collections.  Also added last-resort fallback system font detection 

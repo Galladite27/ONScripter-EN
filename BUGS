@@ -67,7 +67,6 @@ DOCUMENTATION UPDATING LIST
 TODO LIST
 
 * Bring over UTF-8 suport from onscripter-insani
-  - Fix current segfault
   - File extension rules with encoding
   - Update Windows makefiles
   - Make a version of the current linewrap algorithm for use with
@@ -93,3 +92,4 @@ COMPLETED
 * Fix for this fix to allow rgosub to be used in such situations
 * Windows builds, plus some compilation changes
 * yesnobox and okcancelbox implementation for Linux
+* .otf, .otc and .ttc are now allowed in addition to .ttf
