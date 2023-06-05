@@ -1065,9 +1065,11 @@ int ONScripterLabel::init()
     
     if ( open() ) return -1;
 
+    // If no specific save path
     if ( script_h.save_path == NULL ){
         char* gameid = script_h.game_identifier;
         char gamename[20];
+        // If no gameid, use default name
         if (!gameid) {
             gameid=(char*)&gamename;
             snprintf(gameid, 20, "ONScripter-%x", script_h.game_hash);

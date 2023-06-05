@@ -1556,7 +1556,8 @@ int ScriptHandler::readScript( DirPaths &path )
             while ( *buf >= '0' && *buf <= '9' )
                 global_variable_border = global_variable_border * 10 + *buf++ - '0';
             //printf("set global_variable_border: %d\n", global_variable_border);
-        } else if ( *buf == '$' ) {
+        }
+        else if ( *buf == '$' ) {
             buf++;
             while ( *buf != '\n' ) {
                 if (*buf == 'g' || *buf == 'G') {
@@ -1601,6 +1602,8 @@ int ScriptHandler::readScript( DirPaths &path )
         }
         buf++;
     }
+    // Is this in the wrong place? Should it be in the loop above?
+    // - Galladite
     if ( *buf++ == ';' && !game_identifier ){
     	while (*buf == ' ' || *buf == '\t') ++buf;
     	if ( !strncmp( buf, "gameid ", 7 ) ){
