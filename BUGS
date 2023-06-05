@@ -27,6 +27,9 @@ BUGS OR MISFEATURES
 * The freetype-config replacement needs to check that it is being
   executed from the correct folder
 
+* Sound bug related to Plumerai and using -s option (or ons.cfg
+  equivalent). See bug 1 on github.
+
 
 FEATURES REQUESTED
   
