@@ -1182,6 +1182,8 @@ int ONScripterLabel::init()
     // Initialize font
     delete[] font_file;
 
+    // Currently causing segfault -Galladite 2023-6-5
+    /*
     int font_picker = -1;
 
     FILE *fp;
@@ -1280,8 +1282,8 @@ int ONScripterLabel::init()
         fprintf( stderr, "no font file detected; exiting\n" );
         return -1;
     }
+    */
 
-    /*
     if ( default_font ){
         font_file = new char[ strlen(default_font) + 1 ];
         sprintf( font_file, "%s", default_font );
@@ -1298,47 +1300,10 @@ int ONScripterLabel::init()
                 fclose(fp);
                 break;
             }
-            else
-            {
-#if defined(WIN32)
-                fclose(fp);
-                delete font_file;
-                font_file = new char[ strlen("default.ttf") + 1 ];
-                strcpy(font_file, "default.ttf");
-                if ((fp = std::fopen(font_file, "rb")) == NULL)
-                {
-                    fclose(fp);
-                    fp = NULL;
-                    delete font_file;
-                    font_file = new char[ strlen("C:\\Windows\\Fonts\\msgothic.ttc") + 1 ];
-                    strcpy(font_file, "C:\\Windows\\Fonts\\msgothic.ttc");
-                    if ((fp = std::fopen(font_file, "rb")) == NULL)
-                    {
-                        fclose(fp);
-                        fp = NULL;
-                        delete font_file;
-                        font_file = new char[ strlen("C:\\Windows\\Fonts\\msgothic.ttf") + 1 ];
-                        strcpy(font_file, "C:\\Windows\\Fonts\\msgothic.ttf");
-                        if ((fp = std::fopen(font_file, "rb")) == NULL)
-                        {
-                            fclose(fp);
-                            fp = NULL;
-                        }
-                        fclose(fp);
-                        break;
-                    }
-                    fclose(fp);
-                    break;
-                }
-                fclose(fp);
-                break;
-#endif
-            }
         }
         //sprintf( font_file, "%s%s", archive_path->get_path(0), FONT_FILE );
         setStr(&default_font, FONT_FILE);
     }
-    */
 
     // ----------------------------------------
     // Sound related variables
