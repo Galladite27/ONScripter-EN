@@ -1014,7 +1014,9 @@ char* ONScripterLabel::create_filepath(DirPaths archive_path, const char* filena
             return filepath;
         }
     }
-    fclose(fp);
+    // We know that fp will be NULL - this will give a segfault 100%
+    // of the time. -Galladite 2023-06-05
+    //fclose(fp);
     return NULL;
 }
 
@@ -1183,7 +1185,6 @@ int ONScripterLabel::init()
     delete[] font_file;
 
     // Currently causing segfault -Galladite 2023-6-5
-    /*
     int font_picker = -1;
 
     FILE *fp;
@@ -1282,8 +1283,8 @@ int ONScripterLabel::init()
         fprintf( stderr, "no font file detected; exiting\n" );
         return -1;
     }
-    */
 
+    /*
     if ( default_font ){
         font_file = new char[ strlen(default_font) + 1 ];
         sprintf( font_file, "%s", default_font );
@@ -1304,6 +1305,7 @@ int ONScripterLabel::init()
         //sprintf( font_file, "%s%s", archive_path->get_path(0), FONT_FILE );
         setStr(&default_font, FONT_FILE);
     }
+    */
 
     // ----------------------------------------
     // Sound related variables

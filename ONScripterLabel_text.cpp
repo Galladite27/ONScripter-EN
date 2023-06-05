@@ -767,9 +767,6 @@ int ONScripterLabel::textCommand()
 
     // TODO:
     //
-    // Fix the segfault... why is this happening? I changed
-    //   practically nothing :sob:
-    // Confirm facts with gp32
     // Work in file types and encoding checking
     // Keep adding other features from onani
 
