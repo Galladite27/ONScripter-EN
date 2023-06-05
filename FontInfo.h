@@ -26,6 +26,8 @@
 
 #include <SDL.h>
 
+#include "Encoding.h"
+
 typedef unsigned char uchar3[3];
 
 // OS X pollutes the main namespace with its own FontInfo type, so we
