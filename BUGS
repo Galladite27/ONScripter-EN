@@ -53,18 +53,9 @@ DOCUMENTATION UPDATING LIST
 * This section contains changes which need to be made to the
   *NScripter API reference
 
-* Commands in onsen 2023-02-20: ;$ autosaveoff savepoint getbgmvol
-  getmp3vol getsevol getvoicevol
-
-* Under ;$: add notes about onsen-specific behaviour - the letters
-  can be lower case, v option is useless (due to extended variable
-  data), note the bug about g option being set above 4095 removing
-  global variables, the l option is unimplemented (does it even
-  matter? Does onsen have a label limit?)
-
 * Under rgosub: in onsen systemcall DOES work if rgosub is defined
-
 * Under rgosub: please add a reminder to disable rclick within rgosub
+  \--> Have these two been done? I don't remember. -Galladite 2023-6-5
 
 
 TODO LIST
