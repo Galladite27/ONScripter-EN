@@ -69,6 +69,7 @@ DOCUMENTATION UPDATING LIST
 
 TODO LIST
 
+* Change the help text to mention other font types (under -f)
 * Bring over UTF-8 suport from onscripter-insani
   - File extension rules with encoding
   - Update Windows makefiles
