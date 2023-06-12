@@ -63,7 +63,7 @@ ONScripter-EN includes some features designed to make packaging new games or tra
 Firstly, ```game.id``` can be replaced by a line
 
 ```
-gameid Your Title Here
+;gameid Your Title Here
 ```
 
 at the start of the script, or immediately after the modeline if present.
