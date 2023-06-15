@@ -1407,19 +1407,59 @@ int ScriptHandler::readScript( DirPaths &path )
 
     FILE *fp = NULL;
     char filename[10];
+    char *file_extension;
     int i, n=0, encrypt_mode = 0;
     while ((fp == NULL) && (n<archive_path->get_num_paths())) {
         const char *curpath = archive_path->get_path(n);
         const char *filename = "";
         
+        // SHIFT-JIS scripts:
         if ((fp = fopen(curpath, "0.txt", "rb")) != NULL){
             encrypt_mode = 0;
             filename = "0.txt";
+            file_extension = ".txt";
         }
         else if ((fp = fopen(curpath, "00.txt", "rb")) != NULL){
             encrypt_mode = 0;
             filename = "00.txt";
+            file_extension = ".txt";
         }
+
+        // UTF-8 scripts:
+        else if ((fp = fopen(curpath, "0.utf", "rb")) != NULL){
+            encrypt_mode = 0;
+            filename = "0.utf";
+            file_extension = ".utf";
+
+            enc.setEncoding(Encoding::CODE_UTF8);
+            printf("0.utf detected; entering UTF-8 mode\n");
+        }
+        else if ((fp = fopen(curpath, "0.utf.txt", "rb")) != NULL){
+            encrypt_mode = 0;
+            filename = "0.utf.txt";
+            file_extension = ".utf.txt";
+
+            enc.setEncoding(Encoding::CODE_UTF8);
+            printf("0.utf.txt detected; entering UTF-8 mode\n");
+        }
+        else if ((fp = fopen(curpath, "00.utf", "rb")) != NULL){
+            encrypt_mode = 0;
+            filename = "00.utf";
+            file_extension = ".utf";
+
+            enc.setEncoding(Encoding::CODE_UTF8);
+            printf("00.utf detected; entering UTF-8 mode\n");
+        }
+        else if ((fp = fopen(curpath, "00.utf.txt", "rb")) != NULL){
+            encrypt_mode = 0;
+            filename = "00.utf.txt";
+            file_extension = ".utf.txt";
+
+            enc.setEncoding(Encoding::CODE_UTF8);
+            printf("00.utf.txt detected; entering UTF-8 mode\n");
+        }
+
+        // Obfuscated SHIFT-JIS scripts:
         else if ((fp = fopen(curpath, "nscr_sec.dat", "rb")) != NULL){
             encrypt_mode = 2;
             filename = "nscr_sec.dat";
@@ -1459,9 +1499,9 @@ int ScriptHandler::readScript( DirPaths &path )
     if (encrypt_mode == 0){
         fclose(fp);
         for (i=1 ; i<100 ; i++){
-            sprintf(filename, "%d.txt", i);
+            sprintf(filename, "%d%s", i, file_extension);
             if ((fp = fopen(script_path, filename, "rb")) == NULL){
-                sprintf(filename, "%02d.txt", i);
+                sprintf(filename, "%02d%s", i, file_extension);
                 fp = fopen(script_path, filename, "rb");
             }
             if (fp){
