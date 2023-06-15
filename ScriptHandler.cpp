@@ -1490,15 +1490,22 @@ int ScriptHandler::readScript( DirPaths &path )
     }
     if (fp == NULL){
 #if defined(MACOSX) 
+        // Why is the mac version like this? Why does it have 4 stirng
+        // arguments?? -Galladite 2023-6-15
+        /*
         simpleErrorAndExit("No game data found.\nThis application must be run "
                            "from a directory containing ONScripter game data.",
-                           "can't open any of 0.txt, 00.txt, 0.utf, 00.utf,",
-                           "0.utf.txt, 00.utf.txt, nscript.dat, or pscript.dat",
+                           "can't open any of 0.txt, 00.txt, 0.utf, 00.utf, 0.utf.txt, 00.utf.txt, nscript.dat, or pscript.dat",
+                           "Missing game data");
+        */
+
+        // I'll just change it and hope it doesn't break.
+        simpleErrorAndExit("No game script found.",
+                           "can't open any of 0.txt, 00.txt, 0.utf, 00.utf, 0.utf.txt, 00.utf.txt, nscript.dat, or pscript.dat",
                            "Missing game data");
 #else
         simpleErrorAndExit("No game script found.",
-                           "can't open any of 0.txt, 00.txt, 0.utf, 00.utf,",
-                           "0.utf.txt, 00.utf.txt, nscript.dat, or pscript.dat",
+                           "can't open any of 0.txt, 00.txt, 0.utf, 00.utf, 0.utf.txt, 00.utf.txt, nscript.dat, or pscript.dat",
                            "Missing game data");
 #endif
         return -1;
@@ -1960,6 +1967,8 @@ void ScriptHandler::errorAndCont( const char *str, const char *detail, const cha
     processError(str, title, detail, true);
 }
 
+// TODO - change this for clarity; there is no reason for it to be how
+// it is (with title before detail). -Galladite 2023-6-15
 void ScriptHandler::simpleErrorAndExit( const char *str, const char *title, const char *detail, bool is_warning )
 {
     if (title == NULL)
