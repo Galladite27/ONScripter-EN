@@ -1473,6 +1473,15 @@ int ScriptHandler::readScript( DirPaths &path )
             filename = "nscript.dat";
         }
 
+        // Obfuscated UTF-8 scripts:
+        else if ((fp = fopen(curpath, "pscript.dat", "rb")) != NULL){
+            encrypt_mode = 1;
+            filename = "pscript.dat";
+
+            enc.setEncoding(Encoding::CODE_UTF8);
+            printf("pscript.dat detected; entering UTF-8 mode\n");
+        }
+
         if (fp != NULL) {
             fprintf(stderr, "Script found: %s%s\n", curpath, filename);
             setStr(&script_path, curpath);
@@ -1484,12 +1493,12 @@ int ScriptHandler::readScript( DirPaths &path )
         simpleErrorAndExit("No game data found.\nThis application must be run "
                            "from a directory containing ONScripter game data.",
                            "can't open any of 0.txt, 00.txt, 0.utf, 00.utf,",
-                           "0.utf.txt, 00.utf.txt, or nscript.dat",
+                           "0.utf.txt, 00.utf.txt, nscript.dat, or pscript.dat",
                            "Missing game data");
 #else
         simpleErrorAndExit("No game script found.",
                            "can't open any of 0.txt, 00.txt, 0.utf, 00.utf,",
-                           "0.utf.txt, 00.utf.txt, or nscript.dat",
+                           "0.utf.txt, 00.utf.txt, nscript.dat, or pscript.dat",
                            "Missing game data");
 #endif
         return -1;
@@ -1528,9 +1537,9 @@ int ScriptHandler::readScript( DirPaths &path )
     }
     else{
         for (i=0 ; i<100 ; i++){
-            sprintf(filename, "%d.txt", i);
+            sprintf(filename, "%d%s", i, file_extension);
             if ((fp = fopen(script_path, filename, "rb")) == NULL){
-                sprintf(filename, "%02d.txt", i);
+                sprintf(filename, "%02d%s", i, file_extension);
                 fp = fopen(script_path, filename, "rb");
             }
             if (fp){
