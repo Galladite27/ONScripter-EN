@@ -1,3 +1,7 @@
+2023-06-15
+  The engine now checks for UTF-8 scripts. As of now, this behaviour
+  is broken since it still acts as if the script is SHIFT-JIS.
+
 2023-06-05
   OpenType fonts and TrueType/OpenType font collections now actually
   work. Segfault fixed.

@@ -1483,11 +1483,13 @@ int ScriptHandler::readScript( DirPaths &path )
 #if defined(MACOSX) 
         simpleErrorAndExit("No game data found.\nThis application must be run "
                            "from a directory containing ONScripter game data.",
-                           "can't open any of 0.txt, 00.txt, or nscript.dat",
+                           "can't open any of 0.txt, 00.txt, 0.utf, 00.utf,",
+                           "0.utf.txt, 00.utf.txt, or nscript.dat",
                            "Missing game data");
 #else
         simpleErrorAndExit("No game script found.",
-                           "can't open any of 0.txt, 00.txt, or nscript.dat",
+                           "can't open any of 0.txt, 00.txt, 0.utf, 00.utf,",
+                           "0.utf.txt, 00.utf.txt, or nscript.dat",
                            "Missing game data");
 #endif
         return -1;

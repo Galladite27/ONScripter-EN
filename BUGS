@@ -61,9 +61,9 @@ DOCUMENTATION UPDATING LIST
 TODO LIST
 
 * Change the help text to mention other font types (under -f)
+* Update Windows makefiles
 * Bring over UTF-8 suport from onscripter-insani
-  - File extension rules with encoding
-  - Update Windows makefiles
+  - Change ScriptHandler to act differently with UTF-8 scripts
   - Make a version of the current linewrap algorithm for use with
     proportional fonts
 * Continue working on Windows support with insani
@@ -72,8 +72,6 @@ TODO LIST
     * Start by buxfixing the failing checks and tests, primarily
       checks for system libraries
     * Fix the 32/64bit assumptions - broken config.guess?
-    * Use -Wall instead of -Werror - there are many "errors" which
-      don't end up breaking anything
 * Porting additional commands from nscripter?
 * "Requested features"
 * Implement a fix for the PDA build for the sake of completion
@@ -88,3 +86,4 @@ COMPLETED
 * Windows builds, plus some compilation changes
 * yesnobox and okcancelbox implementation for Linux
 * .otf, .otc and .ttc are now allowed in addition to .ttf
+* Engine checks for UTF-8 scripts
