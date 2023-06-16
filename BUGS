@@ -8,6 +8,8 @@ INDEX
 
 BUGS OR MISFEATURES
 
+* The dll-loading option should be hidden on Mac and Linux
+
 * ;gameid seems to have broken since I added ;$ - this needs fixing
   very soon or at least to be mentioned in release notes.
 
