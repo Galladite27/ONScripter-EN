@@ -8,6 +8,9 @@ INDEX
 
 BUGS OR MISFEATURES
 
+* ;gameid seems to have broken since I added ;$ - this needs fixing
+  very soon or at least to be mentioned in release notes.
+
 * OS X: should look for missing files (eg font) inside bundles, even
   if the main game data is outside the bundle.
 
@@ -53,19 +56,14 @@ DOCUMENTATION UPDATING LIST
 * This section contains changes which need to be made to the
   *NScripter API reference
 
-* Under rgosub: in onsen systemcall DOES work if rgosub is defined
-* Under rgosub: please add a reminder to disable rclick within rgosub
-  \--> Have these two been done? I don't remember. -Galladite 2023-6-5
-
+* Under setkinsoku: change addkinsoku to setkinsoku
+* I don't think onsen has the kinsoku command...
 
 TODO LIST
 
 * Change the help text to mention other font types (under -f)
 * Update Windows makefiles
 * Bring over UTF-8 suport from onscripter-insani
-  - Finish ScriptParser::setKinsoku to count bytes properly
-    * Encoding::getBytes
-    * Encoding::getUTF16
   - Make a version of the current linewrap algorithm for use with
     proportional fonts
   - Interpret font styles
@@ -92,3 +90,4 @@ COMPLETED
 * yesnobox and okcancelbox implementation for Linux
 * .otf, .otc and .ttc are now allowed in addition to .ttf
 * Engine checks for UTF-8 scripts
+* Kinsoku system has been converted to UTF

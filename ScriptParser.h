@@ -502,7 +502,7 @@ protected:
     bool english_mode;
 
     struct Kinsoku {
-        char chr[2];
+        unsigned int unicode;
     } *start_kinsoku, *end_kinsoku; //Mion: for kinsoku chars
     int num_start_kinsoku, num_end_kinsoku;
     void setKinsoku(const char *start_chrs, const char *end_chrs, bool add, int code = -1); //Mion
