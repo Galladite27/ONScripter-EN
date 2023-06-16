@@ -56,8 +56,7 @@ DOCUMENTATION UPDATING LIST
 * This section contains changes which need to be made to the
   *NScripter API reference
 
-* Under setkinsoku: change addkinsoku to setkinsoku
-* I don't think onsen has the kinsoku command...
+* Is kinsoku enabled in onsen's english mode?
 
 TODO LIST
 
