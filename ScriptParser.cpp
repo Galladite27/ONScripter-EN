@@ -1249,8 +1249,7 @@ void ScriptParser::setKinsoku(const char *start_chrs, const char *end_chrs, bool
         }
     }
     */
-    // TODO: test this and make other things refer to .unicode instead
-    // of .chr -Galladite 2023-6-16
+    // TODO: test this -Galladite 2023-6-16
     for (int i=0; i<num_start; i++){
         start_kinsoku[num_start_kinsoku + i].unicode = script_h.enc.getUTF16(kchr, code);
         kchr += script_h.enc.getBytes(*kchr, code);
@@ -1282,8 +1281,7 @@ void ScriptParser::setKinsoku(const char *start_chrs, const char *end_chrs, bool
     }
     */
 
-    // TODO: test this and make other things refer to .unicode instead
-    // of .chr -Galladite 2023-6-16
+    // TODO: test this -Galladite 2023-6-16
     for (i=0; i<num_end_kinsoku+num_end; i++) {
         if (i < num_end_kinsoku)
             end_kinsoku[i].unicode = tmp[i].unicode;
