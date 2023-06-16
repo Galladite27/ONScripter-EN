@@ -271,6 +271,10 @@ void ONScripterLabel::setupAnimationInfo( AnimationInfo *anim, Fontinfo *info )
         bool has_alpha;
         SDL_Surface *surface = loadImage( anim->file_name, &has_alpha );
 
+        // Not sure what this does
+        if (script_h.enc.getEncoding() == Encoding::CODE_UTF8 && has_alpha)
+            anim->trans_mode = AnimationInfo::TRANS_ALPHA;
+
         SDL_Surface *surface_m = NULL;
         if (anim->trans_mode == AnimationInfo::TRANS_MASK)
             surface_m = loadImage( anim->mask_file_name );

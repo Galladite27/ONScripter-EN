@@ -40,6 +40,7 @@
 // Ogapee's 20091115 release source code.
 
 #include "ScriptHandler.h"
+#include "Encoding.h"
 #include "ONScripterLabel.h" //so this can call doErrorBox
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -294,6 +295,11 @@ const char *ScriptHandler::readToken(bool check_pretext)
     }
 
     markAsKidoku( buf );
+
+    if(enc.getEncoding() == Encoding::CODE_UTF8)
+    {
+        english_mode = true;
+    }
 
   readTokenTop:
     if (!is_rgosub_click)

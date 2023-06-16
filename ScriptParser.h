@@ -380,7 +380,7 @@ protected:
     char *savedir;
 
     void deleteNestInfo();
-    void setStr( char **dst, const char *src, int num=-1 );
+    void setStr( char **dst, const char *src, int num = -1, bool to_utf8 = false );
 
     /* ---------------------------------------- */
     /* Effect related variables */
@@ -505,7 +505,7 @@ protected:
         char chr[2];
     } *start_kinsoku, *end_kinsoku; //Mion: for kinsoku chars
     int num_start_kinsoku, num_end_kinsoku;
-    void setKinsoku(const char *start_chrs, const char *end_chrs, bool add); //Mion
+    void setKinsoku(const char *start_chrs, const char *end_chrs, bool add, int code = -1); //Mion
     bool isStartKinsoku(const char *str);
     bool isEndKinsoku(const char *str);
     

@@ -43,6 +43,7 @@
 // Ogapee's 20091115 release source code.
 
 #include "ScriptParser.h"
+#include "Encoding.h"
 
 #ifdef MACOSX
 #include "cocoa_bundle.h"
@@ -242,7 +243,17 @@ ScriptParser::ScriptParser()
 
     //Default kinsoku
     num_start_kinsoku = num_end_kinsoku = 0;
-    setKinsoku(DEFAULT_START_KINSOKU, DEFAULT_END_KINSOKU, false);
+
+    if(script_h.enc.getEncoding() == Encoding::CODE_CP932)
+        setKinsoku(DEFAULT_START_KINSOKU, DEFAULT_END_KINSOKU, false, Encoding::CODE_CP932);
+    else
+        setKinsoku(DEFAULT_START_KINSOKU, DEFAULT_END_KINSOKU, false, Encoding::CODE_UTF8);
+
+    /*
+    setKinsoku(DEFAULT_START_KINSOKU, DEFAULT_END_KINSOKU, false,
+        script_h.enc.getEncoding() == Encoding::CODE_CP932 ? Encoding::CODE_CP932
+                                                           : Encoding::CODE_UTF8);
+    */
 
     //onscripter script syntax options (for running some older nscr games)
     allow_color_type_only = false;
@@ -1000,20 +1011,32 @@ void ScriptParser::deleteLayerInfo()
 }
 #endif
 
-void ScriptParser::setStr( char **dst, const char *src, int num )
+void ScriptParser::setStr( char **dst, const char *src, int num, bool to_utf8 )
 {
     if ( *dst ) delete[] *dst;
     *dst = NULL;
     
     if ( src ){
-        if (num >= 0){
+        if ( num >= 0 ){
             *dst = new char[ num + 1 ];
             memcpy( *dst, src, num );
             (*dst)[num] = '\0';
         }
         else{
-            *dst = new char[ strlen( src ) + 1];
-            strcpy( *dst, src );
+            num = strlen(src);
+
+            if ( to_utf8 && script_h.enc.getEncoding() == Encoding::CODE_UTF8 ) {
+                char *tmp_buf = new char[ num*2 + 1 ];
+                DirectReader::convertFromSJISToUTF8(tmp_buf, src);
+                num = strlen(tmp_buf);
+                *dst = new char[ num + 1 ];
+                strcpy(*dst, tmp_buf);
+                delete[] tmp_buf;
+            }
+            else {
+                *dst = new char[ num + 1 ];
+                strcpy( *dst, src );
+            }
         }
     }
 }
@@ -1174,7 +1197,7 @@ void ScriptParser::setDefaultMenuLabels()
 }
 
 //Mion: for kinsoku
-void ScriptParser::setKinsoku(const char *start_chrs, const char *end_chrs, bool add)
+void ScriptParser::setKinsoku(const char *start_chrs, const char *end_chrs, bool add, int code)
 {
     int num_start, num_end, i;
     const char *kchr;
