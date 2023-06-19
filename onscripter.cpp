@@ -44,7 +44,7 @@ static void optionHelp()
 #endif
     printf( "      --match-audiodevice-to-bgm\treset audio to match bgm specs\n");
     printf( "      --nomatch-audiodevice-to-bgm\tdon't reset audio to match bgm specs (default)\n");
-    printf( "  -f, --font file\tset a TTF font file\n");
+    printf( "  -f, --font file\tset a TTF, OTF, TTC, or OTC font file\n");
     printf( "      --registry file\tset a registry file\n");
 #ifdef WIN32
     printf( "      --dll file\tset a dll file\n");

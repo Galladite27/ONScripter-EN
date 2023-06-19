@@ -59,7 +59,6 @@ DOCUMENTATION UPDATING LIST
 
 TODO LIST
 
-* Change the help text to mention other font types (under -f)
 * Update Windows makefiles
 * Bring over UTF-8 suport from onscripter-insani
   - FontInfo, ONScripterLabel_command, ONScripterLabel_text
