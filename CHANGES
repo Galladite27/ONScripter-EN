@@ -1,3 +1,32 @@
+2023-06-19
+  Major bugfix for ;gameid directive - it now works on line 1 lol
+
+  If you use this new version, you should copy your save files from
+  the folder given at startup in the old version into the folder given
+  at startup in the new version, unless the folders are the same.
+
+  Help text fixes for --dll and -f options
+
+  Pretext tag changes for UTF-8 - may be broken (needs testing)
+  - What's the deal with zenkakko_flag (see file for more info)?
+  - I need to check if the checking for '[' and ']' is necessary since
+    buf is determined through a different method in onsen and onani
+    (current_page->tag vs pretext_buf)
+  - Can be disabled temporarily in ONScripterLabel_command.cpp L2754
+    or thereabouts
+  - Where pretext_buf is referenced, I've instead referenced
+    current_page->tag, but this may be wrong.
+
+  More under-the-hood changes to support UTF-8 - I'll work on
+  modifying the text display functions after all the small things like
+  kinsoku, itoa, atoi, etc. have been taken care of.
+
+2023-06-16
+  Kinsoku system now uses UTF-8. This hasn't been fully tested, so
+  while there are no game-breaking errors, it may simply not work.
+
+  This really does need testing at some point.
+
 2023-06-15
   The engine now checks for UTF-8 scripts. As of now, this behaviour
   is broken since it still acts as if the script is SHIFT-JIS.

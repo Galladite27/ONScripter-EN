@@ -8,6 +8,14 @@ INDEX
 
 BUGS OR MISFEATURES
 
+* Pretext tags (namely taglogCommand) need testing with UTF-8
+  - What's the deal with zenkakko_flag (see file for more info)?
+  - I need to check if the checking for '[' and ']' is necessary since
+    buf is determined through a different method in onsen and onani
+    (current_page->tag vs pretext_buf)
+  - Where pretext_buf is referenced, I've instead referenced
+    current_page->tag, but this may be wrong.
+
 * The dll-loading option should be hidden on Mac and Linux
 
 * OS X: should look for missing files (eg font) inside bundles, even
@@ -61,7 +69,8 @@ TODO LIST
 
 * Update Windows makefiles
 * Bring over UTF-8 suport from onscripter-insani
-  - FontInfo, ONScripterLabel_command, ONScripterLabel_text
+  - FontInfo, ONScripterLabel_text
+  - ONScripterLabel_command (gettagCommand, captionCommand)
   - ScriptHandler (getTextMarker usage, string from int)
   - ScriptParser_command (ScriptParser done - kinsoku)
   - Make a version of the current linewrap algorithm for use with

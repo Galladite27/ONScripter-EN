@@ -2749,6 +2749,28 @@ int ONScripterLabel::gettagCommand()
 
     char *buf = current_page->tag;
 
+// Comment this out to not use the untested gettag behaviour
+#define GETTAG_UNSTABLE
+
+#ifdef GETTAG_UNSTABLE
+    printf("DEBUG: buf:\n>>>%s<<<\n");
+
+    /* From onani */
+    int n = script_h.enc.getBytes(buf[0]);
+    unsigned short unicode1 = script_h.enc.getUTF16(buf);
+    unsigned short unicode2 = script_h.enc.getUTF16("��", Encoding::CODE_CP932);
+    /* TODO: is this necessary? */
+    if (buf[0] == '[')
+        buf++;
+    /*
+    else if (zenkakko_flag && unicode1 == unicode2)
+        buf += n;
+    */
+    else
+        buf = NULL;
+    /* End        */
+#endif
+
     int end_status;
     do{
         script_h.readVariable();
@@ -2765,19 +2787,50 @@ int ONScripterLabel::gettagCommand()
         else if ( script_h.pushed_variable.type & ScriptHandler::VAR_STR ){
             if (buf){
                 const char *buf_start = buf;
-                bool in_1byte_mode = false;
-                while((in_1byte_mode || *buf != '/') && *buf != 0){
-                    if (*buf == '`') {
-                        in_1byte_mode = !in_1byte_mode;
-                        buf++;
-                    } else if (IS_TWO_BYTE(*buf))
-                        buf += 2;
-                    else
-                        buf++;
+
+#ifdef GETTAG_UNSTABLE
+                if (script_h.enc.getEncoding() == Encoding::CODE_CP932) {
+#endif
+                    bool in_1byte_mode = false;
+                    while((in_1byte_mode || *buf != '/') && *buf != 0
+#ifdef GETTAG_UNSTABLE
+                            && *buf != ']' /* TODO: do we need to check for zenkakko_flag here?
+                                            * It isn't defined here currently though...
+                                            * see BUGS for more details
+                                            */
+                         ) {
+#endif
+                        if (*buf == '`') {
+                            in_1byte_mode = !in_1byte_mode;
+                            buf++;
+                        } else if (IS_TWO_BYTE(*buf))
+                            buf += 2;
+                        else
+                            buf++;
+                    }
                 }
+
+#ifdef GETTAG_UNSTABLE
+                else {
+                    /* From onani */
+                    unicode1 = script_h.enc.getUTF16(buf);
+                    unicode2 = script_h.enc.getUTF16("��", Encoding::CODE_CP932);
+                    while(*buf != '/' && *buf != 0 && *buf != ']' &&
+                          /* (!zenkakko_flag || unicode1 != unicode2)) {
+                           *
+                           * zenkakko_flag isn't defined here - this may be broken
+                           * see BUGS for more details
+                           */
+                          unicode1 != unicode2) {
+                        buf += script_h.enc.getBytes(buf[0]);
+                    }
+                    /* End        */
+                }
+#endif
+
                 setStr( &script_h.getVariableData( script_h.pushed_variable.var_no ).str, buf_start, buf-buf_start );
             }
-            else{
+            else {
                 setStr( &script_h.getVariableData( script_h.pushed_variable.var_no ).str, NULL);
             }
         }
@@ -2788,6 +2841,21 @@ int ONScripterLabel::gettagCommand()
             buf = NULL;
     }
     while(end_status & ScriptHandler::END_COMMA);
+
+#ifdef GETTAG_UNSTABLE
+    /* Where pretext_buf is referenced, I've instead referenced
+     * current_page->tag - this may be wrong.
+     */
+    n = script_h.enc.getBytes(current_page->tag[0]);
+
+    unicode1 = script_h.enc.getUTF16(current_page->tag);
+
+    unicode2 = script_h.enc.getUTF16("��", Encoding::CODE_CP932);
+    if (current_page->tag[0] == ']')
+        current_page->tag++;
+    else if ( /* zenkakko_flag &&  */ unicode1 == unicode2)
+        current_page->tag += n;
+#endif
 
     return RET_CONTINUE;
 }
