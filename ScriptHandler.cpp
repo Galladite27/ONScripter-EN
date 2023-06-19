@@ -1678,7 +1678,6 @@ int ScriptHandler::readScript( DirPaths &path )
     		game_identifier[i - 1] = 0;
     	}
     }
-    printf("Parsed options\n");
 
     return labelScript();
 }
