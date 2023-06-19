@@ -65,6 +65,9 @@ DOCUMENTATION UPDATING LIST
 
 * Is kinsoku enabled in onsen's english mode?
 
+* ~ and ^ may (will) need updating in relation to onsen's and onani's
+  UTF-8 integration
+
 TODO LIST
 
 * Update Windows makefiles

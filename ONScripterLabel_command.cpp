@@ -31,6 +31,7 @@
  *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include "Encoding.h"
 #include "ONScripterLabel.h"
 #include "graphics_resize.h"
 #include "version.h"
@@ -4051,7 +4052,15 @@ int ONScripterLabel::captionCommand()
     char *buf2 = new char[len*2+3];
     char *buf1 = new char[len+1];
     strcpy(buf1, buf);
-    DirectReader::convertFromSJISToUTF8(buf2, buf1);
+
+    /* I don't think that onsen supports UTF8_CAPTION
+     * -Galladite 2023-6-19
+     */
+    if (script_h.enc.getEncoding() == Encoding::CODE_CP932) {
+        DirectReader::convertFromSJISToUTF8(buf2, buf1);
+    } else {
+        strcpy(buf2, buf1);
+    }
     delete[] buf1;
 
     setStr( &wm_title_string, buf2 );
