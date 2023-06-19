@@ -10,11 +10,15 @@ BUGS OR MISFEATURES
 
 * Pretext tags (namely taglogCommand) need testing with UTF-8
   - What's the deal with zenkakko_flag (see file for more info)?
+    \--> script_h.zenkakko_flag
   - I need to check if the checking for '[' and ']' is necessary since
     buf is determined through a different method in onsen and onani
     (current_page->tag vs pretext_buf)
   - Where pretext_buf is referenced, I've instead referenced
     current_page->tag, but this may be wrong.
+  - OK, so the gettag command is broken. It doesn't fetch the data
+    properly and causes a segfault when returning.
+    \--> HIGH PRIORITY BUG
 
 * The dll-loading option should be hidden on Mac and Linux
 
@@ -74,13 +78,14 @@ TODO LIST
 * Bring over UTF-8 suport from onscripter-insani
   - FontInfo, ONScripterLabel_text
   - ScriptHandler (getTextMarker usage, string from int)
+    \--> Also wow readToken needs a lot doing to it for UTF-8
   - Make a version of the current linewrap algorithm for use with
     proportional fonts
   - Interpret font styles
     * Hold more font styles in FontInfo
     * Recognise ~ tags in script
 * UTF-8 features which need properly testing
-  - ONScripterLabel_command (gettagCommand)
+  - ONScripterLabel_command (gettagCommand) BROKEN
   - ScriptParser_command (basic kinsoku functionality, addkinsokuCommand, setkinsokuCommand)
 
 * Continue working on Windows support with insani

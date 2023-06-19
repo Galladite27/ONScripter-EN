@@ -318,44 +318,68 @@ const char *ScriptHandler::readToken(bool check_pretext)
              ch == '[' || ch == '(' || ch == '`' ||
              ch == '!' || ch == '#' || ch == ',' ||
              ch == '{' || ch == '<' || ch == '>' ||
-             ch == '"'){ // text or pretext
+             ch == '"' ||
+             (enc.getEncoding() == Encoding::CODE_UTF8 &&
+              ch == enc.getTextMarker())
+             ){ // text or pretext
 
         //Mion: parsing pretext tags as separate tokens from text,
         //  which is what NScr seems to be doing
         if (check_pretext && !is_rgosub_click &&
             ( (ch == '[') ||
               (zenkakko_flag && (ch == (char)0x81) && (buf[1] == (char)0x79)) )) {
+
             //pretext tag
             current_cmd_type = CMD_PRETEXT;
             if (ch != '[') ++buf; //fullwidth bracket is 2 bytes
             ch = *++buf;
+
             bool in_1byte_mode = false;
             while (1){
-                if ((ch == 0x0a) || (ch == 0x00)) {
-                    //Mion: NScr will actually parse until a terminating ']',
-                    //  even including newlines... probably not used by anything
-                    // (or a good idea), so we'll stop parsing at end of line
-                    errorAndCont( "readToken: unterminated pretext tag" );
-                    break;
-                }
-                else if (ch == '`')
-                    in_1byte_mode = !in_1byte_mode;
-                else if (!in_1byte_mode && (ch == ']')) {
-                    ++buf;
-                    break;
-                }
-                else if (!in_1byte_mode && zenkakko_flag &&
-                         (ch == (char)0x81) &&
-                         (buf[1] == (char)0x7A)) {
+                int n = enc.getBytes(ch);
+
+                /* Check if we should exit pretext tag through
+                 * zenkakko brackets
+                 */
+                if (!in_1byte_mode && zenkakko_flag &&
+                     (ch == (char)0x81) &&
+                     (buf[1] == (char)0x7A) &&
+                     n == 2) {
                     buf += 2;
                     break;
                 }
-                else if ( IS_TWO_BYTE(ch) ) {
+
+                /* All other special characters are one-byte, so we
+                 * should make sure that we don't misinterpret the
+                 * first byte of multi-byte characters to be one of
+                 * them. -Galladite 2023-6-19
+                 */
+                if (n == 1) {
+                    // Other methods of exiting
+                    if (!in_1byte_mode && (ch == ']')) {
+                        ++buf;
+                        break;
+                    } else if ((ch == 0x0a) || (ch == 0x00)) {
+                        //Mion: NScr will actually parse until a terminating ']',
+                        //  even including newlines... probably not used by anything
+                        // (or a good idea), so we'll stop parsing at end of line
+                        errorAndCont( "readToken: unterminated pretext tag" );
+                        break;
+                    } else if (ch == '`') {
+                        in_1byte_mode = !in_1byte_mode;
+                        // There is no need to advance buf here; since
+                        // there is no break, it will be done below
+                    }
+                }
+
+                /* For each byte in the character, advance 1 byte to
+                 * reach the beginning of the next
+                 */
+                for (int i=0; i<n; i++) {
                     addStringBuffer( ch );
                     ch = *++buf;
                 }
-                addStringBuffer( ch );
-                ch = *++buf;
+
             }
             next_script = buf;
             return string_buffer;

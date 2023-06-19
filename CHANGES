@@ -9,6 +9,7 @@
 
   Pretext tag changes for UTF-8 - may be broken (needs testing)
   - What's the deal with zenkakko_flag (see file for more info)?
+    \--> script_h.zenkakko_flag
   - I need to check if the checking for '[' and ']' is necessary since
     buf is determined through a different method in onsen and onani
     (current_page->tag vs pretext_buf)
@@ -21,7 +22,7 @@
 
   More under-the-hood changes to support UTF-8 - I'll work on
   modifying the text display functions after all the small things like
-  kinsoku, itoa, atoi, etc. have been taken care of.
+  kinsoku, getStringFromInteger etc. have been taken care of.
 
 2023-06-16
   Kinsoku system now uses UTF-8. This hasn't been fully tested, so
