@@ -46,7 +46,9 @@ static void optionHelp()
     printf( "      --nomatch-audiodevice-to-bgm\tdon't reset audio to match bgm specs (default)\n");
     printf( "  -f, --font file\tset a TTF font file\n");
     printf( "      --registry file\tset a registry file\n");
+#ifdef WIN32
     printf( "      --dll file\tset a dll file\n");
+#endif
     printf( "      --english\t\tset preferred text mode to English (default)\n");
     printf( "      --japanese\tset preferred text mode to Japanese\n");
     printf( "      --english-menu\tuse English system menu messages (default)\n");

@@ -10,9 +10,6 @@ BUGS OR MISFEATURES
 
 * The dll-loading option should be hidden on Mac and Linux
 
-* ;gameid seems to have broken since I added ;$ - this needs fixing
-  very soon or at least to be mentioned in release notes.
-
 * OS X: should look for missing files (eg font) inside bundles, even
   if the main game data is outside the bundle.
 
@@ -95,3 +92,5 @@ COMPLETED
 * .otf, .otc and .ttc are now allowed in addition to .ttf
 * Engine checks for UTF-8 scripts
 * Kinsoku system has been converted to UTF
+* --dll option now only visible on Windows
+* ;gameid fixed - ADD TO RELEASE NOTES

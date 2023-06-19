@@ -1587,11 +1587,11 @@ int ScriptHandler::readScript( DirPaths &path )
 
     /* ---------------------------------------- */
     /* screen size and value check */
-    char *buf = script_buffer+1;
+    char *buf = script_buffer;
     while( script_buffer[0] == ';' ){
-        if ( !strncmp( buf, "mode", 4 ) ){
-            buf += 4;
-            if      ( !strncmp( buf, "800", 3 ) ) {
+        if ( !strncmp( buf, ";mode", 5 ) ){
+            buf += 5;
+            if ( !strncmp( buf, "800", 3 ) ) {
                 screen_width = 800;
                 screen_height = 600;
                 buf += 3;
@@ -1613,16 +1613,16 @@ int ScriptHandler::readScript( DirPaths &path )
                 screen_height = 480;
             }
         }
-        else if ( !strncmp( buf, "value", 5 ) ){
-            buf += 5;
+        else if ( !strncmp( buf, ";value", 6 ) ){
+            buf += 6;
             SKIP_SPACE(buf);
             global_variable_border = 0;
             while ( *buf >= '0' && *buf <= '9' )
                 global_variable_border = global_variable_border * 10 + *buf++ - '0';
             //printf("set global_variable_border: %d\n", global_variable_border);
         }
-        else if ( *buf == '$' ) {
-            buf++;
+        else if (!(strncmp( buf, ";$", 2 ))) {
+            buf += 2;
             while ( *buf != '\n' ) {
                 if (*buf == 'g' || *buf == 'G') {
                     buf++;
@@ -1666,8 +1666,7 @@ int ScriptHandler::readScript( DirPaths &path )
         }
         buf++;
     }
-    // Is this in the wrong place? Should it be in the loop above?
-    // - Galladite
+
     if ( *buf++ == ';' && !game_identifier ){
     	while (*buf == ' ' || *buf == '\t') ++buf;
     	if ( !strncmp( buf, "gameid ", 7 ) ){
@@ -1679,6 +1678,7 @@ int ScriptHandler::readScript( DirPaths &path )
     		game_identifier[i - 1] = 0;
     	}
     }
+    printf("Parsed options\n");
 
     return labelScript();
 }
