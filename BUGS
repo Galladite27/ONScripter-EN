@@ -65,6 +65,9 @@ TODO LIST
 * Change the help text to mention other font types (under -f)
 * Update Windows makefiles
 * Bring over UTF-8 suport from onscripter-insani
+  - FontInfo, ONScripterLabel_command, ONScripterLabel_text
+  - ScriptHandler (getTextMarker usage, string from int)
+  - ScriptParser_command (ScriptParser done - kinsoku)
   - Make a version of the current linewrap algorithm for use with
     proportional fonts
   - Interpret font styles
