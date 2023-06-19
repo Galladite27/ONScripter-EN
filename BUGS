@@ -73,14 +73,16 @@ TODO LIST
 * Update Windows makefiles
 * Bring over UTF-8 suport from onscripter-insani
   - FontInfo, ONScripterLabel_text
-  - ONScripterLabel_command (gettagCommand, captionCommand)
   - ScriptHandler (getTextMarker usage, string from int)
-  - ScriptParser_command (ScriptParser done - kinsoku)
   - Make a version of the current linewrap algorithm for use with
     proportional fonts
   - Interpret font styles
     * Hold more font styles in FontInfo
     * Recognise ~ tags in script
+* UTF-8 features which need properly testing
+  - ONScripterLabel_command (gettagCommand)
+  - ScriptParser_command (basic kinsoku functionality, addkinsokuCommand, setkinsokuCommand)
+
 * Continue working on Windows support with insani
   - Building with internal libraries
   - Integrating custom configure and Makefile into main ones
