@@ -8,20 +8,6 @@ INDEX
 
 BUGS OR MISFEATURES
 
-* Pretext tags (namely taglogCommand) need testing with UTF-8
-  - What's the deal with zenkakko_flag (see file for more info)?
-    \--> script_h.zenkakko_flag
-  - I need to check if the checking for '[' and ']' is necessary since
-    buf is determined through a different method in onsen and onani
-    (current_page->tag vs pretext_buf)
-  - Where pretext_buf is referenced, I've instead referenced
-    current_page->tag, but this may be wrong.
-  - OK, so the gettag command is broken. It doesn't fetch the data
-    properly and causes a segfault when returning.
-    \--> HIGH PRIORITY BUG
-
-* The dll-loading option should be hidden on Mac and Linux
-
 * OS X: should look for missing files (eg font) inside bundles, even
   if the main game data is outside the bundle.
 
@@ -72,6 +58,7 @@ DOCUMENTATION UPDATING LIST
 * ~ and ^ may (will) need updating in relation to onsen's and onani's
   UTF-8 integration
 
+
 TODO LIST
 
 * Update Windows makefiles
@@ -109,6 +96,7 @@ COMPLETED
 * yesnobox and okcancelbox implementation for Linux
 * .otf, .otc and .ttc are now allowed in addition to .ttf
 * Engine checks for UTF-8 scripts
-* Kinsoku system has been converted to UTF
+* Kinsoku system has been converted to UTF-8
 * --dll option now only visible on Windows
 * ;gameid fixed - ADD TO RELEASE NOTES
+* Pretext tags have been converted to UTF-8 (also they're cool)

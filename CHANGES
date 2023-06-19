@@ -7,16 +7,8 @@
 
   Help text fixes for --dll and -f options
 
-  Pretext tag changes for UTF-8 - may be broken (needs testing)
-  - What's the deal with zenkakko_flag (see file for more info)?
-    \--> script_h.zenkakko_flag
-  - I need to check if the checking for '[' and ']' is necessary since
-    buf is determined through a different method in onsen and onani
-    (current_page->tag vs pretext_buf)
-  - Can be disabled temporarily in ONScripterLabel_command.cpp L2754
-    or thereabouts
-  - Where pretext_buf is referenced, I've instead referenced
-    current_page->tag, but this may be wrong.
+  Pretext tag changes for UTF-8 (also many bugfixes for my changes)
+  But yeah, pretext tags should be finished now
 
   Window captions should now be drawn properly in UTF-8 mode
 
