@@ -17,6 +17,8 @@
   - Where pretext_buf is referenced, I've instead referenced
     current_page->tag, but this may be wrong.
 
+  Window captions should now be drawn properly in UTF-8 mode
+
   More under-the-hood changes to support UTF-8 - I'll work on
   modifying the text display functions after all the small things like
   kinsoku, itoa, atoi, etc. have been taken care of.
