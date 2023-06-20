@@ -30,6 +30,9 @@ BUGS OR MISFEATURES
 * Sound bug related to Plumerai and using -s option (or ons.cfg
   equivalent). See bug 1 on github.
 
+* Text is wrapping too soon when using larger resolutions, despite the
+  text window being sized correctly (screen ratio variables issue?)
+
 
 FEATURES REQUESTED
   
@@ -66,6 +69,7 @@ TODO LIST
   - FontInfo, ONScripterLabel_text
   - ScriptHandler (getTextMarker usage, string from int)
     \--> Also wow readToken needs a lot doing to it for UTF-8
+    \--> Check if readLabel needs adapting
   - Make a version of the current linewrap algorithm for use with
     proportional fonts
   - Interpret font styles

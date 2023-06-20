@@ -2,6 +2,8 @@
   getStringFromInteger now uses UTF-8 characters when in UTF-8 mode (I
   know, a real shocker)
 
+  Changes to readToken for UTF-8 characters - almost all done
+
 2023-06-19
   Major bugfix for ;gameid directive - it now works on line 1 lol
 

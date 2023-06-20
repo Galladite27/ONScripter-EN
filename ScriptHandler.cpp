@@ -387,6 +387,8 @@ const char *ScriptHandler::readToken(bool check_pretext)
         while (1){
             if (rgosub_flag && (num_rgosub_waits == total_rgosub_wait_size)){
                 //double the rgosub wait buffer size
+                // Does this need changing? I don't really know if
+                // this is UTF-8 related -Galladite 2023-06-20
                 char **tmp = rgosub_wait_pos;
                 bool *tmp2 = rgosub_wait_1byte;
                 total_rgosub_wait_size *= 2;
@@ -408,17 +410,37 @@ const char *ScriptHandler::readToken(bool check_pretext)
                 ch = *buf;
             }
             if ((ch == 0x0a) || (ch == 0x00)) break;
-            if ( IS_TWO_BYTE(ch) ){
+// TODO after testing remove the conditionals
+#define readt_testing
+
+#ifdef readt_testing
+            int n = enc.getBytes(ch);
+            if ( n > 1 ) {
+#else
+            if ( IS_TWO_BYTE(ch) ) {
+#endif
                 if (!ignore_click_flag &&
                     (checkClickstr(buf) > 0))
                     clickstr_flag = true;
                 else
                     clickstr_flag = false;
+#ifdef readt_testing
+                // We already know the first byte isn't 0x0a or \0
+                addStringBuffer( ch );
+                ch = *++buf;
+                for (int i=1; i<n; i++) {
+                    // Invalid multi-byte character:
+                    if (ch == 0x0a || ch == '\0') break;
+                    addStringBuffer( ch );
+                    ch = *++buf;
+                }
+#else
                 addStringBuffer( ch );
                 ch = *++buf;
                 if (ch == 0x0a || ch == '\0') break; //invalid 2-byte char
                 addStringBuffer( ch );
                 ch = *++buf;
+#endif
                 //Mion: ons-en processes clickstr chars here in readToken,
                 // not in ONScripterLabel_text - adds a special
                 // sequence '\@' after the clickstr char
@@ -443,13 +465,16 @@ const char *ScriptHandler::readToken(bool check_pretext)
                 }
                 ignore_click_flag = clickstr_flag = false;
             }
+            // 1 byte character read
             else {
+                // Toggle 1 byte mode
                 if (ch == '`'){
                     addStringBuffer( ch );
                     ch = *++buf;
                     if (!is_nscr_english)
                         in_1byte_mode = !in_1byte_mode;
                 }
+                // 1 byte mode special syntax markers
                 else if (in_1byte_mode) {
                     if (ch == '$'){
                         if (buf[1] == '$') ++buf; else{
@@ -460,6 +485,10 @@ const char *ScriptHandler::readToken(bool check_pretext)
                             continue;
                         }
                     }
+                    /* TODO: integer variables are not interpolated
+                     * into text when in one byte mode. Should this be
+                     * fixed? -Galladite 2023-06-20
+                     */
                     if ((ch == '_') && (checkClickstr(buf+1) > 0)) {
                         ignore_click_flag = true;
                         ch = *++buf;
@@ -497,6 +526,8 @@ const char *ScriptHandler::readToken(bool check_pretext)
                     } else if (ch == ')') {
                         addStringBuffer( RIGHT_PAREN );
                     } else if (ch == 0x0a || ch == '\0') break;
+                    // Advance non-syntax, 1 byte, 1bm characters here
+                    // (The majority of English text)
                     else
                         addStringBuffer( ch );
                     ch = *++buf;
@@ -515,7 +546,9 @@ const char *ScriptHandler::readToken(bool check_pretext)
                     }
                     ignore_click_flag = clickstr_flag = false;
                 }
-                else{ //!in_1byte_mode
+                // Not in one byte mode, but one byte character read
+                else{
+                    // Interpret click waits
                     if ((ch == '@') || (ch == '\\')) {
                         if (!ignore_click_flag){
                             addStringBuffer( ch );
@@ -538,6 +571,8 @@ const char *ScriptHandler::readToken(bool check_pretext)
                         ch = *++buf;
                         continue;
                     }
+                    // One-byte (but not one byte mode) syntax markers
+                    // Aka syntax markers found in Japanese text
                     if (ch == '%' || ch == '?'){
                         addIntVariable(&buf);
                     }
@@ -552,6 +587,7 @@ const char *ScriptHandler::readToken(bool check_pretext)
                         addStringBuffer(TXTBTN_END);
                         ch = *++buf;
                     }
+                    // TODO: THIS NEEDS ADAPTING FOR UTF-8
                     else if (ch == '{') {
                         // comma list of var/val pairs
                         buf++;
@@ -617,14 +653,22 @@ const char *ScriptHandler::readToken(bool check_pretext)
                             ignore_click_flag = true;
                         else
                             ignore_click_flag = false;
+                        // Advance 1 char
                         addStringBuffer( ch );
                         buf++;
+                        // If the next char is a space, advance one
+                        // more char (Why? won't this be handled on
+                        // the next pass?) -Galladite 2023-06-20
                         if (*buf == ' ') {
                             addStringBuffer( *buf );
                             buf++;
                         }
                     }
+                    // Set the next ch to be the char pointerd to by
+                    // the now-advanced buffer
                     ch = *buf;
+                    // Again, wouldn't this be handled on the next pass?
+                    // If it ain't broke, don't fix it, I guess
                     if (ch == 0x0a || ch == '\0') break;
                 }
             }
