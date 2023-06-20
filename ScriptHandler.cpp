@@ -947,12 +947,21 @@ void ScriptHandler::skipToken()
         if ( *buf == 0x0a ||
              (!quote_flag && !text_flag && (*buf == ':' || *buf == ';') ) ) break;
         if ( *buf == '"' ) quote_flag = !quote_flag;
+
+        int n = enc.getBytes(*buf);
+
+        buf += n;
+        if (n > 1 && !quote_flag) text_flag = true;
+
+        // TODO: probably remove this
+        /*
         if ( IS_TWO_BYTE(*buf) ){
             buf += 2;
             if ( !quote_flag ) text_flag = true;
         }
         else
             buf++;
+        */
     }
     if (text_flag && *buf == 0x0a) buf++;
     
@@ -1236,8 +1245,45 @@ int ScriptHandler::checkClickstr(const char *buf, bool recursive_flag)
     if ((buf[0] == '@') || (buf[0] == '\\')) return -1;
 
     if (clickstr_list == NULL) return 0;
+    // Actually means no english mode
     bool only_double_byte_check = true;
     char *click_buf = clickstr_list;
+    int n;
+#ifdef readt_testing
+    /* TODO FIXME THIS IS COMPLETELY UNTESTED
+     * -Galladite 2023-6-20
+     */
+    while(click_buf[0]){
+        n = enc.getBytes(click_buf[0]);
+        m = enc.getBytes(buf[0]);
+
+        if (click_buf[0] == '`'){
+            click_buf++;
+            only_double_byte_check = false;
+            continue;
+        }
+
+        if (! only_double_byte_check){
+            if (n == 1 && m == 1 && (click_buf[0] == buf[0])) {
+                if (!recursive_flag && checkClickstr(buf+1, true) != 0) return 0;
+                return 1;
+            }
+        }
+
+        if (n < 1 && m == n) {
+            for (int i=0; i<n; i++) {
+            }
+        }
+        if (IS_TWO_BYTE(click_buf[0]) && IS_TWO_BYTE(buf[0]) &&
+            (click_buf[0] == buf[0]) && (click_buf[1] == buf[1])){
+            if (!recursive_flag && checkClickstr(buf+2, true) != 0) return 0;
+            return 2;
+        }
+        if (IS_TWO_BYTE(click_buf[0])) click_buf++;
+
+        click_buf++;
+    }
+#else
     while(click_buf[0]){
         if (click_buf[0] == '`'){
             click_buf++;
@@ -1259,6 +1305,7 @@ int ScriptHandler::checkClickstr(const char *buf, bool recursive_flag)
         if (IS_TWO_BYTE(click_buf[0])) click_buf++;
         click_buf++;
     }
+#endif
 
     return 0;
 }

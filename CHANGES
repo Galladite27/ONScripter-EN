@@ -3,6 +3,11 @@
   know, a real shocker)
 
   Changes to readToken for UTF-8 characters - almost all done
+  - We can handle multi-byte characters
+  - { and } now work properly
+
+  I'm now pretty much ready to start working on the text display
+  functions and the new linewrap algorithm.
 
 2023-06-19
   Major bugfix for ;gameid directive - it now works on line 1 lol

@@ -70,6 +70,10 @@ TODO LIST
   - ScriptHandler (getTextMarker usage, string from int)
     \--> Also wow readToken needs a lot doing to it for UTF-8
     \--> Check if readLabel needs adapting
+
+skipToken
+checkClickstr
+
   - Make a version of the current linewrap algorithm for use with
     proportional fonts
   - Interpret font styles
