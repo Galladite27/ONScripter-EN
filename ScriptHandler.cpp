@@ -587,7 +587,6 @@ const char *ScriptHandler::readToken(bool check_pretext)
                         addStringBuffer(TXTBTN_END);
                         ch = *++buf;
                     }
-                    // TODO: THIS NEEDS ADAPTING FOR UTF-8
                     else if (ch == '{') {
                         // comma list of var/val pairs
                         buf++;
@@ -616,10 +615,27 @@ const char *ScriptHandler::readToken(bool check_pretext)
                                 bool invar_1byte_mode = false;
                                 int tmp_count = 0;
                                 strcpy(saved_string_buffer, "");
+                                /* Begin reading string data */
                                 while (*buf != 0x0a && *buf != '\0' &&
                                        (invar_1byte_mode || ((*buf != ',') && (*buf != '}')))) {
                                     if (*buf == '`')
                                         invar_1byte_mode = !invar_1byte_mode;
+#ifdef readt_testing
+                                    n = enc.getBytes(ch);
+                                    if (tmp_count+n >= STRING_BUFFER_LENGTH)
+                                        errorAndExit("readToken: var string length exceeds 2048 bytes.");
+                                    if ((*buf == '\\') || (*buf == BACKSLASH)) {
+                                        //Mion: I really shouldn't be modifying
+                                        //  the script buffer FIXME
+                                        saved_string_buffer[tmp_count++] = '\\';
+                                        *buf++ = BACKSLASH;
+                                    } else {
+                                        for (int i=0; i<n; i++) {
+                                            saved_string_buffer[tmp_count++] = *buf++;
+                                        }
+                                    }
+                                    saved_string_buffer[tmp_count] = '\0';
+#else
                                     if ((tmp_count+1 >= STRING_BUFFER_LENGTH) ||
                                         (IS_TWO_BYTE(*buf) && (tmp_count+2 >= STRING_BUFFER_LENGTH)))
                                         errorAndExit("readToken: var string length exceeds 2048 bytes.");
@@ -634,7 +650,9 @@ const char *ScriptHandler::readToken(bool check_pretext)
                                     } else
                                         saved_string_buffer[tmp_count++] = *buf++;
                                     saved_string_buffer[tmp_count] = '\0';
+#endif
                                 }
+                                /* Finish reading string data */
                                 setStr( &tmp->str, saved_string_buffer );
                                 //printf("string: %s\n", saved_string_buffer);
                             }
