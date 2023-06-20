@@ -1322,6 +1322,7 @@ int ScriptHandler::getStringFromInteger( char *buffer, int no, int num_column,
         num_digit -= num_digit+num_minus-num_column;
     }
 
+    // Half-width characters
     if (!use_zenkaku) {
         if (num_minus == 1) no = -no;
         char format[6];
@@ -1334,6 +1335,11 @@ int ScriptHandler::getStringFromInteger( char *buffer, int no, int num_column,
         return num_column;
     }
 
+    // Full-width characters
+    int code = enc.getEncoding();
+    int n = 2; // bytes per character
+    if (code == Encoding::CODE_UTF8)
+        n = 3;
     int c = 0;
     if (is_zero_inserted){
         for (i=0 ; i<num_space ; i++){
@@ -1348,20 +1354,36 @@ int ScriptHandler::getStringFromInteger( char *buffer, int no, int num_column,
         }
     }
     if (num_minus == 1){
-        buffer[c++] = "|"[0];
-        buffer[c++] = "|"[1];
+        if (code == Encoding::CODE_CP932){
+            // This probably should use the bigger dash, but SJIS
+            // doesn't like that. Can this file use UTF-8?
+            buffer[c++] = "|"[0];
+            buffer[c++] = "|"[1];
+        }
+        if (code == Encoding::CODE_UTF8){
+            buffer[c++] = 0xef;
+            buffer[c++] = 0xbc;
+            buffer[c++] = 0x8d;
+        }
     }
-    c = (num_column-1)*2;
+    c = (num_column-1)*n;
     char num_str[] = "‚O‚P‚Q‚R‚S‚T‚U‚V‚W‚X";
     for (i=0 ; i<num_digit ; i++){
-        buffer[c]   = num_str[ no % 10 * 2];
-        buffer[c+1] = num_str[ no % 10 * 2 + 1];
+        if (code == Encoding::CODE_CP932){
+            buffer[c]   = num_str[no % 10 * 2];
+            buffer[c+1] = num_str[no % 10 * 2 + 1];
+        }
+        if (code == Encoding::CODE_UTF8){
+            buffer[c]   = 0xef;
+            buffer[c+1] = 0xbc;
+            buffer[c+2] = 0x90 + no%10;
+        }
         no /= 10;
-        c -= 2;
+        c -= n;
     }
-    buffer[num_column*2] = '\0';
+    buffer[num_column*n] = '\0';
 
-    return num_column*2;
+    return num_column*n;
 }
 
 int ScriptHandler::readScriptSub( FILE *fp, char **buf, int encrypt_mode )
