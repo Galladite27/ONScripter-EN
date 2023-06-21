@@ -113,7 +113,8 @@ extern unsigned short convUTF8ToUTF16(const char **src);
  * textbtnColorChange - swaps linkcolor[0] and sentence_font.color
  * u8strlen - gets the length of a UTF-8 string
  *
- * Point I've got to (besides processText):
+ * Point I've got to (besides processText): all done!
+ * ProcessText: L928
  *
  */
 
@@ -1391,6 +1392,8 @@ void ONScripterLabel::processRuby(unsigned int i, int cmd)
     }
 }
 
+// I hope that all the necessary changes have been made to this; I
+// don't like this function. -Galladite 2023-6-21
 bool ONScripterLabel::processBreaks(bool cont_line, LineBreakType style)
 // Mion: for text processing
 // cont_line: is this a continuation of a prior line (using "/")?
@@ -1430,6 +1433,7 @@ bool ONScripterLabel::processBreaks(bool cont_line, LineBreakType style)
         // straight kinsoku, using current kinsoku char sets
         return_val = false; // does it contain any printable ASCII?
         while (i<strlen(string_buffer)) {
+
             is_ruby = false;
             if (cmd < 0) {
                 is_ruby = true;
@@ -1437,13 +1441,15 @@ bool ONScripterLabel::processBreaks(bool cont_line, LineBreakType style)
                 cmd = 0;
             }
             else {
-                j = (IS_TWO_BYTE(string_buffer[i])) ? 2 : 1;
+                j = script_h.enc.getBytes(string_buffer[i]);
+                //j = (IS_TWO_BYTE(string_buffer[i])) ? 2 : 1;
                 do {
                     cmd = isTextCommand(string_buffer + i + j);
                     // skip over regular text commands
                     if (cmd > 0) j += cmd;
                 } while (cmd > 0);
             }
+
             if ((cmd >= 0) && ((unsigned char) string_buffer[i+j] < 0x80) &&
                 !(string_buffer[i+j] == ' ' || string_buffer[i+j] == 0x00 ||
                   string_buffer[i+j] == 0x0a)) {
@@ -1490,7 +1496,8 @@ bool ONScripterLabel::processBreaks(bool cont_line, LineBreakType style)
                 is_ruby = true;
                 j = -cmd;
             } else
-                j = (IS_TWO_BYTE(string_buffer[i])) ? 2 : 1;
+                //j = (IS_TWO_BYTE(string_buffer[i])) ? 2 : 1;
+                j = script_h.enc.getBytes(string_buffer[i]);
             bool had_wait = false;
             do {
                 cmd = isTextCommand(string_buffer + i + j);
@@ -1543,7 +1550,7 @@ int ONScripterLabel::findNextBreak(int offset, int &len)
     // return offset of first break_before after/including current offset;
     // use len to return # of printed chars between (in half-width chars)
     char *string_buffer = script_h.getStringBuffer();
-    int i = 0, cmd = 0, ruby_end = 0;
+    int i = 0, cmd = 0, ruby_end = 0, n = 0;
     bool in_ruby = false;
     len = 0;
 
@@ -1563,7 +1570,10 @@ int ONScripterLabel::findNextBreak(int offset, int &len)
                 i -= cmd;
             }
         } else
-            i += (IS_TWO_BYTE(string_buffer[i])) ? 2 : 1;
+            //i += (IS_TWO_BYTE(string_buffer[i])) ? 2 : 1;
+            //It's always a sad day when I have to kill off a
+            //perfectly good ? and : -Galladite
+            i += script_h.enc.getBytes(string_buffer[i]);
     }
 
     while (i<(int)(strlen(string_buffer)+2)) {
@@ -1592,13 +1602,23 @@ int ONScripterLabel::findNextBreak(int offset, int &len)
             // skip the begin paren of a ruby
             i++;
             cmd = 0;
-        } else if (IS_TWO_BYTE(string_buffer[i])) {
+        }
+
+        else {
+            n = script_h.enc.getBytes(string_buffer[i]);
+            i += n;
+            len += n;
+        }
+
+        /*
+        else if (IS_TWO_BYTE(string_buffer[i])) {
             i += 2;
             len += 2;
         } else {
             i++;
             len++;
         }
+        */
     }
     // didn't find a break
     return i;
