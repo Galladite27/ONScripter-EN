@@ -930,7 +930,7 @@ bool ONScripterLabel::processText()
 {
     //printf("processText %s %d %d %d\n", script_h.getStringBuffer() + string_buffer_offset, string_buffer_offset, event_mode, line_enter_status);
 
-    char out_text[5]= {'\0', '\0', '\0', '\0'};
+    char out_text[5]= {'\0', '\0', '\0', '\0', '\0'};
 
     bool old_new_line_skip_flag = new_line_skip_flag; //Mion: for temp Umineko8 fix
 
