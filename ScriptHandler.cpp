@@ -1242,20 +1242,20 @@ void ScriptHandler::setClickstr(const char *list)
 int ScriptHandler::checkClickstr(const char *buf, bool recursive_flag)
 {
     if ((buf[0] == '\\') && (buf[1] == '@')) return -2;  //clickwait-or-page
-    if ((buf[0] == '@') || (buf[0] == '\\')) return -1;
+    //if ((buf[0] == '@') || (buf[0] == '\\')) return -1;
+    if ((buf[0] == '@') || (buf[0] == '\\')) {
+        printf("\nEncountered @\n\n");
+        return -1;
+    }
 
+    // Check for clickstr characters
     if (clickstr_list == NULL) return 0;
     // Actually means no english mode
     bool only_double_byte_check = true;
     char *click_buf = clickstr_list;
     int n;
-#ifdef readt_testing
-    /* TODO FIXME THIS IS COMPLETELY UNTESTED
-     * -Galladite 2023-6-20
-     */
+
     while(click_buf[0]){
-        n = enc.getBytes(click_buf[0]);
-        m = enc.getBytes(buf[0]);
 
         if (click_buf[0] == '`'){
             click_buf++;
@@ -1263,49 +1263,30 @@ int ScriptHandler::checkClickstr(const char *buf, bool recursive_flag)
             continue;
         }
 
+        int n = enc.getBytes(click_buf[0]);
+        int m = enc.getBytes(buf[0]);
+
         if (! only_double_byte_check){
-            if (n == 1 && m == 1 && (click_buf[0] == buf[0])) {
+            if (n == 1 && m == 1 && click_buf[0] == buf[0]) {
                 if (!recursive_flag && checkClickstr(buf+1, true) != 0) return 0;
                 return 1;
             }
         }
 
-        if (n < 1 && m == n) {
+        if (n > 1 && m == n) {
             for (int i=0; i<n; i++) {
-            }
-        }
-        if (IS_TWO_BYTE(click_buf[0]) && IS_TWO_BYTE(buf[0]) &&
-            (click_buf[0] == buf[0]) && (click_buf[1] == buf[1])){
-            if (!recursive_flag && checkClickstr(buf+2, true) != 0) return 0;
-            return 2;
-        }
-        if (IS_TWO_BYTE(click_buf[0])) click_buf++;
+                if (click_buf[i] != buf[i]) goto ccs_skip;
 
-        click_buf++;
-    }
-#else
-    while(click_buf[0]){
-        if (click_buf[0] == '`'){
-            click_buf++;
-            only_double_byte_check = false;
-            continue;
-        }
-        if (! only_double_byte_check){
-            if (!IS_TWO_BYTE(click_buf[0]) && !IS_TWO_BYTE(buf[0]) 
-                && (click_buf[0] == buf[0])){
-                if (!recursive_flag && checkClickstr(buf+1, true) != 0) return 0;
-                return 1;
+                if (!recursive_flag && checkClickstr(buf+n, true) != 0) return 0;
+                return 2;
             }
         }
-        if (IS_TWO_BYTE(click_buf[0]) && IS_TWO_BYTE(buf[0]) &&
-            (click_buf[0] == buf[0]) && (click_buf[1] == buf[1])){
-            if (!recursive_flag && checkClickstr(buf+2, true) != 0) return 0;
-            return 2;
-        }
-        if (IS_TWO_BYTE(click_buf[0])) click_buf++;
-        click_buf++;
+ccs_skip:
+        // goto isn't *that* cursed, right? ...right?
+        // -Galladite 2023-6-21
+
+        click_buf += n;
     }
-#endif
 
     return 0;
 }

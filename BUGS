@@ -31,7 +31,8 @@ BUGS OR MISFEATURES
   equivalent). See bug 1 on github.
 
 * Text is wrapping too soon when using larger resolutions, despite the
-  text window being sized correctly (screen ratio variables issue?)
+  text window being sized correctly - not enough text columns are set
+  (minor issue - the user can use setwindow)
 
 
 FEATURES REQUESTED
@@ -60,6 +61,8 @@ DOCUMENTATION UPDATING LIST
 
 * ~ and ^ may (will) need updating in relation to onsen's and onani's
   UTF-8 integration
+
+* clickstr syntax notes (MULTI`SINGLE)
 
 
 TODO LIST
