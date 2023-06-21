@@ -277,6 +277,7 @@ void ONScripterLabel::drawChar( char* text, Fontinfo *info, bool flush_flag,
         }
     }
 
+    // FIXME this may break when proportionality gets added
     if ( info->isEndOfLine() ){
         info->newLine();
         for (int i=0 ; i<indent_offset ; i++)
@@ -460,13 +461,18 @@ void ONScripterLabel::drawString( const char *str, uchar3 color, Fontinfo *info,
             }
         }
 
-        if ( IS_TWO_BYTE(*str) ){
+        int n = script_h.enc.getBytes(*str);
+        //if ( IS_TWO_BYTE(*str) ){
+        if (n > 1) {
             /* Kinsoku process */
-            if (isEndKinsoku( str+2 )){
-                int i = 2;
+            if (isEndKinsoku(str+n)) {
+                int i = 0;
+                // While we keep running into endkinsoku characters...
                 while (!info->isEndOfLine(i) &&
-                       isEndKinsoku( str+2+i )){
-                    i += 2;
+                       isEndKinsoku( str+n+i )){
+                    // ...keep moving along by the number of bytes in
+                    // the previous character we checked
+                    i += script_h.enc.getBytes(*(str+n+i));
                 }
                 if (info->isEndOfLine(i)){
                     info->newLine();
@@ -476,8 +482,9 @@ void ONScripterLabel::drawString( const char *str, uchar3 color, Fontinfo *info,
                 }
             }
 
-            text[0] = *str++;
-            text[1] = *str++;
+            for (int i=0; i<n; i++) {
+                text[i] = *str++;
+            }
             drawChar( text, info, false, false, surface, cache_info, abs_offset );
         }
         else if ((*str == 0x0a) ||
@@ -490,10 +497,24 @@ void ONScripterLabel::drawString( const char *str, uchar3 color, Fontinfo *info,
             text[1] = '\0';
             drawChar( text, info, false, false, surface, cache_info, abs_offset );
             //Mion: fix for allowing mixed 1 & 2 byte chars in English mode
+            /*
             if (script_h.preferred_script == ScriptHandler::JAPANESE_SCRIPT) {
                 if (*str && *str != 0x0a){
                     text[0] = *str++;
                     drawChar( text, info, false, false, surface, cache_info, abs_offset );
+                }
+            }
+            */
+            if (script_h.preferred_script == ScriptHandler::JAPANESE_SCRIPT) {
+                // This fix may be unnecessary now, but just in case...
+                // Yippee nesting
+                for (int i=0; i<3; i++) {
+                    if (*str && *str != 0x0a){
+                        text[0] = *str++;
+                        drawChar( text, info, false, false, surface, cache_info, abs_offset );
+                    } else {
+                        break;
+                    }
                 }
             }
         }
@@ -516,7 +537,7 @@ void ONScripterLabel::restoreTextBuffer(SDL_Surface *surface)
 {
     text_info.fill( 0, 0, 0, 0 );
 
-    char out_text[3] = { '\0','\0','\0' };
+    char out_text[3] = { '\0', '\0', '\0' };
     Fontinfo f_info = sentence_font;
     f_info.clear();
     bool tateyoko = (f_info.getTateyokoMode() == Fontinfo::TATE_MODE);
