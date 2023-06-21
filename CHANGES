@@ -9,6 +9,21 @@
   number of bytes in the string (may still be broken - should it only
   ever be 1 or 2 advances?)
 
+  And so on and so forth, I've made all the obvious modifications
+  necessary to ONScripterLabel_text.cpp before I can start working on
+  the processText command (which is big and important).
+
+  My general checklist for UTF-8 is this:
+  - Modify processText to let UTF-8 characters display
+  - Get the kerning and letter spacing sorted for UTF-8 mode
+  - Make a new linewrap algorithm based on Seung's advice for UTF-8
+    mode only
+  - Create a major release, listing UTF-8 support as "experimental"
+  - Bugfix based on my own findings and any reports
+  - Once enough bugs have been fixed, create another release with
+    UTF-8 listed as "completed" (but there will likely be more
+    bugfixes in the future)
+
 2023-06-20
   getStringFromInteger now uses UTF-8 characters when in UTF-8 mode (I
   know, a real shocker)

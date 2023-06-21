@@ -37,6 +37,7 @@ BUGS OR MISFEATURES
 * Need to advance the right amount after drawing a character (in
   drawChar)
   \--> should it only ever be 1 or 2 advances?
+  \--> do this after processText works properly
 
 
 FEATURES REQUESTED
@@ -73,16 +74,16 @@ TODO LIST
 
 * Update Windows makefiles
 * Bring over UTF-8 suport from onscripter-insani
-  - FontInfo, ONScripterLabel_text
-    \--> ScriptHandler::getNext()
+  - FontInfo, ONScripterLabel_text (processText) ALMOST DONE
+  - Kerning and spacing in UTF-8 mode
   - Make a version of the current linewrap algorithm for use with
     proportional fonts
   - Interpret font styles
     * Hold more font styles in FontInfo
     * Recognise ~ tags in script
 * UTF-8 features which need properly testing
-  - ONScripterLabel_command (gettagCommand) BROKEN
-  - ScriptParser_command (basic kinsoku functionality, addkinsokuCommand, setkinsokuCommand)
+  - ScriptParser_command (basic kinsoku functionality,
+    addkinsokuCommand, setkinsokuCommand)
 
 * Continue working on Windows support with insani
   - Building with internal libraries
