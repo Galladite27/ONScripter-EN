@@ -36,6 +36,7 @@ BUGS OR MISFEATURES
 
 * Need to advance the right amount after drawing a character (in
   drawChar)
+  \--> should it only ever be 1 or 2 advances?
 
 
 FEATURES REQUESTED
@@ -73,6 +74,7 @@ TODO LIST
 * Update Windows makefiles
 * Bring over UTF-8 suport from onscripter-insani
   - FontInfo, ONScripterLabel_text
+    \--> ScriptHandler::getNext()
   - Make a version of the current linewrap algorithm for use with
     proportional fonts
   - Interpret font styles

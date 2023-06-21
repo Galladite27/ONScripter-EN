@@ -3,6 +3,12 @@
   been fixed where certain multi-byte characters would cause
   one directly proceeding clickwait character to be skipped)
 
+  DrawGlyph converts from UTF-8 to UTF-16 when given UTF-8 chars
+
+  DrawChar advances kankaku and uses current_page->add based on the
+  number of bytes in the string (may still be broken - should it only
+  ever be 1 or 2 advances?)
+
 2023-06-20
   getStringFromInteger now uses UTF-8 characters when in UTF-8 mode (I
   know, a real shocker)

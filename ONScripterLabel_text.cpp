@@ -362,7 +362,7 @@ void ONScripterLabel::drawChar( char* text, Fontinfo *info, bool flush_flag,
 }
 
 void ONScripterLabel::drawString( const char *str, uchar3 color, Fontinfo *info,
-                                  bool flush_flag, SDL_Surface *surface, 
+                                  bool flush_flag, SDL_Surface *surface,
                                   int abs_offset, SDL_Rect *rect,
                                   AnimationInfo *cache_info, bool skip_whitespace_flag )
 {
@@ -541,8 +541,6 @@ void ONScripterLabel::restoreTextBuffer(SDL_Surface *surface)
     Fontinfo f_info = sentence_font;
     f_info.clear();
     bool tateyoko = (f_info.getTateyokoMode() == Fontinfo::TATE_MODE);
-
-    printf("Text count: %d\n", current_page->text_count);
 
     int n;
     for ( int i=0 ; i<current_page->text_count ; i+=n  ){
@@ -828,11 +826,12 @@ void ONScripterLabel::startRuby(char *buf, Fontinfo &info)
 
 void ONScripterLabel::endRuby(bool flush_flag, bool lookback_flag, SDL_Surface *surface, AnimationInfo *cache_info)
 {
-    char out_text[3]= {'\0', '\0', '\0'};
+    char out_text[5]= {'\0', '\0', '\0', '\0', '\0'};
     if ( rubyon_flag ){
         ruby_font.clear();
         char *buf = ruby_struct.ruby_start;
         while( buf < ruby_struct.ruby_end ){
+            /*
             out_text[0] = *buf;
             if ( IS_TWO_BYTE(*buf) ){
                 out_text[1] = *(buf+1);
@@ -844,6 +843,15 @@ void ONScripterLabel::endRuby(bool flush_flag, bool lookback_flag, SDL_Surface *
                 drawChar( out_text, &ruby_font, flush_flag,  lookback_flag, surface, cache_info );
             }
             buf++;
+            */
+
+            int n = script_h.enc.getBytes(*buf);
+            for (int i=0; i<n; i++) {
+                out_text[i] = *buf;
+                buf++;
+            }
+
+            drawChar( out_text, &ruby_font, flush_flag,  lookback_flag, surface, cache_info );
         }
     }
     ruby_struct.stage = RubyStruct::NONE;
@@ -858,7 +866,7 @@ int ONScripterLabel::textCommand()
 
     char *buf = script_h.getStringBuffer();
 
-    if (pretextgosub_label && 
+    if (pretextgosub_label &&
         ( (script_h.current_cmd_type == ScriptHandler::CMD_PRETEXT) ||
           ((!pagetag_flag || (page_enter_status == 0)) &&
            (line_enter_status == 0)) )){
@@ -955,7 +963,7 @@ bool ONScripterLabel::processText()
     }
 
     new_line_skip_flag = false;
-    
+
     char ch = script_h.getStringBuffer()[string_buffer_offset];
 
     if (!line_has_nonspace) {
@@ -1200,7 +1208,7 @@ bool ONScripterLabel::processText()
             }
             text_button_info.next->prtext = current_page->text
                 + current_page->text_count;
-            text_button_info.next->text = script_h.getStringBuffer() + 
+            text_button_info.next->text = script_h.getStringBuffer() +
                 string_buffer_offset;
             in_txtbtn = true;
         } else
@@ -1432,7 +1440,7 @@ bool ONScripterLabel::processBreaks(bool cont_line, LineBreakType style)
                 is_ruby = true;
                 j = -cmd;
                 cmd = 0;
-            } 
+            }
             else {
                 j = (IS_TWO_BYTE(string_buffer[i])) ? 2 : 1;
                 do {
@@ -1486,7 +1494,7 @@ bool ONScripterLabel::processBreaks(bool cont_line, LineBreakType style)
             if (cmd < 0) {
                 is_ruby = true;
                 j = -cmd;
-            } else 
+            } else
                 j = (IS_TWO_BYTE(string_buffer[i])) ? 2 : 1;
             bool had_wait = false;
             do {
