@@ -113,6 +113,8 @@ extern unsigned short convUTF8ToUTF16(const char **src);
  * textbtnColorChange - swaps linkcolor[0] and sentence_font.color
  * u8strlen - gets the length of a UTF-8 string
  *
+ * Point I've got to (besides processText):
+ *
  */
 
 extern unsigned short convSJIS2UTF16( unsigned short in );
@@ -831,6 +833,8 @@ void ONScripterLabel::endRuby(bool flush_flag, bool lookback_flag, SDL_Surface *
         ruby_font.clear();
         char *buf = ruby_struct.ruby_start;
         while( buf < ruby_struct.ruby_end ){
+            // I should probably leave this here until my fix has been
+            // tested -Galladite 2023-6-21
             /*
             out_text[0] = *buf;
             if ( IS_TWO_BYTE(*buf) ){
@@ -891,15 +895,6 @@ int ONScripterLabel::textCommand()
         return RET_CONTINUE;
     }
 
-    // Testing:
-    //bool utf8_check = false;
-    //if(script_h.enc.getEncoding() == Encoding::CODE_UTF8) utf8_check = true;
-
-    // TODO:
-    //
-    // Work in file types and encoding checking
-    // Keep adding other features from onani
-
     refresh_window_text_mode = REFRESH_NORMAL_MODE | REFRESH_WINDOW_MODE | REFRESH_TEXT_MODE;
     enterTextDisplayMode();
 
@@ -934,7 +929,7 @@ bool ONScripterLabel::processText()
 {
     //printf("processText %s %d %d %d\n", script_h.getStringBuffer() + string_buffer_offset, string_buffer_offset, event_mode, line_enter_status);
 
-    char out_text[3]= {'\0', '\0', '\0'};
+    char out_text[5]= {'\0', '\0', '\0', '\0'};
 
     bool old_new_line_skip_flag = new_line_skip_flag; //Mion: for temp Umineko8 fix
 
