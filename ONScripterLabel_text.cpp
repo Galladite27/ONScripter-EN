@@ -537,16 +537,26 @@ void ONScripterLabel::restoreTextBuffer(SDL_Surface *surface)
 {
     text_info.fill( 0, 0, 0, 0 );
 
-    char out_text[3] = { '\0', '\0', '\0' };
+    char out_text[5] = { '\0', '\0', '\0', '\0', '\0' };
     Fontinfo f_info = sentence_font;
     f_info.clear();
     bool tateyoko = (f_info.getTateyokoMode() == Fontinfo::TATE_MODE);
-    for ( int i=0 ; i<current_page->text_count ; i++ ){
+
+    printf("Text count: %d\n", current_page->text_count);
+
+    int n;
+    for ( int i=0 ; i<current_page->text_count ; i+=n  ){
+        n = script_h.enc.getBytes(current_page->text[i]);
+
         if ( current_page->text[i] == 0x0a ){
             f_info.newLine();
         }
         else{
-            out_text[0] = current_page->text[i];
+            // Copy the whole character into out_text from
+            // current_page, taking into account the offset
+            for (int j=0; j<n; j++) {
+                out_text[j] = current_page->text[i+j];
+            }
             if (out_text[0] == '('){
                 startRuby(current_page->text + i + 1, f_info);
                 f_info.addLineOffset(ruby_struct.margin);
@@ -604,13 +614,6 @@ void ONScripterLabel::restoreTextBuffer(SDL_Surface *surface)
             else if (out_text[0] == ScriptHandler::TEXT_RIGHT) {
                 f_info.setXY(f_info.xy[0]/2 + 1);
                 continue;
-            }
-            if ( IS_TWO_BYTE(out_text[0]) ){
-                out_text[1] = current_page->text[i+1];
-                i++;
-            }
-            else{
-                out_text[1] = '\0';
             }
             drawChar( out_text, &f_info, false, false, surface, &text_info );
         }
