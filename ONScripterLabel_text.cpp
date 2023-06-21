@@ -36,6 +36,7 @@
 
 #include "ONScripterLabel.h"
 #include "Encoding.h"
+extern unsigned short convUTF8ToUTF16(const char **src);
 
 /*
  * Welcome to Galladite's handy-dandy guide to how the heck this all
@@ -46,6 +47,15 @@
  *  - Character - a single letter or symbol
  *  - Glyph     - a representation of a character (so this includes
  *                fonts and styling)
+ *
+ *
+ *
+ * Useful variables (from Fontinfo):
+ * int font_size_xy[2]  Width and height of font
+ * int top_xy[2]        Top left origin
+ * int num_xy[2]        Row and column of the text windows
+ * int xy[2]            Current position
+ * int pitch_xy[2];     Width and height of a character
  *
  *
  *
@@ -182,13 +192,19 @@ void ONScripterLabel::drawGlyph( SDL_Surface *dst_surface, Fontinfo *info, SDL_C
         return;
 
     unsigned short unicode;
-    if (IS_TWO_BYTE(text[0])){
-        unsigned index = ((unsigned char*)text)[0];
-        index = index << 8 | ((unsigned char*)text)[1];
-        unicode = convSJIS2UTF16( index );
-    }
-    else{
-        unicode = convSJIS2UTF16( ((unsigned char*)text)[0] );
+
+    if (script_h.enc.getEncoding() == Encoding::CODE_CP932) {
+        if (IS_TWO_BYTE(text[0])){
+            unsigned index = ((unsigned char*)text)[0];
+            index = index << 8 | ((unsigned char*)text)[1];
+            unicode = convSJIS2UTF16( index );
+        }
+        else{
+            unicode = convSJIS2UTF16( ((unsigned char*)text)[0] );
+        }
+    } else {
+        // This is surprisingly simple here...
+        unicode = convUTF8ToUTF16((const char**)&text);
     }
 
     int minx, maxx, miny, maxy, advanced;
