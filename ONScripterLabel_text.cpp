@@ -37,12 +37,84 @@
 #include "ONScripterLabel.h"
 #include "Encoding.h"
 
+/*
+ * Welcome to Galladite's handy-dandy guide to how the heck this all
+ * works! This is mostly written for myself before I convert it to
+ * UTF-8, but if anyone works on this in the future it may be of use.
+ *
+ * Quick terminology:
+ *  - Character - a single letter or symbol
+ *  - Glyph     - a representation of a character (so this includes
+ *                fonts and styling)
+ *
+ *
+ *
+ * Command overview:
+ * isRotationRequired - used once, returns true on a one-byte char or
+ *     on one of several two-byte characters
+ * isTranslationRequired - used once, returns true on a full-width
+ *     comma or full stop
+ * isNonPrinting - used once, returns true on a control character or
+ *     full-width space
+ *
+ * renderGlyph - takes a font and a glyph, draws the glyph on a
+ *     surface, and returns the surface
+ * drawGlyph - takes an SDL surface, a Fontinfo, and other info,
+ *     converts to UTF-16, renders the glyph, and applies any
+ *     transformations
+ * drawChar - takes a char * (for multibyte), a Fontinfo, a surface,
+ *     and other info. Ensures the font is open, advances the line
+ *     counter, interprets some minor control characters, draws the
+ *     glyph, and advances the text buffer
+ * drawString - takes lots of information, which is mostly passed
+ *     along. Handles most control characters, ruby text, tabs and
+ *     form feeds etc., handles kinsoku process, newlines, and in the
+ *     end calls drawChar on each character. Also does a little clean-
+ *     up work after the whole string is drawn.
+ *
+ * restoreTextBuffer - pretty much drawString but for use in lookback
+ *     mode
+ * enterTextDisplayMode - what it says on the tin
+ * leaveTextDisplayMode - what it says on the tin
+ * doClickEnd - used after clickwaits
+ * clickWait - initiate a clickwait (calls doClickEnd)
+ * clickNewPage - initiate a clickwait with new page (calls
+ *     doClickEnd)
+ * startRuby - what it says on the tin
+ * endRuby - what it says on the tin
+ * textCommand - calles saveSaveFile(-1), gets the string to print,
+ *     gosubs to the pretext label (if required), enters text display
+ *     mode, calls processText() (linewrap algo??)
+ * processEOT - does something I guess
+ * processText - now this is a big ol' function. Does some text
+ *     processing ig (wait, really?), calles drawChar, returns true
+ *     for a lot of things (why?), reads !s !d !w, also seems to
+ *     handle ruby text (?), does text buttons, calls drawchar...
+ * doLineBreak - what it says on the tin
+ * isTextCommand - what it says on the tin - checks if a line in the
+ *     script is a text command or not
+ * processRuby - calls startRuby and sets some variables
+ * processBreaks - reads through a line until it finds a break, does
+ *     kinsoku and spacebreak stuff, might call some ruby commands
+ * findNextBreak - returns the offset of the first break in a string,
+ *     taking into account a pre-existing offset
+ * terminateTextButton - used to terminate improperly-terminated text
+ *     buttons
+ * textbtnColorChange - swaps linkcolor[0] and sentence_font.color
+ * u8strlen - gets the length of a UTF-8 string
+ *
+ */
+
 extern unsigned short convSJIS2UTF16( unsigned short in );
 
-static inline bool isRotationRequired(const char *text)
+static inline bool isRotationRequired(const char *text, Encoding enc)
 {
-    if ( !IS_TWO_BYTE(text[0]) )    // ascii, halfwidth kana
+
+    // Probably works -Galladite 2023-6-21
+    if (enc.getBytes(text[0]) == 1)
         return true;
+    //if ( !IS_TWO_BYTE(text[0]) )    // ascii, halfwidth kana
+    //    return true;
     //fullwidth commas or full-stops
     return ((text[0] == (char)0x81) &&
             ( ((text[1] >= 0x5b) && (text[1] <= 0x5d)) ||  //hyphens
@@ -135,7 +207,7 @@ void ONScripterLabel::drawGlyph( SDL_Surface *dst_surface, Fontinfo *info, SDL_C
 
     bool rotate_flag = false;
     if ( (info->getTateyokoMode() == Fontinfo::TATE_MODE) &&
-         isRotationRequired(text) )
+         isRotationRequired(text, script_h.enc) )
         rotate_flag = true;
 
     //Mion: to display vertical text more cleanly
