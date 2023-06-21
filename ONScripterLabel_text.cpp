@@ -290,7 +290,7 @@ void ONScripterLabel::drawChar( char* text, Fontinfo *info, bool flush_flag,
         }
     }
 
-    char out_text[3]= {'\0', '\0', '\0'};
+    char out_text[5]= {'\0', '\0', '\0', '\0', '\0'};
     if (text[0] == ScriptHandler::LEFT_PAREN) {
         out_text[0] = '(';
     } else if (text[0] == ScriptHandler::RIGHT_PAREN) {
@@ -338,15 +338,25 @@ void ONScripterLabel::drawChar( char* text, Fontinfo *info, bool flush_flag,
 
     /* ---------------------------------------- */
     /* Update text buffer */
+    /*
     if (IS_TWO_BYTE(text[0]))
         info->advanceCharInHankaku(2);
     else
         info->advanceCharInHankaku(1);
+    */
+    int n = script_h.enc.getBytes(text[0]);
+
+    info->advanceCharInHankaku(n);
 
     if ( lookback_flag ){
+        /*
         current_page->add( text[0] );
         if (IS_TWO_BYTE(text[0]))
             current_page->add( text[1] );
+        */
+        for (int i=0; i<n; i++) {
+            current_page->add(text[i]);
+        }
     }
 }
 
@@ -368,7 +378,7 @@ void ONScripterLabel::drawString( const char *str, uchar3 color, Fontinfo *info,
     setColor(info->color, color);
 
     bool tateyoko = (info->getTateyokoMode() == Fontinfo::TATE_MODE);
-    char text[3] = { '\0', '\0', '\0' };
+    char text[5] = { '\0', '\0', '\0', '\0', '\0' };
     while( *str ){
         while (*str == ' ' && skip_whitespace_flag) str++;
         if (!*str) break;

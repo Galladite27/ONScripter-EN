@@ -34,6 +34,9 @@ BUGS OR MISFEATURES
   text window being sized correctly - not enough text columns are set
   (minor issue - the user can use setwindow)
 
+* Need to advance the right amount after drawing a character (in
+  drawChar)
+
 
 FEATURES REQUESTED
   
