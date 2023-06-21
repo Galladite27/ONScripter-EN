@@ -1242,15 +1242,10 @@ void ScriptHandler::setClickstr(const char *list)
 int ScriptHandler::checkClickstr(const char *buf, bool recursive_flag)
 {
     if ((buf[0] == '\\') && (buf[1] == '@')) return -2;  //clickwait-or-page
-    //if ((buf[0] == '@') || (buf[0] == '\\')) return -1;
-    if ((buf[0] == '@') || (buf[0] == '\\')) {
-        printf("\nEncountered @\n\n");
-        return -1;
-    }
+    if ((buf[0] == '@') || (buf[0] == '\\')) return -1;
 
     // Check for clickstr characters
     if (clickstr_list == NULL) return 0;
-    // Actually means no english mode
     bool only_double_byte_check = true;
     char *click_buf = clickstr_list;
     int n;
