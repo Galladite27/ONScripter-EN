@@ -1,5 +1,21 @@
 2023-06-20
-  ScriptHandler::checkClickstr now work with UTF-8 (plus a bug has
+  processText modified - initial UTF-8 support! OYABB! I've only
+  tested it with CJK characters and accented Latin characters, but
+  it's all good so far! (I wouldn't try coloured emojis though...)
+
+  For the time being, I've set it to advance the distance of a
+  fullwidth space after printing any multibyte character, so that SJIS
+  doesn't break and so that characters don't overlap (as much) while I
+  work on proportional fonts.
+
+  Lookback mode now works properly with UTF-8
+
+  Begin work on proportional fonts for UTF-8 mode :D
+  (Don't worry, SJIS scripts won't be broken by this)
+  \--> Mostly just utility function work so far
+
+2023-06-20
+  ScriptHandler::checkClickstr now works with UTF-8 (plus a bug has
   been fixed where certain multi-byte characters would cause
   one directly proceeding clickwait character to be skipped)
 

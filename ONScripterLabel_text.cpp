@@ -55,7 +55,10 @@ extern unsigned short convUTF8ToUTF16(const char **src);
  * int top_xy[2]        Top left origin
  * int num_xy[2]        Row and column of the text windows
  * int xy[2]            Current position
- * int pitch_xy[2];     Width and height of a character
+ * int pitch_xy[2]      Width and height of a character
+ *
+ * Oh, and tateyoko_mode means whether text is being written
+ * horizontally or vertically. On is "tate" and one is "yoko".
  *
  *
  *
@@ -113,8 +116,29 @@ extern unsigned short convUTF8ToUTF16(const char **src);
  * textbtnColorChange - swaps linkcolor[0] and sentence_font.color
  * u8strlen - gets the length of a UTF-8 string
  *
- * Point I've got to (besides processText): all done!
- * ProcessText: L928
+ *
+ *
+ * After reviewing processText, I need to implement proportionality :(
+ *
+ * I need to fix all instances of advanceCharInHankaku (they WILL
+ * break)
+ *
+ * Process for modifying to be proportional:
+ *  - Always check for Encoding::CODE_UTF8 and keep the behaviour as
+ *    the original for SJIS
+ *  - Change advanceCharInHankaku instances to measure pixels
+ *  - Change newlines to measure font hight
+ *  - On loading a font in Fontinfo, we need to check if in UTF mode,
+ *    and if we are then adapt the textwindow width limits to use
+ *    pixels
+ *  - This means that we can use advanceCharInHankaku and all the
+ *    functions that check for newlines and such to have their
+ *    arguments and return values use pixels, and then have this
+ *    behaviour only occur in UTF-8 mode. Alternatively, we could have
+ *    other functions like advancePxInHankaku, but this would be over-
+ *    complicated and unnecessary.
+ *  - In UTF-8 mode, we actually WANT to draw spaces since their width
+ *    may vary.
  *
  */
 
@@ -280,7 +304,7 @@ void ONScripterLabel::drawChar( char* text, Fontinfo *info, bool flush_flag,
         }
     }
 
-    // FIXME this may break when proportionality gets added
+    // FIXME this will break when proportionality gets added
     if ( info->isEndOfLine() ){
         info->newLine();
         for (int i=0 ; i<indent_offset ; i++)
@@ -317,8 +341,9 @@ void ONScripterLabel::drawChar( char* text, Fontinfo *info, bool flush_flag,
     xy[0] = abs_offset + ExpandPos(info->x());
     xy[1] = ExpandPos(info->y());
 
-    if ( !isNonPrinting(&out_text[0]) ){
-        //don't bother drawing non-printing glyphs
+    if ( !isNonPrinting(&out_text[0]) || script_h.enc.getEncoding() == Encoding::CODE_UTF8 ){
+        //don't bother drawing non-printing glyphs - unless it's UTF-8
+        //mode - spaces may have variable width -Galladite 2023-6-22
         SDL_Color color;
         SDL_Rect dst_rect;
         if ( info->is_shadow ){
@@ -329,6 +354,7 @@ void ONScripterLabel::drawChar( char* text, Fontinfo *info, bool flush_flag,
         color.g = info->color[1];
         color.b = info->color[2];
         drawGlyph( surface, info, color, out_text, xy, false, cache_info, clip, dst_rect );
+        printf("Char: [%s]\tExpected pixel length: %f\n", out_text, strpxlen(out_text, info));
 
         if ( surface == accumulation_surface &&
              !flush_flag &&
@@ -352,7 +378,8 @@ void ONScripterLabel::drawChar( char* text, Fontinfo *info, bool flush_flag,
     */
     int n = script_h.enc.getBytes(text[0]);
 
-    info->advanceCharInHankaku(n);
+    // Temporary fix - this eventually needs to work with pixels
+    info->advanceCharInHankaku(n == 1 ? 1 : 2);
 
     if ( lookback_flag ){
         /*
@@ -1033,7 +1060,6 @@ bool ONScripterLabel::processText()
 
         for (int i=0; i<n; i++) {
             out_text[i] = script_h.getStringBuffer()[string_buffer_offset+i];
-            printf("Copying byte %d: %x\n", i+1, out_text[i]);
         }
 
         last_textpos_xy[0] = sentence_font.x()-sentence_font.ruby_offset_xy[0];
@@ -1665,6 +1691,14 @@ void ONScripterLabel::textbtnColorChange()
     setColor(ruby_font.color, tmpcolor);
 }
 
+// From here on down is UTF-8 related functions. Thanks Seung!
+/*
+ * int u8strlen(const char *s)
+ * --
+ * A simple function to grab the number of glyphs in a given UTF8-encoded string.
+ * Works just like standard strlen.  Necessary for the initial version of the 
+ * insani legacy linewrap algorithm with UTF8-encoded 0.utf.
+ */
 int ONScripterLabel::u8strlen(const char *s)
 {
     int len = 0;
@@ -1674,3 +1708,565 @@ int ONScripterLabel::u8strlen(const char *s)
     }
     return len;
 }
+
+/*
+ * int strpxlen(const char *buf, Fontinfo *fi)
+ * --
+ * A function to return the pixels taken up by a given string.  A critical part
+ * of the insani linewrap algorithm for all non-CJK modes.
+ */
+// I've temporarily lobotomised this function while font styles don't
+// exist; I want to be able to fully focus on proportionalit for now.
+// -Galladite 2023-6-22
+/*
+float ONScripter::strpxlen(const char *buf, Fontinfo *fi, bool *bold_flag, bool *italics_flag)
+{
+    openFont(fi);
+
+    int old_style = fi->getStyle();
+    bool old_bold_flag;
+    bool old_italics_flag;
+    int font_index = 0;
+
+    switch(old_style)
+    {
+        case 1:
+        case 5:
+            old_bold_flag = 1;
+            old_italics_flag = 0;
+            break;
+        case 2:
+        case 6:
+            old_bold_flag = 0;
+            old_italics_flag = 1;
+            break;
+        case 3:
+        case 7:
+            old_bold_flag = 1;
+            old_italics_flag = 1;
+            break;
+        default:
+            old_bold_flag = 0;
+            old_italics_flag = 0;
+            break;
+    }
+
+    if(*bold_flag == false && *italics_flag == false)
+    {
+        fi->setStyle(0, 0, 0, fi->style_underline);
+        font_index = 0;
+    }
+    else if(*bold_flag == true && *italics_flag == false) 
+    {
+        fi->setStyle(1, 1, 0, fi->style_underline);
+        font_index = 2;
+    }
+    else if(*italics_flag == true && *bold_flag == false)
+    {
+        fi->setStyle(2, 0, 1, fi->style_underline);
+        font_index = 4;
+    }
+    else if(*bold_flag == true && *italics_flag == true)
+    {
+        fi->setStyle(3, 1, 1, fi->style_underline);
+        font_index = 6;
+    }
+    else
+    {
+        fi->setStyle(0, 0, 0, 0);
+        font_index = 0;
+    }
+
+    // behold the insani.org debug printf series :3
+    //printf("strpxlen :: b: %d i: %d\n", *bold_flag, *italics_flag);
+    //printf("strpxlen :: s: %s\n", buf);
+    
+    float w = 0.0;
+    char two_chars[7] = {};
+    char num_chars = 1;
+    float advanced = 0.0;
+    while (buf[0] != '\0')
+    {
+        int n = script_h.enc.getBytes(buf[0]);
+        unsigned short unicode = script_h.enc.getUTF16(buf);
+        if(buf[n] != '\0') num_chars = 2;
+
+        for(int x = 0; x < n; x++) two_chars[x] = buf[x];
+        int o = script_h.enc.getBytes(buf[n]);
+        for(int y = 0; y < o; y++) two_chars[n+y] = buf[n+y];
+        
+        int minx, maxx, miny, maxy, advanced_int;
+        TTF_GlyphMetrics((TTF_Font*)fi->ttf_font[font_index], unicode,
+                         &minx, &maxx, &miny, &maxy, &advanced_int);
+        
+        advanced = (float) advanced_int;
+
+        if(!english_mode || (fi->style_bold && !fi->style_italics && faux_bold) || (!fi->style_bold && fi->style_italics && faux_italics) || (fi->style_bold && fi->style_italics && faux_bolditalics))
+        {
+            // do not use harfbuzz metrics if we are in a faux style or we are not in English mode
+        }
+        else
+        {
+            // for normal, true bold, true italics, and true bold italics, whilst in UTF8 mode, use harfbuzz
+            hb_buffer_t *hb_buf;
+            hb_buf = hb_buffer_create();
+            hb_buffer_add_utf8(hb_buf, two_chars, strlen(two_chars), 0, strlen(two_chars));
+            hb_buffer_guess_segment_properties(hb_buf);
+
+            hb_blob_t *blob = NULL;
+
+            if(!fi->style_bold && !fi->style_italics) blob = hb_blob_create_from_file(font_file);
+            else if(fi->style_bold && !fi->style_italics) blob = hb_blob_create_from_file(font_bold_file);
+            else if(!fi->style_bold && fi->style_italics) blob = hb_blob_create_from_file(font_italics_file);
+            else if(fi->style_bold && fi->style_italics) blob = hb_blob_create_from_file(font_bolditalics_file);
+
+            hb_face_t *hb_face = hb_face_create(blob, 0);
+            hb_font_t *hb_font = hb_font_create(hb_face);
+            int ptem = fi->getPointSize();
+            hb_font_set_ptem(hb_font, ptem);
+            unsigned int upem = hb_face_get_upem(hb_face);
+
+            hb_shape(hb_font, hb_buf, NULL, 0);
+            unsigned int glyph_count = 0;
+            hb_glyph_info_t *glyph_info = hb_buffer_get_glyph_infos(hb_buf, &glyph_count);
+            hb_glyph_position_t *glyph_pos = hb_buffer_get_glyph_positions(hb_buf, &glyph_count);
+            advanced = (float) glyph_pos[0].x_advance * (float) ptem / (float) upem;
+            if(num_chars == 2 && glyph_count == 1)
+            {
+                // there's a ligature here; undo the ligature
+                hb_buffer_destroy(hb_buf);
+                hb_buf = hb_buffer_create();
+                two_chars[n] = '\0';
+                hb_buffer_add_utf8(hb_buf, two_chars, strlen(two_chars), 0, strlen(two_chars));
+                hb_buffer_guess_segment_properties(hb_buf);
+                ptem = fi->getPointSize();
+                hb_font_set_ptem(hb_font, ptem);
+                upem = hb_face_get_upem(hb_face);
+                hb_shape(hb_font, hb_buf, NULL, 0);
+                hb_glyph_info_t *glyph_info = hb_buffer_get_glyph_infos(hb_buf, &glyph_count);
+                hb_glyph_position_t *glyph_pos = hb_buffer_get_glyph_positions(hb_buf, &glyph_count);
+                advanced = (float) glyph_pos[0].x_advance * (float) ptem / (float) upem;
+            }
+
+            hb_buffer_destroy(hb_buf);
+            hb_font_destroy(hb_font);
+            hb_face_destroy(hb_face);
+            hb_blob_destroy(blob);
+
+        }
+
+
+        w += advanced + (float) fi->pitch_xy[0] - (float) fi->font_size_xy[0];
+        buf += n;
+    }
+    w -= (float) fi->pitch_xy[0] - (float) fi->font_size_xy[0];
+
+    fi->setStyle(old_style, old_bold_flag, old_italics_flag, fi->style_underline);
+
+    return w;
+}
+*/
+float ONScripterLabel::strpxlen(const char *buf, Fontinfo *fi)
+{
+    //openFont(fi);
+
+    /*
+    int old_style = fi->getStyle();
+    bool old_bold_flag;
+    bool old_italics_flag;
+    int font_index = 0;
+
+    switch(old_style)
+    {
+        case 1:
+        case 5:
+            old_bold_flag = 1;
+            old_italics_flag = 0;
+            break;
+        case 2:
+        case 6:
+            old_bold_flag = 0;
+            old_italics_flag = 1;
+            break;
+        case 3:
+        case 7:
+            old_bold_flag = 1;
+            old_italics_flag = 1;
+            break;
+        default:
+            old_bold_flag = 0;
+            old_italics_flag = 0;
+            break;
+    }
+
+    if(*bold_flag == false && *italics_flag == false)
+    {
+        fi->setStyle(0, 0, 0, fi->style_underline);
+        font_index = 0;
+    }
+    else if(*bold_flag == true && *italics_flag == false) 
+    {
+        fi->setStyle(1, 1, 0, fi->style_underline);
+        font_index = 2;
+    }
+    else if(*italics_flag == true && *bold_flag == false)
+    {
+        fi->setStyle(2, 0, 1, fi->style_underline);
+        font_index = 4;
+    }
+    else if(*bold_flag == true && *italics_flag == true)
+    {
+        fi->setStyle(3, 1, 1, fi->style_underline);
+        font_index = 6;
+    }
+    else
+    {
+        fi->setStyle(0, 0, 0, 0);
+        font_index = 0;
+    }
+    */
+
+    // behold the insani.org debug printf series :3
+    //printf("strpxlen :: b: %d i: %d\n", *bold_flag, *italics_flag);
+    //printf("strpxlen :: s: %s\n", buf);
+    
+    float w = 0.0;
+    char two_chars[7] = {};
+    char num_chars = 1;
+    float advanced = 0.0;
+    while (buf[0] != '\0')
+    {
+        int n = script_h.enc.getBytes(buf[0]);
+        unsigned short unicode = script_h.enc.getUTF16(buf);
+        if(buf[n] != '\0') num_chars = 2;
+
+        for(int x = 0; x < n; x++) two_chars[x] = buf[x];
+        int o = script_h.enc.getBytes(buf[n]);
+        for(int y = 0; y < o; y++) two_chars[n+y] = buf[n+y];
+        
+        int minx, maxx, miny, maxy, advanced_int;
+        //TTF_GlyphMetrics((TTF_Font*)fi->ttf_font[font_index], unicode,
+        //                 &minx, &maxx, &miny, &maxy, &advanced_int);
+        TTF_GlyphMetrics((TTF_Font*)fi->ttf_font, unicode,
+                         &minx, &maxx, &miny, &maxy, &advanced_int);
+        
+        advanced = (float) advanced_int;
+
+        //if(!english_mode || (fi->style_bold && !fi->style_italics && faux_bold) || (!fi->style_bold && fi->style_italics && faux_italics) || (fi->style_bold && fi->style_italics && faux_bolditalics))
+        if( 0 )
+        {
+            // do not use harfbuzz metrics if we are in a faux style or we are not in English mode
+        }
+        /*
+        // Do not use harfbuzz metrics ever lol
+        else
+        {
+            // for normal, true bold, true italics, and true bold italics, whilst in UTF8 mode, use harfbuzz
+            hb_buffer_t *hb_buf;
+            hb_buf = hb_buffer_create();
+            hb_buffer_add_utf8(hb_buf, two_chars, strlen(two_chars), 0, strlen(two_chars));
+            hb_buffer_guess_segment_properties(hb_buf);
+
+            hb_blob_t *blob = NULL;
+
+            if(!fi->style_bold && !fi->style_italics) blob = hb_blob_create_from_file(font_file);
+            else if(fi->style_bold && !fi->style_italics) blob = hb_blob_create_from_file(font_bold_file);
+            else if(!fi->style_bold && fi->style_italics) blob = hb_blob_create_from_file(font_italics_file);
+            else if(fi->style_bold && fi->style_italics) blob = hb_blob_create_from_file(font_bolditalics_file);
+
+            hb_face_t *hb_face = hb_face_create(blob, 0);
+            hb_font_t *hb_font = hb_font_create(hb_face);
+            int ptem = fi->getPointSize();
+            hb_font_set_ptem(hb_font, ptem);
+            unsigned int upem = hb_face_get_upem(hb_face);
+
+            hb_shape(hb_font, hb_buf, NULL, 0);
+            unsigned int glyph_count = 0;
+            hb_glyph_info_t *glyph_info = hb_buffer_get_glyph_infos(hb_buf, &glyph_count);
+            hb_glyph_position_t *glyph_pos = hb_buffer_get_glyph_positions(hb_buf, &glyph_count);
+            advanced = (float) glyph_pos[0].x_advance * (float) ptem / (float) upem;
+            if(num_chars == 2 && glyph_count == 1)
+            {
+                // there's a ligature here; undo the ligature
+                hb_buffer_destroy(hb_buf);
+                hb_buf = hb_buffer_create();
+                two_chars[n] = '\0';
+                hb_buffer_add_utf8(hb_buf, two_chars, strlen(two_chars), 0, strlen(two_chars));
+                hb_buffer_guess_segment_properties(hb_buf);
+                ptem = fi->getPointSize();
+                hb_font_set_ptem(hb_font, ptem);
+                upem = hb_face_get_upem(hb_face);
+                hb_shape(hb_font, hb_buf, NULL, 0);
+                hb_glyph_info_t *glyph_info = hb_buffer_get_glyph_infos(hb_buf, &glyph_count);
+                hb_glyph_position_t *glyph_pos = hb_buffer_get_glyph_positions(hb_buf, &glyph_count);
+                advanced = (float) glyph_pos[0].x_advance * (float) ptem / (float) upem;
+            }
+
+            hb_buffer_destroy(hb_buf);
+            hb_font_destroy(hb_font);
+            hb_face_destroy(hb_face);
+            hb_blob_destroy(blob);
+
+        }
+        */
+
+
+        w += advanced + (float) fi->pitch_xy[0] - (float) fi->font_size_xy[0];
+        buf += n;
+    }
+    w -= (float) fi->pitch_xy[0] - (float) fi->font_size_xy[0];
+
+    //fi->setStyle(old_style, old_bold_flag, old_italics_flag, fi->style_underline);
+
+    return w;
+}
+
+/*
+ * float getPixelLength(const char *buf, Fontinfo *fi)
+ * --
+ * A function to return the pixels taken up by a given string, minus all inline 
+ * commands.  A critical part of the insani linewrap algorithm for all non-CJK modes.
+ */
+/*
+float ONScripterLabel::getPixelLength(const char *buf, Fontinfo *fi, bool *bold_flag, bool *italics_flag)
+{
+    //openFont(fi);
+
+    float orig_length = strpxlen(buf, fi, bold_flag, italics_flag);
+    char tmp[256];
+    int x = 0;
+
+    while(buf[0] != '\0')
+    {
+        // !d, !sd, !s, !w
+        if(buf[0] == '!')
+        {
+            // !d
+            if(buf[1] == 'd')
+            {
+                tmp[0] = '!';
+                tmp[1] = 'd';
+                x = 2;
+                for(x = 2; isdigit(buf[x]) == true; x++)
+                {
+                    tmp[x] = buf[x];
+                }
+                tmp[x+1] = '\0';
+                orig_length -= strpxlen(tmp, fi, bold_flag, italics_flag);
+            }
+            // !sd
+            else if(buf[1] == 's' && buf[2] == 'd') orig_length -= strpxlen("!sd", fi, bold_flag, italics_flag);
+            // !s
+            else if(buf[1] == 's')
+            {
+                tmp[0] = '!';
+                tmp[1] = 's';
+                x = 2;
+                for(x = 2; isdigit(buf[x]) == true; x++)
+                {
+                    tmp[x] = buf[x];
+                }
+                tmp[x+1] = '\0';
+                orig_length -= strpxlen(tmp, fi, bold_flag, italics_flag);
+            }
+            // !w
+            else if(buf[1] == 'w')
+            {
+                tmp[0] = '!';
+                tmp[1] = 'w';
+                x = 2;
+                for(int x = 2; isdigit(buf[x]) == true; x++)
+                {
+                    tmp[x] = buf[x];
+                }
+                tmp[x+1] = '\0';
+                orig_length -= strpxlen(tmp, fi, bold_flag, italics_flag);
+            }
+        }
+        // #nnnnnn
+        else if(buf[0] == '#')
+        {
+            tmp[0] = '#';
+            x = 1;
+            for(int x = 1; isdigit(buf[x]) == true; x++)
+            {
+                tmp[x] = buf[x];
+            }
+            tmp[x+1] = '\0';
+            orig_length -= strpxlen(tmp, fi, bold_flag, italics_flag);
+        }
+        // ~i~, ~b~, ~ib~, ~bi~
+        else if(buf[0] == '~')
+        {
+            if(buf[1] == 'b' && buf[2] == '~')
+            {
+                orig_length -= strpxlen("~b~", fi, bold_flag, italics_flag);
+                if(*bold_flag == true) *bold_flag = false;
+                else *bold_flag = true;
+            }
+            else if(buf[1] == 'i' && buf[2] == '~')
+            {
+                orig_length -= strpxlen("~i~", fi, bold_flag, italics_flag);
+                if(*italics_flag == true) *italics_flag = false;
+                else *italics_flag = true;
+            }
+            else if(buf[1] == 'u' && buf[2] == '~')
+            {
+                orig_length -= strpxlen("~u~", fi, bold_flag, italics_flag);
+            }
+            else if(buf[1] == 'b' && buf[2] == 'i' && buf[3] == '~')
+            {
+                orig_length -= strpxlen("~bi~", fi, bold_flag, italics_flag);
+                if(*italics_flag == true) *italics_flag = false;
+                else *italics_flag = true;
+                if(*bold_flag == true) *bold_flag = false;
+                else *bold_flag = true;
+            }
+            else if(buf[1] == 'b' && buf[2] == 'u' && buf[3] == '~')
+            {
+                orig_length -= strpxlen("~bu~", fi, bold_flag, italics_flag);
+                if(*bold_flag == true) *bold_flag = false;
+                else *bold_flag = true;
+            }
+            else if(buf[1] == 'i' && buf[2] == 'b' && buf[3] == '~')
+            {
+                orig_length -= strpxlen("~ib~", fi, bold_flag, italics_flag);
+                if(*italics_flag == true) *italics_flag = false;
+                else *italics_flag = true;
+                if(*bold_flag == true) *bold_flag = false;
+                else *bold_flag = true;
+            }
+            else if(buf[1] == 'i' && buf[2] == 'u' && buf[3] == '~')
+            {
+                orig_length -= strpxlen("~iu~", fi, bold_flag, italics_flag);
+                if(*italics_flag == true) *italics_flag = false;
+                else *italics_flag = true;
+            }
+            else if(buf[1] == 'u' && buf[2] == 'b' && buf[3] == '~')
+            {
+                orig_length -= strpxlen("~ub~", fi, bold_flag, italics_flag);
+                if(*bold_flag == true) *bold_flag = false;
+                else *bold_flag = true;
+            }
+            else if(buf[1] == 'u' && buf[2] == 'i' && buf[3] == '~')
+            {
+                orig_length -= strpxlen("~ui~", fi, bold_flag, italics_flag);
+                if(*italics_flag == true) *italics_flag = false;
+                else *italics_flag = true;
+            }
+            else if( (buf[1] == 'b' && buf[2] == 'i' && buf[3] == 'u' && buf[4] == '~') || 
+                     (buf[1] == 'b' && buf[2] == 'u' && buf[3] == 'i' && buf[4] == '~') || 
+                     (buf[1] == 'i' && buf[2] == 'b' && buf[3] == 'u' && buf[4] == '~') ||
+                     (buf[1] == 'i' && buf[2] == 'u' && buf[3] == 'b' && buf[4] == '~') ||
+                     (buf[1] == 'u' && buf[2] == 'b' && buf[3] == 'i' && buf[4] == '~') ||
+                     (buf[1] == 'u' && buf[2] == 'i' && buf[3] == 'b' && buf[4] == '~') )
+            {
+                char biu[6];
+                biu[0] = '~';
+                biu[1] = buf[1];
+                biu[2] = buf[2];
+                biu[3] = buf[3];
+                biu[4] = buf[4];
+                biu[5] = '\0';
+
+                orig_length -= strpxlen(biu, fi, bold_flag, italics_flag);
+                if(*italics_flag == true) *italics_flag = false;
+                else *italics_flag = true;
+                if(*bold_flag == true) *bold_flag = false;
+                else *bold_flag = true;
+            }
+        }
+        // `
+        else if(buf[0] == '`')
+        {
+            orig_length -= strpxlen("`", fi, bold_flag, italics_flag);
+        }
+        buf++;
+        x = 0;
+    }
+
+    return orig_length;
+}
+*/
+
+/*
+ * void getNextChar(const char *buf, int offset)
+ * --
+ * A function that returns the current true printing character and next true
+ * printing character in the current buffer in .  This buffer
+ * will usually be script_h's stringBuffer, but can also be current_page->text
+ * in log mode.  In essence this is a helper function, as otherwise we would
+ * have to do this over and over in different sections.  out_chars, by the way,
+ * is a char[7].
+ */
+/*
+void ONScripterLabel::getNextChar(const char *buf, int offset, char *out_chars)
+{
+    // this function assumes that it has been called on the first printable char
+    int i = offset;
+
+    // always initialize out_chars to \0
+    out_chars[0] = out_chars[1] = out_chars[2] = out_chars[3] = out_chars[4] = out_chars[5] = out_chars[6] = '\0';
+
+    // place the first printable char in our out_chars array
+    int n = script_h.enc.getBytes(buf[i]);
+    for(int x = 0; x < n; x++) out_chars[x] = buf[i+x];
+    i += n;
+
+    // next we have to find the next printable char
+    bool printable = false;
+    while(!printable)
+    {
+        // end of line and end of text markers
+        if(buf[i] == '\0') printable = true;
+        else if(buf[i] == '\n') printable = true;
+        else if(buf[i] == 0x0a) printable = true;
+        // backtick
+        else if(buf[i] == '`') i++;
+        // ~b~, ~i~, ~u~, and all permutations
+        else if(buf[i] == '~' && buf[i+1] == 'b' && buf[i+2] == '~') i += 3;
+        else if(buf[i] == '~' && buf[i+1] == 'i' && buf[i+2] == '~') i += 3;
+        else if(buf[i] == '~' && buf[i+1] == 'u' && buf[i+2] == '~') i += 3;
+        else if(buf[i] == '~' && buf[i+1] == 'b' && buf[i+2] == 'i' && buf[i+3] == '~') i += 4;
+        else if(buf[i] == '~' && buf[i+1] == 'b' && buf[i+2] == 'u' && buf[i+3] == '~') i += 4;
+        else if(buf[i] == '~' && buf[i+1] == 'i' && buf[i+2] == 'b' && buf[i+3] == '~') i += 4;
+        else if(buf[i] == '~' && buf[i+1] == 'i' && buf[i+2] == 'u' && buf[i+3] == '~') i += 4;
+        else if(buf[i] == '~' && buf[i+1] == 'u' && buf[i+2] == 'b' && buf[i+3] == '~') i += 4;
+        else if(buf[i] == '~' && buf[i+1] == 'u' && buf[i+2] == 'i' && buf[i+3] == '~') i += 4;
+        else if(buf[i] == '~' && buf[i+1] == 'b' && buf[i+2] == 'i' && buf[i+3] == 'u' && buf[i+4] == '~') i += 5;
+        else if(buf[i] == '~' && buf[i+1] == 'b' && buf[i+2] == 'u' && buf[i+3] == 'i' && buf[i+4] == '~') i += 5;
+        else if(buf[i] == '~' && buf[i+1] == 'i' && buf[i+2] == 'b' && buf[i+3] == 'u' && buf[i+4] == '~') i += 5;
+        else if(buf[i] == '~' && buf[i+1] == 'i' && buf[i+2] == 'u' && buf[i+3] == 'b' && buf[i+4] == '~') i += 5;
+        else if(buf[i] == '~' && buf[i+1] == 'u' && buf[i+2] == 'b' && buf[i+3] == 'i' && buf[i+4] == '~') i += 5;
+        else if(buf[i] == '~' && buf[i+1] == 'u' && buf[i+2] == 'i' && buf[i+3] == 'b' && buf[i+4] == '~') i += 5;
+        // !sd and !s<number>
+        else if(buf[i] == '!' && buf[i+1] == 's')
+        {
+            if(buf[i+2] == 'd') i += 3;
+            else
+            {
+                i += 2;
+                while(buf[i] >= '0' && buf[i] <= '9') i++;
+            }
+        }
+        // !w and !d
+        else if(buf[i] == '!' && (buf[i+1] == 'd' || buf[i+1] == 'w'))
+        {
+            i += 2;
+            while(buf[i] >= '0' && buf[i] <= '9') i++;
+        }
+        // #nnnnnn
+        else if(buf[i] == '#') i += 7;
+        // we finally got to an actual printable character
+        else
+        {
+            printable = true;
+            int o = script_h.enc.getBytes(buf[i]);
+            for(int y = 0; y < o; y++) out_chars[n+y] = buf[i+y];
+        }
+    }
+
+    // debug printf
+   // printf("getNextChar :: out_chars: %s\n", out_chars);
+}
+*/

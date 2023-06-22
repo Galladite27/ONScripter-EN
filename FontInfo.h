@@ -63,7 +63,7 @@ public:
     void setTateyokoMode( int tateyoko_mode );
     int getTateyokoMode();
     int getRemainingLine();
-    
+
     int x();
     int y();
     void setXY( int x=-1, int y=-1 );

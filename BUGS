@@ -74,8 +74,9 @@ TODO LIST
 
 * Update Windows makefiles
 * Bring over UTF-8 suport from onscripter-insani
-  - FontInfo, ONScripterLabel_text (processText) ALMOST DONE
-  - Kerning and spacing in UTF-8 mode
+  - Kerning and spacing in UTF-8 mode (ONScripterLabel_text)
+   \--> TateYoko might break if I don't check for glyph height when in
+        yoko mode (or whichever one is vertical)
   - Make a version of the current linewrap algorithm for use with
     proportional fonts
   - Interpret font styles

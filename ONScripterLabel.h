@@ -836,6 +836,11 @@ private:
 
     // UTF-8 related
     int u8strlen(const char *s);
+    //float strpxlen(const char *buf, Fontinfo *fi, bool *bold_flag, bool *italics_flag);
+    float strpxlen(const char *buf, Fontinfo *fi);
+    //float getPixelLength(const char *buf, Fontinfo *fi, bool *bold_flag, bool *italics_flag);
+    // May be unnecessary, I haven't been using it so far bc I didn't realise it existed lol
+    //void getNextChar(const char *buf, int offset, char *out_chars);
 
     //Mion: variables & functions for special text processing
     bool *string_buffer_breaks;  // can it break before a particular offset?
