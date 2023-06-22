@@ -351,7 +351,6 @@ void ONScripterLabel::drawChar( char* text, Fontinfo *info, bool flush_flag,
         info->advanceCharInHankaku(1);
     */
     int n = script_h.enc.getBytes(text[0]);
-    printf("Bytes: %d\n\n", n);
 
     info->advanceCharInHankaku(n);
 
@@ -1039,8 +1038,6 @@ bool ONScripterLabel::processText()
 
         last_textpos_xy[0] = sentence_font.x()-sentence_font.ruby_offset_xy[0];
         last_textpos_xy[1] = sentence_font.y()-sentence_font.ruby_offset_xy[1];
-
-
 
         drawChar( out_text, &sentence_font, flush_flag, true, accumulation_surface, &text_info );
 
