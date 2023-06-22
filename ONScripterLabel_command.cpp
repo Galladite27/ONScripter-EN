@@ -431,7 +431,11 @@ int ONScripterLabel::tateyokoCommand()
     }
 
     if (!in_textgosub)
-        sentence_font.setTateyokoMode( mode );
+        if (script_h.enc.getEncoding() == Encoding::CODE_CP932) {
+            sentence_font.setTateyokoMode( mode );
+        } else {
+            fprintf(stderr, "tateyoko: in UTF-8 mode, ignoring\n");
+        }
     else
         fprintf(stderr, "tateyoko: in textgosub, ignoring\n");
 
