@@ -8,8 +8,6 @@ INDEX
 
 BUGS OR MISFEATURES
 
-* DO NOT USE - major SJIS breakage while I get UTF-8 sorted out!
-
 * OS X: should look for missing files (eg font) inside bundles, even
   if the main game data is outside the bundle.
 
@@ -31,15 +29,6 @@ BUGS OR MISFEATURES
 
 * Sound bug related to Plumerai and using -s option (or ons.cfg
   equivalent). See bug 1 on github.
-
-* Text is wrapping too soon when using larger resolutions, despite the
-  text window being sized correctly - not enough text columns are set
-  (minor issue - the user can use setwindow)
-
-* Need to advance the right amount after drawing a character (in
-  drawChar)
-  \--> should it only ever be 1 or 2 advances?
-  \--> do this after processText works properly
 
 
 FEATURES REQUESTED
@@ -76,9 +65,7 @@ TODO LIST
 
 * Update Windows makefiles
 * Bring over UTF-8 suport from onscripter-insani
-  - Kerning and spacing in UTF-8 mode (ONScripterLabel_text)
-   \--> TateYoko might break if I don't check for glyph height when in
-        yoko mode (or whichever one is vertical)
+  - Kerning and spacing in UTF-8 mode
   - Make a version of the current linewrap algorithm for use with
     proportional fonts
   - Interpret font styles

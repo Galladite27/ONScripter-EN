@@ -144,7 +144,24 @@ extern unsigned short convUTF8ToUTF16(const char **src);
  *
  *
  *
- * Fontinfo functions to fix:
+ * Fontinfo functions to fix, and files they are called from (sigh):
+ * - x
+ *   \-> FontInfo.cpp
+ *   \-> ONScripterLabel.cpp
+ *   \-> ONScripterLabel_animation.cpp
+ *   \-> ONScripterLabel_command.cpp
+ *   \-> ONScripterLabel_text.cpp
+ * - setLineArea
+ *   \-> ONScripterLabel_animation.cpp
+ *   \-> ONScripterLabel_command.cpp
+ *   \-> ONScripterLabel_text.cpp
+ * - isEndOfLine
+ *   \-> ONScripterLabel_text.cpp
+ * - calcUpdatedArea (check this functin also)
+ *   \-> ONScripterLabel_animation.cpp
+ *   \-> ONScripterLabel_text.cpp
+ * - initRuby
+ *   \-> ONScripterLabel_text.cpp
  *
  */
 

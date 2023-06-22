@@ -10,9 +10,12 @@
 
   Lookback mode now works properly with UTF-8
 
-  Begin work on proportional fonts for UTF-8 mode :D
+  Proportional fonts fully implemented today! :D
   (Don't worry, SJIS scripts won't be broken by this)
-  \--> Mostly just utility function work so far
+
+  DON'T try using this with SJIS in its current state; some functions
+  are hard-coded with their UTF-8 functionality and need to check
+  which mode they are in and act accordingly.
 
 2023-06-20
   ScriptHandler::checkClickstr now works with UTF-8 (plus a bug has
