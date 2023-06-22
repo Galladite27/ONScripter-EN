@@ -8,6 +8,8 @@ INDEX
 
 BUGS OR MISFEATURES
 
+* DO NOT USE - major SJIS breakage while I get UTF-8 sorted out!
+
 * OS X: should look for missing files (eg font) inside bundles, even
   if the main game data is outside the bundle.
 
