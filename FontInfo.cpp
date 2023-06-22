@@ -1,5 +1,5 @@
 /* -*- C++ -*-
- * 
+ *
  *  FontInfo.cpp - Font information storage class of ONScripter-EN
  *
  *  Copyright (c) 2001-2007 Ogapee. All rights reserved.
@@ -30,6 +30,8 @@
 #include "FontInfo.h"
 #include <stdio.h>
 #include <SDL_ttf.h>
+
+#define FI_TEST
 
 static struct FontContainer{
     FontContainer *next;
@@ -89,11 +91,12 @@ void *Fontinfo::openFont( char *font_file, int ratio1, int ratio2 )
         FILE *fp = fopen( font_file, "r" );
         if ( fp == NULL ) return NULL;
         fclose( fp );
+        printf("Opening font.\tSize (full-width): %d\tEffective size: %d\n", font_size, font_size * ratio1 / ratio2);
         fc->next->font = TTF_OpenFont( font_file, font_size * ratio1 / ratio2 );
     }
 
     ttf_font = (void*)fc->next->font;
-    
+
     return fc->next->font;
 }
 
@@ -110,19 +113,32 @@ int Fontinfo::getTateyokoMode()
 
 int Fontinfo::getRemainingLine()
 {
+    // TODO needs changing - num_xy is total number of rows and
+    // columns in text window - needs to work in pixles
     if (tateyoko_mode == YOKO_MODE)
         return num_xy[1] - xy[1]/2;
     else
+        // Also, what?
         return num_xy[1] - num_xy[0] + xy[0]/2 + 1;
 }
 
 int Fontinfo::x()
 {
+#ifdef FI_TEST
+    printf("xy[0]: %d\tpitch_xy[0]/2: %d\ttop_xy[0]: %d\tline_offset_xy[0]: %d\truby_offset_xy[0]: %d\n", xy[0], pitch_xy[0]/2, top_xy[0], line_offset_xy[0], ruby_offset_xy[0]);
+    return xy[0] + top_xy[0] + line_offset_xy[0] + ruby_offset_xy[0];
+#else
+    // Multiplies current column by character pixel count to get offset
     return xy[0]*pitch_xy[0]/2 + top_xy[0] + line_offset_xy[0] + ruby_offset_xy[0];
+#endif
 }
 
 int Fontinfo::y()
 {
+    // Multiplies current row count by character pixel count (halved to get hw) to get offset
+    // Since SJIS behaviour will be unchanged, it's unlikely that tateyoko will ever be used.
+    // For this reason, at least for now, I'm still going to count xy[1] in rows instead of
+    // pixels like xy[0].
     return xy[1]*pitch_xy[1]/2 + top_xy[1] + line_offset_xy[1] + ruby_offset_xy[1];
 }
 
@@ -136,6 +152,8 @@ void Fontinfo::clear()
 {
     if (tateyoko_mode == YOKO_MODE)
         setXY(0, 0);
+    //TODO only allow in SJIS mode (maybe)
+    //At least, it will need fixing
     else
         setXY(num_xy[0]-1, 0);
     line_offset_xy[0] = line_offset_xy[1] = 0;
@@ -205,7 +223,7 @@ void Fontinfo::setRubyOnFlag(bool flag)
 SDL_Rect Fontinfo::calcUpdatedArea(int start_xy[2], int ratio1, int ratio2)
 {
     SDL_Rect rect;
-    
+
     if (tateyoko_mode == YOKO_MODE){
         if (start_xy[1] == xy[1]){
             rect.x = top_xy[0] + pitch_xy[0]*start_xy[0]/2;
@@ -242,7 +260,7 @@ SDL_Rect Fontinfo::calcUpdatedArea(int start_xy[2], int ratio1, int ratio2)
         rect.h = rect.h * ratio1 / ratio2;
     else
         rect.h = rect.h * ratio1 / ratio2 + 1;
-    
+
     return rect;
 }
 
@@ -272,7 +290,7 @@ int Fontinfo::initRuby(Fontinfo &body_info, int body_count, int ruby_count)
     pitch_xy[1] = font_size_xy[1];
 
     int margin=0;
-    
+
     if (tateyoko_mode == YOKO_MODE){
         top_xy[1] -= font_size_xy[1];
         num_xy[0] = ruby_count;
@@ -283,19 +301,19 @@ int Fontinfo::initRuby(Fontinfo &body_info, int body_count, int ruby_count)
         num_xy[0] = 1;
         num_xy[1] = ruby_count;
     }
-    
+
     if (ruby_count*font_size_xy[tateyoko_mode] >= body_count*body_info.pitch_xy[tateyoko_mode]){
         margin = (ruby_count*font_size_xy[tateyoko_mode] - body_count*body_info.pitch_xy[tateyoko_mode] + 1)/2;
     }
     else{
         int offset = 0;
-        if (ruby_count > 0) 
+        if (ruby_count > 0)
             offset = (body_count*body_info.pitch_xy[tateyoko_mode] - ruby_count*font_size_xy[tateyoko_mode]) / ruby_count;
         top_xy[tateyoko_mode] += (offset+1)/2;
         pitch_xy[tateyoko_mode] += offset;
     }
     //body_info.line_offset_xy[tateyoko_mode] += margin;
-    
+
     clear();
 
     return margin;

@@ -118,14 +118,20 @@ extern unsigned short convUTF8ToUTF16(const char **src);
  *
  *
  *
- * After reviewing processText, I need to implement proportionality :(
- *
  * I need to fix all instances of advanceCharInHankaku (they WILL
  * break)
+ * I must make sure I properly check if the character after an end-
+ * kinsoku character will fit on the line wihtout relying on columns
+ * of text
+ *
+ * Expected pixel length in lookback mode is far too big (always 91?)
  *
  * Process for modifying to be proportional:
  *  - Always check for Encoding::CODE_UTF8 and keep the behaviour as
  *    the original for SJIS
+ *  - Change FontInfo functions to assume xy is measured in pixles,
+ *    not columns, when in UTF-8 mode
+ *
  *  - Change advanceCharInHankaku instances to measure pixels
  *  - Change newlines to measure font hight
  *  - On loading a font in Fontinfo, we need to check if in UTF mode,
@@ -356,7 +362,8 @@ void ONScripterLabel::drawChar( char* text, Fontinfo *info, bool flush_flag,
         color.g = info->color[1];
         color.b = info->color[2];
         drawGlyph( surface, info, color, out_text, xy, false, cache_info, clip, dst_rect );
-        printf("Char: [%s]\tExpected pixel length: %f\n", out_text, strpxlen(out_text, info));
+        info->x();
+        printf("Char: [%s]\tExpected pixel length: %f\n\n", out_text, strpxlen(out_text, info));
 
         if ( surface == accumulation_surface &&
              !flush_flag &&
