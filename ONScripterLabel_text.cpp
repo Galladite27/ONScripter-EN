@@ -270,7 +270,7 @@ void ONScripterLabel::drawChar( char* text, Fontinfo *info, bool flush_flag,
                                 bool lookback_flag, SDL_Surface *surface,
                                 AnimationInfo *cache_info, int abs_offset, SDL_Rect *clip )
 {
-    //printf("draw %x-%x[%s] %d, %d\n", text[0], text[1], text, info->xy[0], info->xy[1] );
+    //printf("draw %x-%x-%x-%x[%s] %d, %d\n", text[0], text[1], text[2], text[3], text, info->xy[0], info->xy[1] );
 
     if ( info->ttf_font == NULL ){
         if ( info->openFont( font_file, screen_ratio1, screen_ratio2 ) == NULL ){
@@ -309,6 +309,8 @@ void ONScripterLabel::drawChar( char* text, Fontinfo *info, bool flush_flag,
     } else {
         out_text[0] = text[0];
         out_text[1] = text[1];
+        out_text[2] = text[2];
+        out_text[3] = text[3];
     }
 
     int xy[2];
@@ -349,6 +351,7 @@ void ONScripterLabel::drawChar( char* text, Fontinfo *info, bool flush_flag,
         info->advanceCharInHankaku(1);
     */
     int n = script_h.enc.getBytes(text[0]);
+    printf("Bytes: %d\n\n", n);
 
     info->advanceCharInHankaku(n);
 
@@ -968,9 +971,14 @@ bool ONScripterLabel::processText()
             ch = script_h.getStringBuffer()[++string_buffer_offset];
     }
 
+    // ch *shouldn't* change after here, at least at the top level
+    int n = script_h.enc.getBytes(ch);
+
     int cmd = isTextCommand(script_h.getStringBuffer() + string_buffer_offset);
+    // Ruby text or not a text command
     if (cmd <= 0) {
         line_has_nonspace = true;
+        // TODO this will probably need changing
         if (sentence_font.isEndOfLine(0) ||
             (IS_TWO_BYTE(ch) && sentence_font.isEndOfLine(1))) {
             // no room for current char on the line
@@ -981,6 +989,7 @@ bool ONScripterLabel::processText()
             int break_offset, length, margins, tmp;
             break_offset = findNextBreak(string_buffer_offset, length);
             if (break_offset == string_buffer_offset) {
+                /*
                 if (cmd < 0) {
                     break_offset++;
                     tmp = 0;
@@ -991,6 +1000,14 @@ bool ONScripterLabel::processText()
                 } else {
                     break_offset += 1;
                     tmp = 1;
+                }
+                */
+                if (cmd < 0) {
+                    break_offset++;
+                    tmp = 0;
+                } else {
+                    break_offset += n;
+                    tmp = n;
                 }
                 break_offset = findNextBreak(break_offset, length);
                 //printf("next break before %s", script_h.getStringBuffer() + break_offset);
@@ -1010,15 +1027,21 @@ bool ONScripterLabel::processText()
 
     new_line_skip_flag = false;
 
-    if ( IS_TWO_BYTE(ch) ){ // Shift jis
+    //if ( IS_TWO_BYTE(ch) ){ // Shift jis
+    if (n > 1) {
 
         bool flush_flag = !(skip_mode || ctrl_pressed_status || (sentence_font.wait_time == 0));
 
-        out_text[0] = script_h.getStringBuffer()[string_buffer_offset];
-        out_text[1] = script_h.getStringBuffer()[string_buffer_offset+1];
+        for (int i=0; i<n; i++) {
+            out_text[i] = script_h.getStringBuffer()[string_buffer_offset+i];
+            printf("Copying byte %d: %x\n", i+1, out_text[i]);
+        }
 
         last_textpos_xy[0] = sentence_font.x()-sentence_font.ruby_offset_xy[0];
         last_textpos_xy[1] = sentence_font.y()-sentence_font.ruby_offset_xy[1];
+
+
+
         drawChar( out_text, &sentence_font, flush_flag, true, accumulation_surface, &text_info );
 
         if (flush_flag) {
@@ -1031,8 +1054,8 @@ bool ONScripterLabel::processText()
                     waitEvent( sentence_font.wait_time );
             }
         }
-        num_chars_in_sentence += 2;
-        string_buffer_offset += 2;
+        num_chars_in_sentence += n;
+        string_buffer_offset += n;
 
         return true;
     }
