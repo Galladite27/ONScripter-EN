@@ -128,26 +128,24 @@ extern unsigned short convUTF8ToUTF16(const char **src);
  *
  * Process for modifying to be proportional:
  *  - Always check for Encoding::CODE_UTF8 and keep the behaviour as
- *    the original for SJIS
- *  - Change FontInfo functions to assume xy is measured in pixles,
- *    not columns, when in UTF-8 mode
+ *    the original for SJIS - DONE (in FontInfo)
+ *  - Change FontInfo functions to assume the x in xy is measured in
+ *    pixels, not columns, when in UTF-8 mode - DONE (mostly - see the
+ *    TODOs)
  *
- *  - Change advanceCharInHankaku instances to measure pixels
- *  - Change newlines to measure font hight
+ *  - Do I need to check AnimationInfo? (I hope not lol)
+ *
  *  - On loading a font in Fontinfo, we need to check if in UTF mode,
  *    and if we are then adapt the textwindow width limits to use
- *    pixels
- *  - This means that we can use advanceCharInHankaku and all the
- *    functions that check for newlines and such to have their
- *    arguments and return values use pixels, and then have this
- *    behaviour only occur in UTF-8 mode. Alternatively, we could have
- *    other functions like advancePxInHankaku, but this would be over-
- *    complicated and unnecessary.
+ *    pixels (Do we? Several FontInfo variables already work in px.)
+ *  - Change newlines to measure font hight
  *  - In UTF-8 mode, we need to make sure that white space advances
- *    the correct amount still
+ *    the correct amount still (will be done automatically I think)
  *
- * FontInfo work:
- *  - addLineOffset needs to have hard-coded width of fullwidth space
+ *
+ *
+ * Fontinfo functions to fix:
+ *
  */
 
 extern unsigned short convSJIS2UTF16( unsigned short in );
@@ -316,7 +314,13 @@ void ONScripterLabel::drawChar( char* text, Fontinfo *info, bool flush_flag,
     if ( info->isEndOfLine() ){
         info->newLine();
         for (int i=0 ; i<indent_offset ; i++)
-            sentence_font.advanceCharInHankaku(2);
+            if (script_h.enc.getEncoding() == Encoding::CODE_CP932) {
+                sentence_font.advanceCharInHankaku(2);
+            } else {
+                // Don't worry about it (untested)
+                printf("New line: advancing %d pixels\n", info->pitch_xy[0]);
+                sentence_font.advanceCharInHankaku(info->pitch_xy[0]);
+            }
 
         if ( lookback_flag ){
             for (int i=0 ; i<indent_offset ; i++){
@@ -362,7 +366,6 @@ void ONScripterLabel::drawChar( char* text, Fontinfo *info, bool flush_flag,
         color.g = info->color[1];
         color.b = info->color[2];
         drawGlyph( surface, info, color, out_text, xy, false, cache_info, clip, dst_rect );
-        info->x();
         printf("Char: [%s]\tExpected pixel length: %f\n\n", out_text, strpxlen(out_text, info));
 
         if ( surface == accumulation_surface &&
@@ -379,16 +382,15 @@ void ONScripterLabel::drawChar( char* text, Fontinfo *info, bool flush_flag,
 
     /* ---------------------------------------- */
     /* Update text buffer */
-    /*
-    if (IS_TWO_BYTE(text[0]))
-        info->advanceCharInHankaku(2);
-    else
-        info->advanceCharInHankaku(1);
-    */
-    int n = script_h.enc.getBytes(text[0]);
-
-    // Temporary fix - this eventually needs to work with pixels
-    info->advanceCharInHankaku(n == 1 ? 1 : 2);
+    if (script_h.enc.getEncoding() == Encoding::CODE_CP932) {
+        if (IS_TWO_BYTE(text[0]))
+            info->advanceCharInHankaku(2);
+        else
+            info->advanceCharInHankaku(1);
+    } else {
+        // OYABB :D
+        info->advanceCharInHankaku(strpxlen(out_text, info));
+    }
 
     if ( lookback_flag ){
         /*
@@ -396,6 +398,7 @@ void ONScripterLabel::drawChar( char* text, Fontinfo *info, bool flush_flag,
         if (IS_TWO_BYTE(text[0]))
             current_page->add( text[1] );
         */
+        int n = script_h.enc.getBytes(text[0]);
         for (int i=0; i<n; i++) {
             current_page->add(text[i]);
         }
@@ -518,7 +521,10 @@ void ONScripterLabel::drawString( const char *str, uchar3 color, Fontinfo *info,
                 if (info->isEndOfLine(i)){
                     info->newLine();
                     for (int i=0 ; i<indent_offset ; i++){
-                        sentence_font.advanceCharInHankaku(2);
+                        if (script_h.enc.getEncoding() == Encoding::CODE_CP932)
+                            sentence_font.advanceCharInHankaku(2);
+                        else
+                            sentence_font.advanceCharInHankaku(info->pitch_xy[0]);
                     }
                 }
             }
@@ -1336,7 +1342,10 @@ char ONScripterLabel::doLineBreak(bool isHardBreak)
         for (int i=0 ; i<indent_offset ; i++){
             current_page->add(0x81);
             current_page->add(0x40);
-            sentence_font.advanceCharInHankaku(2);
+            if (script_h.enc.getEncoding() == Encoding::CODE_CP932)
+                sentence_font.advanceCharInHankaku(2);
+            else
+                sentence_font.advanceCharInHankaku(sentence_font.pitch_xy[0]);
         }
     //}
     line_has_nonspace = false;
