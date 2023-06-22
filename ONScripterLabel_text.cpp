@@ -137,9 +137,11 @@ extern unsigned short convUTF8ToUTF16(const char **src);
  *    behaviour only occur in UTF-8 mode. Alternatively, we could have
  *    other functions like advancePxInHankaku, but this would be over-
  *    complicated and unnecessary.
- *  - In UTF-8 mode, we actually WANT to draw spaces since their width
- *    may vary.
+ *  - In UTF-8 mode, we need to make sure that white space advances
+ *    the correct amount still
  *
+ * FontInfo work:
+ *  - addLineOffset needs to have hard-coded width of fullwidth space
  */
 
 extern unsigned short convSJIS2UTF16( unsigned short in );
@@ -1696,7 +1698,7 @@ void ONScripterLabel::textbtnColorChange()
  * int u8strlen(const char *s)
  * --
  * A simple function to grab the number of glyphs in a given UTF8-encoded string.
- * Works just like standard strlen.  Necessary for the initial version of the 
+ * Works just like standard strlen.  Necessary for the initial version of the
  * insani legacy linewrap algorithm with UTF8-encoded 0.utf.
  */
 int ONScripterLabel::u8strlen(const char *s)
@@ -1756,7 +1758,7 @@ float ONScripter::strpxlen(const char *buf, Fontinfo *fi, bool *bold_flag, bool 
         fi->setStyle(0, 0, 0, fi->style_underline);
         font_index = 0;
     }
-    else if(*bold_flag == true && *italics_flag == false) 
+    else if(*bold_flag == true && *italics_flag == false)
     {
         fi->setStyle(1, 1, 0, fi->style_underline);
         font_index = 2;
@@ -1780,7 +1782,7 @@ float ONScripter::strpxlen(const char *buf, Fontinfo *fi, bool *bold_flag, bool 
     // behold the insani.org debug printf series :3
     //printf("strpxlen :: b: %d i: %d\n", *bold_flag, *italics_flag);
     //printf("strpxlen :: s: %s\n", buf);
-    
+
     float w = 0.0;
     char two_chars[7] = {};
     char num_chars = 1;
@@ -1794,11 +1796,11 @@ float ONScripter::strpxlen(const char *buf, Fontinfo *fi, bool *bold_flag, bool 
         for(int x = 0; x < n; x++) two_chars[x] = buf[x];
         int o = script_h.enc.getBytes(buf[n]);
         for(int y = 0; y < o; y++) two_chars[n+y] = buf[n+y];
-        
+
         int minx, maxx, miny, maxy, advanced_int;
         TTF_GlyphMetrics((TTF_Font*)fi->ttf_font[font_index], unicode,
                          &minx, &maxx, &miny, &maxy, &advanced_int);
-        
+
         advanced = (float) advanced_int;
 
         if(!english_mode || (fi->style_bold && !fi->style_italics && faux_bold) || (!fi->style_bold && fi->style_italics && faux_italics) || (fi->style_bold && fi->style_italics && faux_bolditalics))
@@ -1904,7 +1906,7 @@ float ONScripterLabel::strpxlen(const char *buf, Fontinfo *fi)
         fi->setStyle(0, 0, 0, fi->style_underline);
         font_index = 0;
     }
-    else if(*bold_flag == true && *italics_flag == false) 
+    else if(*bold_flag == true && *italics_flag == false)
     {
         fi->setStyle(1, 1, 0, fi->style_underline);
         font_index = 2;
@@ -1929,7 +1931,7 @@ float ONScripterLabel::strpxlen(const char *buf, Fontinfo *fi)
     // behold the insani.org debug printf series :3
     //printf("strpxlen :: b: %d i: %d\n", *bold_flag, *italics_flag);
     //printf("strpxlen :: s: %s\n", buf);
-    
+
     float w = 0.0;
     char two_chars[7] = {};
     char num_chars = 1;
@@ -1943,13 +1945,13 @@ float ONScripterLabel::strpxlen(const char *buf, Fontinfo *fi)
         for(int x = 0; x < n; x++) two_chars[x] = buf[x];
         int o = script_h.enc.getBytes(buf[n]);
         for(int y = 0; y < o; y++) two_chars[n+y] = buf[n+y];
-        
+
         int minx, maxx, miny, maxy, advanced_int;
         //TTF_GlyphMetrics((TTF_Font*)fi->ttf_font[font_index], unicode,
         //                 &minx, &maxx, &miny, &maxy, &advanced_int);
         TTF_GlyphMetrics((TTF_Font*)fi->ttf_font, unicode,
                          &minx, &maxx, &miny, &maxy, &advanced_int);
-        
+
         advanced = (float) advanced_int;
 
         //if(!english_mode || (fi->style_bold && !fi->style_italics && faux_bold) || (!fi->style_bold && fi->style_italics && faux_italics) || (fi->style_bold && fi->style_italics && faux_bolditalics))
@@ -2024,7 +2026,7 @@ float ONScripterLabel::strpxlen(const char *buf, Fontinfo *fi)
 /*
  * float getPixelLength(const char *buf, Fontinfo *fi)
  * --
- * A function to return the pixels taken up by a given string, minus all inline 
+ * A function to return the pixels taken up by a given string, minus all inline
  * commands.  A critical part of the insani linewrap algorithm for all non-CJK modes.
  */
 /*
@@ -2154,8 +2156,8 @@ float ONScripterLabel::getPixelLength(const char *buf, Fontinfo *fi, bool *bold_
                 if(*italics_flag == true) *italics_flag = false;
                 else *italics_flag = true;
             }
-            else if( (buf[1] == 'b' && buf[2] == 'i' && buf[3] == 'u' && buf[4] == '~') || 
-                     (buf[1] == 'b' && buf[2] == 'u' && buf[3] == 'i' && buf[4] == '~') || 
+            else if( (buf[1] == 'b' && buf[2] == 'i' && buf[3] == 'u' && buf[4] == '~') ||
+                     (buf[1] == 'b' && buf[2] == 'u' && buf[3] == 'i' && buf[4] == '~') ||
                      (buf[1] == 'i' && buf[2] == 'b' && buf[3] == 'u' && buf[4] == '~') ||
                      (buf[1] == 'i' && buf[2] == 'u' && buf[3] == 'b' && buf[4] == '~') ||
                      (buf[1] == 'u' && buf[2] == 'b' && buf[3] == 'i' && buf[4] == '~') ||

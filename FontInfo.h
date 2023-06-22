@@ -1,5 +1,5 @@
 /* -*- C++ -*-
- * 
+ *
  *  FontInfo.h - Font information storage class of ONScripter
  *
  *  Copyright (c) 2001-2007 Ogapee. All rights reserved.
