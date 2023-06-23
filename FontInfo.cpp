@@ -91,7 +91,7 @@ void *Fontinfo::openFont( char *font_file, int ratio1, int ratio2 )
         FILE *fp = fopen( font_file, "r" );
         if ( fp == NULL ) return NULL;
         fclose( fp );
-        printf("Opening font.\tSize (full-width): %d\tEffective size: %d\n", font_size, font_size * ratio1 / ratio2);
+        //printf("Opening font.\tSize (full-width): %d\tEffective size: %d\n", font_size, font_size * ratio1 / ratio2);
         fc->next->font = TTF_OpenFont( font_file, font_size * ratio1 / ratio2 );
     }
 

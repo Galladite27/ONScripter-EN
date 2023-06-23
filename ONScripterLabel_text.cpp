@@ -118,33 +118,16 @@ extern unsigned short convUTF8ToUTF16(const char **src);
  *
  *
  *
- * I need to fix all instances of advanceCharInHankaku (they WILL
- * break)
- * I must make sure I properly check if the character after an end-
- * kinsoku character will fit on the line wihtout relying on columns
- * of text
+ * - Do I need to check AnimationInfo? (I hope not lol)
+ * - Change newlines to measure font hight?
  *
- * Expected pixel length in lookback mode is far too big (always 91?)
- * Does this still apply? 2023-6-23
+ * - startRuby needs fixing to use px
+ * - I must make sure I properly check if the character after an end-
+ *   kinsoku character will fit on the line wihtout relying on columns
+ *   of text
+ * - Expected pixel length in lookback mode is far too big (91?)
+ *   Does this still apply? 2023-6-23
  *
- * Process for modifying to be proportional:
- *  - Always check for Encoding::CODE_UTF8 and keep the behaviour as
- *    the original for SJIS - DONE (in FontInfo)
- *  - Change FontInfo functions to assume the x in xy is measured in
- *    pixels, not columns, when in UTF-8 mode - DONE (mostly - see the
- *    TODOs)
- *
- *  - Do I need to check AnimationInfo? (I hope not lol)
- *
- *  - On loading a font in Fontinfo, we need to check if in UTF mode,
- *    and if we are then adapt the textwindow width limits to use
- *    pixels (Do we? Several FontInfo variables already work in px.)
- *  - Change newlines to measure font hight
- *  - In UTF-8 mode, we need to make sure that white space advances
- *    the correct amount still (will be done automatically I think)
- *
- *
- * startRuby needs fixing to use px
  *
  * Fontinfo functions to fix, and files they are called from (sigh):
  * - x
