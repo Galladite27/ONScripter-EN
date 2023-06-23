@@ -64,7 +64,7 @@ public:
     int getTateyokoMode();
     int getRemainingLine();
 
-    int x();
+    int x(int encoding);
     int y();
     void setXY( int x=-1, int y=-1 );
     void clear();

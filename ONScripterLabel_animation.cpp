@@ -91,7 +91,7 @@ int ONScripterLabel::proceedCursorAnimation()
         if ( anim && anim->visible && anim->is_animatable ){
             SDL_Rect dst_rect = anim->pos;
             if ( !anim->abs_flag ){
-                dst_rect.x += ExpandPos(sentence_font.x());
+                dst_rect.x += ExpandPos(sentence_font.x(script_h.enc.getEncoding()));
                 dst_rect.y += ExpandPos(sentence_font.y());
             }
 
@@ -515,7 +515,7 @@ void ONScripterLabel::drawTaggedSurface( SDL_Surface *dst_surface, AnimationInfo
         SDL_Rect poly_rect = anim->pos;
 
         if ( !anim->abs_flag ){
-            poly_rect.x += ExpandPos(sentence_font.x());
+            poly_rect.x += ExpandPos(sentence_font.x(script_h.enc.getEncoding()));
             poly_rect.y += ExpandPos(sentence_font.y());
         }
 
@@ -553,7 +553,7 @@ void ONScripterLabel::stopCursorAnimation( int click )
     SDL_Rect dst_rect = cursor_info[ no ].pos;
 
     if ( !cursor_info[ no ].abs_flag ){
-        dst_rect.x += ExpandPos(sentence_font.x());
+        dst_rect.x += ExpandPos(sentence_font.x(script_h.enc.getEncoding()));
         dst_rect.y += ExpandPos(sentence_font.y());
     }
 

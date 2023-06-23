@@ -2339,7 +2339,7 @@ AnimationInfo* ONScripterLabel::getSentence( char *buffer, Fontinfo *info, int n
     }
     anim->skip_whitespace = skip_whitespace;
     setStr( &anim->file_name, buffer );
-    anim->orig_pos.x = info->x();
+    anim->orig_pos.x = info->x(script_h.enc.getEncoding());
     anim->orig_pos.y = info->y();
     UpdateAnimPosXY(anim);
     anim->visible = true;

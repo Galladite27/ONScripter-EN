@@ -131,11 +131,7 @@ extern unsigned short convUTF8ToUTF16(const char **src);
  *
  * Fontinfo functions to fix, and files they are called from (sigh):
  * - x
- *   \-> FontInfo.cpp
- *   \-> ONScripterLabel.cpp
- *   \-> ONScripterLabel_animation.cpp
  *   \-> ONScripterLabel_command.cpp
- *   \-> ONScripterLabel_text.cpp
  *
  */
 
@@ -341,7 +337,7 @@ void ONScripterLabel::drawChar( char* text, Fontinfo *info, bool flush_flag,
     }
 
     int xy[2];
-    xy[0] = abs_offset + ExpandPos(info->x());
+    xy[0] = abs_offset + ExpandPos(info->x(script_h.enc.getEncoding()));
     xy[1] = ExpandPos(info->y());
 
     if ( !isNonPrinting(&out_text[0]) || script_h.enc.getEncoding() == Encoding::CODE_UTF8 ){
@@ -1069,7 +1065,7 @@ bool ONScripterLabel::processText()
             out_text[i] = script_h.getStringBuffer()[string_buffer_offset+i];
         }
 
-        last_textpos_xy[0] = sentence_font.x()-sentence_font.ruby_offset_xy[0];
+        last_textpos_xy[0] = sentence_font.x(script_h.enc.getEncoding())-sentence_font.ruby_offset_xy[0];
         last_textpos_xy[1] = sentence_font.y()-sentence_font.ruby_offset_xy[1];
 
         drawChar( out_text, &sentence_font, flush_flag, true, accumulation_surface, &text_info );
@@ -1299,7 +1295,7 @@ bool ONScripterLabel::processText()
             string_buffer_offset++;
             return false;
         }
-        last_textpos_xy[0] = sentence_font.x()-sentence_font.ruby_offset_xy[0];
+        last_textpos_xy[0] = sentence_font.x(script_h.enc.getEncoding())-sentence_font.ruby_offset_xy[0];
         last_textpos_xy[1] = sentence_font.y()-sentence_font.ruby_offset_xy[1];
         bool flush_flag = !(skip_mode || ctrl_pressed_status || (sentence_font.wait_time == 0));
         drawChar( out_text, &sentence_font, flush_flag, true, accumulation_surface, &text_info );

@@ -3118,13 +3118,13 @@ int ONScripterLabel::getcursorposCommand()
         }
 
         script_h.readInt();
-        //script_h.setInt( &script_h.current_variable, sentence_font.x() );
+        //script_h.setInt( &script_h.current_variable, sentence_font.x(script_h.enc.getEncoding()) );
 #ifdef RCA_SCALE
         if (scr_stretch_x > 1.0)
-            script_h.setInt( &script_h.current_variable, (sentence_font.x()-sentence_font.ruby_offset_xy[0]) / scr_stretch_x + 0.5);
+            script_h.setInt( &script_h.current_variable, (sentence_font.x(script_h.enc.getEncoding())-sentence_font.ruby_offset_xy[0]) / scr_stretch_x + 0.5);
         else
 #endif
-        script_h.setInt( &script_h.current_variable, sentence_font.x()-sentence_font.ruby_offset_xy[0] ); // workaround for possibly a bug in the original
+        script_h.setInt( &script_h.current_variable, sentence_font.x(script_h.enc.getEncoding())-sentence_font.ruby_offset_xy[0] ); // workaround for possibly a bug in the original
 
         script_h.readInt();
         //script_h.setInt( &script_h.current_variable, sentence_font.y() );

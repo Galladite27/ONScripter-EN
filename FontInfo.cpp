@@ -121,14 +121,13 @@ int Fontinfo::getRemainingLine()
         return num_xy[1] - num_xy[0] + xy[0]/2 + 1;
 }
 
-int Fontinfo::x()
+int Fontinfo::x(int encoding)
 {
-#ifdef FI_TEST
-    return xy[0] + top_xy[0] + line_offset_xy[0] + ruby_offset_xy[0];
-#else
-    // Multiplies current column by character pixel count to get offset
-    return xy[0]*pitch_xy[0]/2 + top_xy[0] + line_offset_xy[0] + ruby_offset_xy[0];
-#endif
+    if (encoding == Encoding::CODE_CP932)
+        // Multiplies current column by character pixel count to get offset
+        return xy[0]*pitch_xy[0]/2 + top_xy[0] + line_offset_xy[0] + ruby_offset_xy[0];
+    else
+        return xy[0] + top_xy[0] + line_offset_xy[0] + ruby_offset_xy[0];
 }
 
 int Fontinfo::y()
@@ -276,7 +275,6 @@ SDL_Rect Fontinfo::calcUpdatedArea(int start_xy[2], int ratio1, int ratio2, int 
 
     rect.x = rect.x * ratio1 / ratio2;
     rect.y = rect.y * ratio1 / ratio2;
-    //TODO: does this need changing?
     if (((rect.w*ratio1)%ratio2)==0)
         rect.w = rect.w * ratio1 / ratio2;
     else
@@ -291,8 +289,6 @@ SDL_Rect Fontinfo::calcUpdatedArea(int start_xy[2], int ratio1, int ratio2, int 
 
 void Fontinfo::addShadeArea(SDL_Rect &rect, int shade_distance[2])
 {
-    //TODO: I think this is fine, I'm mostly sure that this is all
-    //pixels anyways.
     if (is_shadow){
         if (shade_distance[0]>0)
             rect.w += shade_distance[0];
@@ -314,7 +310,7 @@ void Fontinfo::addShadeArea(SDL_Rect &rect, int shade_distance[2])
 int Fontinfo::initRuby(Fontinfo &body_info, int body_count, int ruby_count, int encoding)
 {
     //Uses px I think
-    top_xy[0] = body_info.x();
+    top_xy[0] = body_info.x(encoding);
     top_xy[1] = body_info.y();
     pitch_xy[0] = font_size_xy[0];
     pitch_xy[1] = font_size_xy[1];
