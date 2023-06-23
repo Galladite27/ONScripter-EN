@@ -171,16 +171,9 @@ void Fontinfo::newLine()
 
 void Fontinfo::setLineArea(int num)
 {
-#ifdef FI_TEST
-    // We know that tateyoko_mode will always be yoko
-    //TODO the functions that call this func should be aware of the
-    //encoding in order to send the right num)
-    num_xy[0] = num;
-    num_xy[1] = 1;
-#else
+    // Doesn't require fix; UTF-8 will always be yoko
     num_xy[tateyoko_mode] = num;
     num_xy[1-tateyoko_mode] = 1;
-#endif
 }
 
 bool Fontinfo::isEndOfLine(int margin)
@@ -188,21 +181,14 @@ bool Fontinfo::isEndOfLine(int margin)
     if (pitch_xy[tateyoko_mode] == 0)
         return false;
 
-#ifdef FI_TEST
-    //TODO fix this
-    //I really wish I didn't have to figure out what this func does...
-    int offset = 2 * line_offset_xy[0] / pitch_xy[0];
-    if (((2 * line_offset_xy[0]) % pitch_xy[0]) > 0)
-        offset++;
-    if (xy[0] + offset + margin >= num_xy[0]*2)
-        return true;
-#else
+    // It's unnecessary to "fix" this (or at least I think it is)
+    // because tateyoko mode will always be 0 in UTF-8 mode, and
+    // it already looks like it uses px
     int offset = 2 * line_offset_xy[tateyoko_mode] / pitch_xy[tateyoko_mode];
     if (((2 * line_offset_xy[tateyoko_mode]) % pitch_xy[tateyoko_mode]) > 0)
         offset++;
     if (xy[tateyoko_mode] + offset + margin >= num_xy[tateyoko_mode]*2)
         return true;
-#endif
 
     return false;
 }
@@ -236,26 +222,42 @@ void Fontinfo::setRubyOnFlag(bool flag)
 	ruby_offset_xy[1] = pitch_xy[1] - font_size_xy[1];
 }
 
-SDL_Rect Fontinfo::calcUpdatedArea(int start_xy[2], int ratio1, int ratio2)
+SDL_Rect Fontinfo::calcUpdatedArea(int start_xy[2], int ratio1, int ratio2, int encoding)
 {
     SDL_Rect rect;
 
     if (tateyoko_mode == YOKO_MODE){
         if (start_xy[1] == xy[1]){
-            rect.x = top_xy[0] + pitch_xy[0]*start_xy[0]/2;
-            rect.w = pitch_xy[0]*(xy[0]-start_xy[0])/2+1;
+            if (encoding == Encoding::CODE_CP932) {
+                rect.x = top_xy[0] + pitch_xy[0]*start_xy[0]/2;
+                rect.w = pitch_xy[0]*(xy[0]-start_xy[0])/2+1;
+            } else {
+                rect.x = top_xy[0] + start_xy[0];
+                rect.w = xy[0] - start_xy[0] + 1;
+                // I'm keeping the +1 because I don't know what it does
+            }
         }
         else{
             rect.x = top_xy[0];
-#ifdef FI_TEST
-            // Need to check if start_xy uses pixels
-            rect.w = xy[0]-start_xy[0];
-#else
-            rect.w = pitch_xy[0]*num_xy[0];
-#endif
+            if (encoding == Encoding::CODE_CP932) {
+                rect.w = pitch_xy[0]*num_xy[0];
+            } else {
+                // My rehashed analysis: top_xy is based on Fontinfo::xy
+                // and so it will naturally contain either columns or px
+                // depending on the encoding in use :D
+                rect.w = xy[0]-start_xy[0];
+            }
         }
-        rect.y = top_xy[1] + start_xy[1]*pitch_xy[1]/2;
-        rect.h = pitch_xy[1]*(xy[1]-start_xy[1]+2)/2;
+        if (encoding == Encoding::CODE_CP932) {
+            rect.y = top_xy[1] + start_xy[1]*pitch_xy[1]/2;
+            rect.h = pitch_xy[1]*(xy[1]-start_xy[1]+2)/2;
+        } else {
+            // I think this still holds true since I haven't changed how
+            // Y values work (that is, counting in rows instead of px)
+            // -Galladite 2023-6-23
+            rect.y = top_xy[1] + start_xy[1]*pitch_xy[1]/2;
+            rect.h = pitch_xy[1]*(xy[1]-start_xy[1]+2)/2;
+        }
     }
     // This can stay the same; it only applies to SJIS mode
     else{
@@ -307,9 +309,9 @@ void Fontinfo::addShadeArea(SDL_Rect &rect, int shade_distance[2])
     }
 }
 
-//TODO: functions that call this func should be aware of giving ints in x
+//TODO: functions that call this func should be aware of giving ints in px
 //TODO: also the return value (margin) will be given in px
-int Fontinfo::initRuby(Fontinfo &body_info, int body_count, int ruby_count)
+int Fontinfo::initRuby(Fontinfo &body_info, int body_count, int ruby_count, int encoding)
 {
     //Uses px I think
     top_xy[0] = body_info.x();
@@ -332,34 +334,32 @@ int Fontinfo::initRuby(Fontinfo &body_info, int body_count, int ruby_count)
         num_xy[1] = ruby_count;
     }
 
-#ifdef FI_TEST
-    //TODO: may need to be reverted. This has been changed to assume body_count and ruby_count in px
-    if (ruby_count >= body_count){
-        // This plus one already meant one pixel, right?
-        // Why is this divided by two? Wouldn't that only give it half the margin required to make
-        // sure it all fits on the screen?
-        margin = (ruby_count - body_count + 1)/2;
+    if (encoding == Encoding::CODE_UTF8) {
+        //TODO: may need to be reverted. This has been changed to assume body_count and ruby_count in px
+        if (ruby_count >= body_count){
+            margin = (ruby_count - body_count + 1)/2;
+        }
+        else{
+            int offset = 0;
+            if (ruby_count > 0)
+                //TODO: double-check this maths stays true in px
+                offset = (body_count - ruby_count) / ruby_count;
+            top_xy[0] += (offset+1)/2; //Ig to prevent truncation
+            pitch_xy[0] += offset;
+        }
+    } else {
+        //SJIS
+        if (ruby_count*font_size_xy[tateyoko_mode] >= body_count*body_info.pitch_xy[tateyoko_mode]){
+            margin = (ruby_count*font_size_xy[tateyoko_mode] - body_count*body_info.pitch_xy[tateyoko_mode] + 1)/2;
+        }
+        else{
+            int offset = 0;
+            if (ruby_count > 0)
+                offset = (body_count*body_info.pitch_xy[tateyoko_mode] - ruby_count*font_size_xy[tateyoko_mode]) / ruby_count;
+            top_xy[tateyoko_mode] += (offset+1)/2;
+            pitch_xy[tateyoko_mode] += offset;
+        }
     }
-    else{
-        int offset = 0;
-        if (ruby_count > 0)
-            //TODO: double-check this maths stays true in px
-            offset = (body_count - ruby_count) / ruby_count;
-        top_xy[0] += (offset+1)/2; //Ig to prevent truncation
-        pitch_xy[0] += offset;
-    }
-#else
-    if (ruby_count*font_size_xy[tateyoko_mode] >= body_count*body_info.pitch_xy[tateyoko_mode]){
-        margin = (ruby_count*font_size_xy[tateyoko_mode] - body_count*body_info.pitch_xy[tateyoko_mode] + 1)/2;
-    }
-    else{
-        int offset = 0;
-        if (ruby_count > 0)
-            offset = (body_count*body_info.pitch_xy[tateyoko_mode] - ruby_count*font_size_xy[tateyoko_mode]) / ruby_count;
-        top_xy[tateyoko_mode] += (offset+1)/2;
-        pitch_xy[tateyoko_mode] += offset;
-    }
-#endif
     //body_info.line_offset_xy[tateyoko_mode] += margin;
 
     clear();

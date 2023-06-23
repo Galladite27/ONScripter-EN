@@ -234,7 +234,7 @@ void ONScripterLabel::setupAnimationInfo( AnimationInfo *anim, Fontinfo *info )
             
             int xy[2] = {0, 0};
             f_info.setXY(f_info.num_xy[0]-1, f_info.num_xy[1]-1);
-            pos = f_info.calcUpdatedArea(xy, screen_ratio1, screen_ratio2);
+            pos = f_info.calcUpdatedArea(xy, screen_ratio1, screen_ratio2, script_h.enc.getEncoding());
 
             f_info.xy[0] = xy_bak[0];
             f_info.xy[1] = xy_bak[1];

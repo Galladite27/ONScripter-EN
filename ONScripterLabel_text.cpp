@@ -143,6 +143,7 @@ extern unsigned short convUTF8ToUTF16(const char **src);
  *    the correct amount still (will be done automatically I think)
  *
  *
+ * startRuby needs fixing to use px
  *
  * Fontinfo functions to fix, and files they are called from (sigh):
  * - x
@@ -150,17 +151,6 @@ extern unsigned short convUTF8ToUTF16(const char **src);
  *   \-> ONScripterLabel.cpp
  *   \-> ONScripterLabel_animation.cpp
  *   \-> ONScripterLabel_command.cpp
- *   \-> ONScripterLabel_text.cpp
- * - setLineArea
- *   \-> ONScripterLabel_animation.cpp
- *   \-> ONScripterLabel_command.cpp
- *   \-> ONScripterLabel_text.cpp
- * - isEndOfLine
- *   \-> ONScripterLabel_text.cpp
- * - calcUpdatedArea (check this functin also)
- *   \-> ONScripterLabel_animation.cpp
- *   \-> ONScripterLabel_text.cpp
- * - initRuby
  *   \-> ONScripterLabel_text.cpp
  *
  */
@@ -587,7 +577,7 @@ void ONScripterLabel::drawString( const char *str, uchar3 color, Fontinfo *info,
 
     /* ---------------------------------------- */
     /* Calculate the area of selection */
-    SDL_Rect clipped_rect = info->calcUpdatedArea(start_xy, screen_ratio1, screen_ratio2);
+    SDL_Rect clipped_rect = info->calcUpdatedArea(start_xy, screen_ratio1, screen_ratio2, script_h.enc.getEncoding());
     clipped_rect.x += abs_offset;
     info->addShadeArea(clipped_rect, shade_distance);
 
@@ -885,7 +875,8 @@ void ONScripterLabel::startRuby(char *buf, Fontinfo &info)
     }
     ruby_struct.ruby_end = buf;
     ruby_struct.stage = RubyStruct::BODY;
-    ruby_struct.margin = ruby_font.initRuby(info, ruby_struct.body_count/2, ruby_struct.ruby_count/2);
+    //TODO: calculate body count and ruby count in px
+    ruby_struct.margin = ruby_font.initRuby(info, ruby_struct.body_count/2, ruby_struct.ruby_count/2, script_h.enc.getEncoding());
 }
 
 void ONScripterLabel::endRuby(bool flush_flag, bool lookback_flag, SDL_Surface *surface, AnimationInfo *cache_info)
