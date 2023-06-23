@@ -1,4 +1,11 @@
-2023-06-20
+2023-06-23
+  SJIS mode now works properly. All modified functions now use
+  conditionals instead of hard-coded ifdefs, meaning that one
+  exectable will work for both SJIS and UTF-8 scripts.
+
+  Begun work on a linewrap algorithm for UTF-8
+
+2023-06-22
   processText modified - initial UTF-8 support! OYABB! I've only
   tested it with CJK characters and accented Latin characters, but
   it's all good so far! (I wouldn't try coloured emojis though...)
@@ -17,7 +24,7 @@
   are hard-coded with their UTF-8 functionality and need to check
   which mode they are in and act accordingly.
 
-2023-06-20
+2023-06-21
   ScriptHandler::checkClickstr now works with UTF-8 (plus a bug has
   been fixed where certain multi-byte characters would cause
   one directly proceeding clickwait character to be skipped)

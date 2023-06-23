@@ -127,11 +127,7 @@ extern unsigned short convUTF8ToUTF16(const char **src);
  *   of text
  * - Expected pixel length in lookback mode is far too big (91?)
  *   Does this still apply? 2023-6-23
- *
- *
- * Fontinfo functions to fix, and files they are called from (sigh):
- * - x
- *   \-> ONScripterLabel_command.cpp
+ * - Need to set sane default soft text width limit int UTF-8 mode
  *
  */
 
