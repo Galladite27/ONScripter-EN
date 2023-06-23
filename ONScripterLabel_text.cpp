@@ -125,6 +125,7 @@ extern unsigned short convUTF8ToUTF16(const char **src);
  * of text
  *
  * Expected pixel length in lookback mode is far too big (always 91?)
+ * Does this still apply? 2023-6-23
  *
  * Process for modifying to be proportional:
  *  - Always check for Encoding::CODE_UTF8 and keep the behaviour as
@@ -373,7 +374,7 @@ void ONScripterLabel::drawChar( char* text, Fontinfo *info, bool flush_flag,
         color.g = info->color[1];
         color.b = info->color[2];
         drawGlyph( surface, info, color, out_text, xy, false, cache_info, clip, dst_rect );
-        printf("Char: [%s]\tExpected pixel length: %f\n\n", out_text, strpxlen(out_text, info));
+        //printf("Char: [%s]\tExpected pixel length: %f\n\n", out_text, strpxlen(out_text, info));
 
         if ( surface == accumulation_surface &&
              !flush_flag &&
