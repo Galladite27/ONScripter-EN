@@ -33,6 +33,18 @@ BUGS OR MISFEATURES
 * UTF-8 Lookback mode: it seems like multibyte characters cause all
   subsequently drawn characters to have far too much spacing
 
+* Rmenu needs fixing - still assuming columns
+
+* Linewrap algorithm (UTF-8) - characters going slightly off-screen
+  with default text area width - this is due to only 1px of the area
+  needing to be free for it to begin drawing the character, which then
+  runs off the side of the area (and potentially the text box or
+  screen). 1px now used to be one column. This will likely be fixed
+  when I fix the linerap algorithm for UTF-8 mode.
+
+* Ruby text doesn't display properly in UTF-8 mode - probably still
+  assuming columns
+
 FEATURES REQUESTED
   
 * Allow the specification of a "fallback" font to use for characters
@@ -48,8 +60,6 @@ FEATURES REQUESTED
 
 * Red borders for the Linux pop-ups
 
-* UTF-8 suport bringing in from onscripter-insani
-
 
 DOCUMENTATION UPDATING LIST
 * This section contains changes which need to be made to the
@@ -60,16 +70,14 @@ DOCUMENTATION UPDATING LIST
 * ~ and ^ may (will) need updating in relation to onsen's and onani's
   UTF-8 integration
 
-* clickstr syntax notes (MULTI`SINGLE)
-
 
 TODO LIST
 
 * Update Windows makefiles
 * Bring over UTF-8 suport from onscripter-insani
-  - Kerning and spacing in UTF-8 mode
   - Make a version of the current linewrap algorithm for use with
     proportional fonts
+  - Many bugfixes
   - Interpret font styles
     * Hold more font styles in FontInfo
     * Recognise ~ tags in script

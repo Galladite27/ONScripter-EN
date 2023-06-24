@@ -1573,7 +1573,11 @@ void ONScripterLabel::resetSentenceFont()
     sentence_font.font_size_xy[1] = DEFAULT_FONT_SIZE;
     sentence_font.top_xy[0] = 21;
     sentence_font.top_xy[1] = 16;// + sentence_font.font_size;
-    sentence_font.num_xy[0] = 23;
+    if (script_h.enc.getEncoding() == Encoding::CODE_CP932)
+        sentence_font.num_xy[0] = 23;
+    else
+        // Needs to be half the equivalent value
+        sentence_font.num_xy[0] = 319;
     sentence_font.num_xy[1] = 16;
     sentence_font.pitch_xy[0] = sentence_font.font_size_xy[0];
     sentence_font.pitch_xy[1] = 2 + sentence_font.font_size_xy[1];
