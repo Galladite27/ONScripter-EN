@@ -36,8 +36,6 @@
 
 #include "ONScripterLabel.h"
 #include "Encoding.h"
-#include <cstring>
-#define STRING_BUFFER_LENGTH 2048
 extern unsigned short convUTF8ToUTF16(const char **src);
 
 /*
