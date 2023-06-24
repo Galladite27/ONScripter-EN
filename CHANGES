@@ -1,9 +1,13 @@
+2023-06-24
+  Added setwindow4 command for option use in UTF-8 mode - allows for
+  better and simpler setting of the text display area size.
+
+  Begun work on a linewrap algorithm for UTF-8
+
 2023-06-23
   SJIS mode now works properly. All modified functions now use
   conditionals instead of hard-coded ifdefs, meaning that one
   exectable will work for both SJIS and UTF-8 scripts.
-
-  Begun work on a linewrap algorithm for UTF-8
 
 2023-06-22
   processText modified - initial UTF-8 support! OYABB! I've only
