@@ -36,6 +36,8 @@
 
 #include "ONScripterLabel.h"
 #include "Encoding.h"
+#include <cstring>
+#define STRING_BUFFER_LENGTH 2048
 extern unsigned short convUTF8ToUTF16(const char **src);
 
 /*
@@ -820,7 +822,18 @@ void ONScripterLabel::startRuby(char *buf, Fontinfo &info)
 {
     ruby_struct.stage = RubyStruct::BODY;
     ruby_font = info;
-    ruby_font.ttf_font = NULL;
+
+    if (ruby_font.ttf_font == NULL &&
+           script_h.enc.getEncoding() == Encoding::CODE_UTF8) {
+        fprintf(stderr, "Error: incorrect font information for ruby text!\nThis is a known bug; for now, please do not use ruby text on the first line.\n");
+        exit(1);
+        //ruby_font.openFont(font_file, screen_ratio1, screen_ratio2);
+    }
+
+    // Don't do this in UTF-8 mode
+    if (script_h.enc.getEncoding() == Encoding::CODE_CP932)
+        ruby_font.ttf_font = NULL;
+
     if ( ruby_struct.font_size_xy[0] != -1 )
         ruby_font.font_size_xy[0] = ruby_struct.font_size_xy[0];
     else
@@ -833,6 +846,14 @@ void ONScripterLabel::startRuby(char *buf, Fontinfo &info)
     ruby_struct.body_count = 0;
     ruby_struct.ruby_count = 0;
 
+    if (script_h.enc.getEncoding() == Encoding::CODE_UTF8) {
+        char check_text[5] = {'\0', '\0', '\0', '\0', '\0'};
+        int n;
+    }
+
+    int n;
+    char check_text[5] = {'\0', '\0', '\0', '\0', '\0'};
+
     while(1){
         if ( *buf == '/' ){
             ruby_struct.stage = RubyStruct::RUBY;
@@ -841,14 +862,32 @@ void ONScripterLabel::startRuby(char *buf, Fontinfo &info)
         else if ( *buf == ')' || *buf == '\0' ){
             break;
         }
-        else{
-            if ( ruby_struct.stage == RubyStruct::BODY )
-                ruby_struct.body_count++;
-            else if ( ruby_struct.stage == RubyStruct::RUBY )
-                ruby_struct.ruby_count++;
+        else {
+            if (script_h.enc.getEncoding() == Encoding::CODE_CP932) {
+                n=1;
+                if ( ruby_struct.stage == RubyStruct::BODY )
+                    ruby_struct.body_count++;
+                else if ( ruby_struct.stage == RubyStruct::RUBY )
+                    ruby_struct.ruby_count++;
+
+            } else {
+                n = script_h.enc.getBytes(*buf);
+                for (int i=0; i<n; i++) {
+                    check_text[i] = buf[i];
+                }
+
+                if ( ruby_struct.stage == RubyStruct::BODY )
+                    ruby_struct.body_count+=strpxlen(check_text, &ruby_font);
+                else if ( ruby_struct.stage == RubyStruct::RUBY )
+                    ruby_struct.ruby_count+=strpxlen(check_text, &ruby_font);
+            }
         }
-        buf++;
+
+        buf += n;
     }
+    // In case it was skipped earlier due to UTF-8 mode
+    ruby_font.ttf_font = NULL;
+
     ruby_struct.ruby_end = buf;
     ruby_struct.stage = RubyStruct::BODY;
     //TODO: calculate body count and ruby count in px

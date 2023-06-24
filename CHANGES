@@ -2,7 +2,8 @@
   Added setwindow4 command for option use in UTF-8 mode - allows for
   better and simpler setting of the text display area size.
 
-  Begun work on a linewrap algorithm for UTF-8
+  Bugfixing for some really annoying ruby text bugs (and finding
+  several more). However, it at least pretty much works now.
 
 2023-06-23
   SJIS mode now works properly. All modified functions now use

@@ -45,6 +45,9 @@ BUGS OR MISFEATURES
 * Ruby text doesn't display properly in UTF-8 mode - probably still
   assuming columns
 
+* Ruby text doesn't work on line 1 in UTF-8 mode (I hate this error)
+* Body is not centred beneath ruby
+
 FEATURES REQUESTED
   
 * Allow the specification of a "fallback" font to use for characters
