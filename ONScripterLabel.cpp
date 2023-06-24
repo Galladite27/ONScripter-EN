@@ -135,6 +135,7 @@ static struct FuncLUT{
     {"skipoff",   &ONScripterLabel::skipoffCommand},
     {"shell",   &ONScripterLabel::shellCommand},
     {"sevol",   &ONScripterLabel::sevolCommand},
+    {"setwindow4",   &ONScripterLabel::setwindow4Command},
     {"setwindow3",   &ONScripterLabel::setwindow3Command},
     {"setwindow2",   &ONScripterLabel::setwindow2Command},
     {"setwindow",   &ONScripterLabel::setwindowCommand},

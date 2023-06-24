@@ -882,7 +882,7 @@ int ONScripterLabel::sevolCommand()
     return RET_CONTINUE;
 }
 
-void ONScripterLabel::setwindowCore()
+void ONScripterLabel::setwindowCore(bool utf8_precalc)
 {
     sentence_font.ttf_font  = NULL;
     sentence_font.top_xy[0] = script_h.readInt();
@@ -896,6 +896,18 @@ void ONScripterLabel::setwindowCore()
     sentence_font.wait_time = script_h.readInt();
     sentence_font.is_bold = script_h.readInt()?true:false;
     sentence_font.is_shadow = script_h.readInt()?true:false;
+    if (script_h.enc.getEncoding() == Encoding::CODE_UTF8 &&
+         utf8_precalc == true) {
+        // In UTF-8 mode, this must be applied prematurely since
+        // num_xy now counts px instead of columns
+        sentence_font.num_xy[0] *= sentence_font.font_size_xy[0];
+        //Is this needed? Should we round up?
+        //sentence_font.num_xy[0] += 1;
+        sentence_font.num_xy[0] /= 2;
+    } else if (script_h.enc.getEncoding() == Encoding::CODE_UTF8) {
+        // I don't know why, but this makes setwindow4 work properly
+        sentence_font.num_xy[0] /= 2;
+    }
 
     bool is_color = false;
     const char *buf;
@@ -1006,6 +1018,25 @@ int ONScripterLabel::setwindowCommand()
     indent_offset = 0;
     line_enter_status = 0;
     page_enter_status = 0;
+    display_mode = DISPLAY_MODE_NORMAL;
+    flush( refreshMode(), &sentence_font_info.pos );
+
+    return RET_CONTINUE;
+}
+
+int ONScripterLabel::setwindow4Command()
+{
+    setwindowCore(false);
+
+    bool lbflush = script_h.readInt()?true:false;
+
+    if (lbflush) {
+        lookbackflushCommand();
+        indent_offset = 0;
+        line_enter_status = 0;
+        page_enter_status = 0;
+    }
+
     display_mode = DISPLAY_MODE_NORMAL;
     flush( refreshMode(), &sentence_font_info.pos );
 

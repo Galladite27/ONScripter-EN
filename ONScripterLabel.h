@@ -219,6 +219,7 @@ public:
     int skipoffCommand();
     int shellCommand();
     int sevolCommand();
+    int setwindow4Command();
     int setwindow3Command();
     int setwindow2Command();
     int setwindowCommand();
@@ -816,7 +817,9 @@ private:
     int last_textpos_xy[2];
 
     int  refreshMode();
-    void setwindowCore();
+    void setwindowCore(bool utf8_precalc = true);
+    // New option specifies if we should calculate early the total px
+    // from the full-width px and number of columns
 
     SDL_Surface *renderGlyph(TTF_Font *font, Uint16 text);
     void drawGlyph( SDL_Surface *dst_surface, Fontinfo *info, SDL_Color &color, char *text, int xy[2], bool shadow_flag, AnimationInfo *cache_info, SDL_Rect *clip, SDL_Rect &dst_rect );

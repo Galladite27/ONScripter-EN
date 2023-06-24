@@ -30,9 +30,8 @@ BUGS OR MISFEATURES
 * Sound bug related to Plumerai and using -s option (or ons.cfg
   equivalent). See bug 1 on github.
 
-* UTF-8 Lookback mode: certain whitespace / character spacing is too
-  wide
-
+* UTF-8 Lookback mode: it seems like multibyte characters cause all
+  subsequently drawn characters to have far too much spacing
 
 FEATURES REQUESTED
   
