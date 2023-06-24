@@ -48,6 +48,9 @@ BUGS OR MISFEATURES
 * Ruby text doesn't work on line 1 in UTF-8 mode (I hate this error)
 * Body is not centred beneath ruby
 
+* Rmenu isn't wide enough.
+* Need to work on executeSystemSave and executeSystemLoad
+
 FEATURES REQUESTED
   
 * Allow the specification of a "fallback" font to use for characters
@@ -72,6 +75,8 @@ DOCUMENTATION UPDATING LIST
 
 * ~ and ^ may (will) need updating in relation to onsen's and onani's
   UTF-8 integration
+
+* strsp and strsph say INT instead of STR in options
 
 
 TODO LIST

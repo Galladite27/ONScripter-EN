@@ -1287,7 +1287,7 @@ void ScriptParser::setKinsoku(const char *start_chrs, const char *end_chrs, bool
             end_kinsoku[i].unicode = tmp[i].unicode;
         else
             end_kinsoku[i].unicode = script_h.enc.getUTF16(kchr, code);
-            kchr += script_h.enc.getBytes(*kchr, code);
+        kchr += script_h.enc.getBytes(*kchr, code);
     }
 
     // Old ver.

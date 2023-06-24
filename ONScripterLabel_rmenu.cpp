@@ -33,6 +33,7 @@
 // Modified by Mion, November 2009, to update from
 // Ogapee's 20091115 release source code.
 
+#include "Encoding.h"
 #include "ONScripterLabel.h"
 
 static const char* messages[][8] = {
@@ -194,12 +195,27 @@ void ONScripterLabel::executeSystemMenu()
     text_info.fill( 0, 0, 0, 0 );
     flush( refreshMode() );
 
+    // Num_XY: the number of columns (or in UTF-8, pixles) and rows
     menu_font.num_xy[0] = rmenu_link_width;
+    if (script_h.enc.getEncoding() == Encoding::CODE_UTF8)
+        menu_font.num_xy[0] *= menu_font.pitch_xy[0];
     menu_font.num_xy[1] = rmenu_link_num;
-    menu_font.top_xy[0] = (ContractPos(screen_width) - menu_font.num_xy[0] * menu_font.pitch_xy[0]) / 2;
+
+    // Top_xy: origin in pixels
+    // Origin: half of the screen's width, minus half of the px width of the text
+    if (script_h.enc.getEncoding() == Encoding::CODE_CP932)
+        menu_font.top_xy[0] = (ContractPos(screen_width) - menu_font.num_xy[0] * menu_font.pitch_xy[0]) / 2;
+    else
+        menu_font.top_xy[0] = (ContractPos(screen_width) - menu_font.num_xy[0]) / 2;
     menu_font.top_xy[1] = (ContractPos(screen_height) - menu_font.num_xy[1] * menu_font.pitch_xy[1]) / 2;
-    menu_font.setXY( (menu_font.num_xy[0] - rmenu_link_width) / 2,
-                     (menu_font.num_xy[1] - rmenu_link_num) / 2 );
+
+    // XY: measured in columns and rows (with px instead of columns in UTF-8 mode)
+    if (script_h.enc.getEncoding() == Encoding::CODE_CP932)
+        menu_font.setXY( (menu_font.num_xy[0] - rmenu_link_width) / 2,
+                         (menu_font.num_xy[1] - rmenu_link_num) / 2 );
+    else
+        menu_font.setXY( (menu_font.num_xy[0] - (rmenu_link_width * menu_font.pitch_xy[0])) / 2,
+                         (menu_font.num_xy[1] - rmenu_link_num) / 2 );
 
     RMenuLink *link = root_rmenu_link.next;
     int counter = 1;
@@ -431,11 +447,29 @@ void ONScripterLabel::executeSystemSave()
 
     text_info.fill( 0, 0, 0, 0 );
 
-    menu_font.num_xy[0] = (strlen(save_item_name)+1)/2+2+13;
+    // Number of columns / UTF-8 px width
+    if (script_h.enc.getEncoding() == Encoding::CODE_CP932)
+        menu_font.num_xy[0] = (strlen(save_item_name)+1)/2+2+13;
+    else
+        // Is this right??    No, it's broken
+        menu_font.num_xy[0] = strpxlen(save_item_name, &menu_font)+(15*menu_font.pitch_xy[0]);
     menu_font.num_xy[1] = num_save_file+2;
-    menu_font.top_xy[0] = (ContractPos(screen_width) - menu_font.num_xy[0] * menu_font.pitch_xy[0]) / 2;
+
+    if (script_h.enc.getEncoding() == Encoding::CODE_CP932)
+        menu_font.top_xy[0] = (ContractPos(screen_width) - menu_font.num_xy[0] * menu_font.pitch_xy[0]) / 2;
+    else
+        menu_font.top_xy[0] = (ContractPos(screen_width) - menu_font.num_xy[0]) / 2;
     menu_font.top_xy[1] = (ContractPos(screen_height) - menu_font.num_xy[1] * menu_font.pitch_xy[1]) / 2;
-    menu_font.setXY((menu_font.num_xy[0] - (strlen( save_menu_name )+1) / 2 ) / 2, 0);
+
+    if (script_h.enc.getEncoding() == Encoding::CODE_CP932)
+        menu_font.setXY((menu_font.num_xy[0] - (strlen( save_menu_name )+1) / 2 ) / 2, 0);
+    else
+        menu_font.setXY((menu_font.num_xy[0] - (strlen( save_menu_name )*menu_font.pitch_xy[0] +1) / 2 ) / 2, 0);
+
+    //menu_font.setXY( (menu_font.num_xy[0] - (rmenu_link_width * menu_font.pitch_xy[0])) / 2,
+    //                 (menu_font.num_xy[1] - rmenu_link_num) / 2 );
+
+
     //Mion: fixed the menu title bug noted in the past by Seung Park:
     // the menu title must be drawn close to last during refresh,
     // not in the textwindow, since there could be sprites above the
