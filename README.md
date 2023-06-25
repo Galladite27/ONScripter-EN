@@ -138,7 +138,7 @@ Haeleth officially retired from our community in 2010, and as such should not be
 Correspondence in English, or regarding issues related to this branch in particular, should be directed to [@Galladite27](https://github.com/Galladite27) or to [@lightbinder](https://github.com/lightbinder), as it contains a large number of customisations that have nothing to do with Ogapee, and neither Haeleth nor Uncle Mion are actively maintaining ONScripter-EN.
 
 ## Changelog
-Please see release notes [here](https://github.com/Galladite27/ONScripter-en/releases).
+Please see release notes [here](https://github.com/Galladite27/ONScripter-en/releases) or the more in-depth changelog [here](https://github.com/Galladite27/ONScripter-EN/blob/master/CHANGES).
 
 ## License
 ONScripter and ONScripter-EN are distributed under the terms of the GNU General Public License v2.  See COPYING for details.
