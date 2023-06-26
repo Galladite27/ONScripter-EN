@@ -30,16 +30,6 @@ BUGS OR MISFEATURES
 * Sound bug related to Plumerai and using -s option (or ons.cfg
   equivalent). See bug 1 on github.
 
-* UTF-8 Lookback mode: it seems like multibyte characters cause all
-  subsequently drawn characters to have far too much spacing
-
-* Linewrap algorithm (UTF-8) - characters going slightly off-screen
-  with default text area width - this is due to only 1px of the area
-  needing to be free for it to begin drawing the character, which then
-  runs off the side of the area (and potentially the text box or
-  screen). 1px now used to be one column. This will likely be fixed
-  when I fix the linerap algorithm for UTF-8 mode.
-
 * Ruby text doesn't work on line 1 in UTF-8 mode (I hate this error)
 * Body is not centred beneath ruby
 
@@ -73,6 +63,9 @@ DOCUMENTATION UPDATING LIST
 
 * strsp and strsph say INT instead of STR in options
 
+* setwindow4: add notes about subtracting text window X inset from
+  text display area X to prevent overfowing screen
+
 
 TODO LIST
 
@@ -80,7 +73,6 @@ TODO LIST
 * Bring over UTF-8 suport from onscripter-insani
   - Make a version of the current linewrap algorithm for use with
     proportional fonts
-  - Many bugfixes
   - Interpret font styles
     * Hold more font styles in FontInfo
     * Recognise ~ tags in script
@@ -114,3 +106,4 @@ COMPLETED
 * ;gameid fixed - ADD TO RELEASE NOTES
 * Pretext tags have been converted to UTF-8 (also they're cool)
 * Captions and clickwait characters can be UTF-8
+* Modified linewrap algorithm to work with proportional fonts

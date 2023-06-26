@@ -36,6 +36,8 @@
 
 #include "ONScripterLabel.h"
 #include "Encoding.h"
+#include "ScriptHandler.h"
+#include <cstring>
 extern unsigned short convUTF8ToUTF16(const char **src);
 
 /*
@@ -189,7 +191,8 @@ SDL_Surface *ONScripterLabel::renderGlyph(TTF_Font *font, Uint16 text)
 
     gc->text = text;
     gc->font = font;
-    if (gc->surface) SDL_FreeSurface(gc->surface);
+    printf("Checking to free surface\n");
+    if (gc->surface != NULL) SDL_FreeSurface(gc->surface);
 
     /* Initializing SDL_Color.unused here to silence warnings about unused
        variables. 32 bit operations should be faster than 24 bit ones anyway.
@@ -219,7 +222,6 @@ void ONScripterLabel::drawGlyph( SDL_Surface *dst_surface, Fontinfo *info, SDL_C
             unicode = convSJIS2UTF16( ((unsigned char*)text)[0] );
         }
     } else {
-        // This is surprisingly simple here...
         unicode = convUTF8ToUTF16((const char**)&text);
     }
 
@@ -1040,9 +1042,23 @@ bool ONScripterLabel::processText()
     // Ruby text or not a text command
     if (cmd <= 0) {
         line_has_nonspace = true;
-        // TODO this will probably need changing
-        if (sentence_font.isEndOfLine(0) ||
-            (IS_TWO_BYTE(ch) && sentence_font.isEndOfLine(1))) {
+
+        int spacing;
+        if (script_h.enc.getEncoding() == Encoding::CODE_CP932)
+            spacing = IS_TWO_BYTE(ch) ? 1 : 0;
+        else {
+            for (int i=0; i<n; i++) {
+                out_text[i] = script_h.getStringBuffer()[string_buffer_offset + i];
+                out_text[i+1] = '\0';
+            }
+
+            if (sentence_font.ttf_font == NULL) sentence_font.openFont(font_file, screen_ratio1, screen_ratio2);
+            spacing = strpxlen(out_text, &sentence_font);
+        }
+
+        if (sentence_font.isEndOfLine(spacing)) {
+        //if (sentence_font.isEndOfLine(0) ||
+        //    (IS_TWO_BYTE(ch) && sentence_font.isEndOfLine(1))) {
             // no room for current char on the line
             //printf("at end; breaking before %s", script_h.getStringBuffer() + string_buffer_offset);
             ch = doLineBreak();
@@ -1069,15 +1085,29 @@ bool ONScripterLabel::processText()
                     tmp = 0;
                 } else {
                     break_offset += n;
-                    tmp = n;
+
+                    if (script_h.enc.getEncoding() == Encoding::CODE_UTF8) {
+                        for (int i=0; i<n; i++) {
+                            out_text[i] = script_h.getStringBuffer()[string_buffer_offset + i];
+                            out_text[i+1] = '\0';
+                        }
+                        tmp = strpxlen(out_text, &sentence_font);
+                    }
+
+                    else
+                        tmp = n;
                 }
+
+                // We need to get length in px
                 break_offset = findNextBreak(break_offset, length);
-                //printf("next break before %s", script_h.getStringBuffer() + break_offset);
+
+                // I think that this is used for ruby text
                 margins = 0;
                 for (int i = string_buffer_offset; i < break_offset; i++)
                     margins += string_buffer_margins[i];
                 sentence_font.addLineOffset(margins);
-                if (sentence_font.isEndOfLine(length+tmp-1)) {
+
+                if (sentence_font.isEndOfLine(length+tmp-1)) { // aaaaaaa
                     //printf("breaking before %s", script_h.getStringBuffer() + string_buffer_offset);
                     ch = doLineBreak();
                 } else {
@@ -1319,6 +1349,7 @@ bool ONScripterLabel::processText()
 
         line_has_nonspace = true;
         out_text[0] = ch;
+        out_text[1] = '\0';
 
         if ((string_buffer_offset == 0) && (script_h.getStringBuffer()[1] == 0)) {
             // For now, when in double-byte mode, don't output single-byte
@@ -1486,7 +1517,11 @@ bool ONScripterLabel::processBreaks(bool cont_line, LineBreakType style)
 {
     char *string_buffer = script_h.getStringBuffer();
     unsigned int i=0, j=0;
-    unsigned int len = strlen(string_buffer);
+    unsigned int len;
+    if (script_h.enc.getEncoding() == Encoding::CODE_CP932)
+        len = strlen(string_buffer);
+    else
+        len = u8strlen(string_buffer);
     int cmd=0;
     bool return_val;
     bool is_ruby = false;
@@ -1634,6 +1669,8 @@ int ONScripterLabel::findNextBreak(int offset, int &len)
 {
     // return offset of first break_before after/including current offset;
     // use len to return # of printed chars between (in half-width chars)
+    //
+    // In UTF-8 mode, len needs to contain the value in pixels
     char *string_buffer = script_h.getStringBuffer();
     int i = 0, cmd = 0, ruby_end = 0, n = 0;
     bool in_ruby = false;
@@ -1661,10 +1698,18 @@ int ONScripterLabel::findNextBreak(int offset, int &len)
             i += script_h.enc.getBytes(string_buffer[i]);
     }
 
-    while (i<(int)(strlen(string_buffer)+2)) {
+    int toCheck;
+    if (script_h.enc.getEncoding() == Encoding::CODE_CP932)
+        toCheck = (int)(strlen(string_buffer)+2);
+    else
+        toCheck = u8strlen(string_buffer); // What is the +2 for?
+
+    while (i<toCheck) {
         if (in_ruby && (string_buffer[i] == '/')) {
             // done with ruby body; skip past ruby command
             len += 3; // seems we need to do this to match Nscr
+                      // How would this even be adapted to use px?
+                      // -Galladite 2023-06-26
             i = ruby_end;
             in_ruby = false;
             ruby_end = 0;
@@ -1692,7 +1737,16 @@ int ONScripterLabel::findNextBreak(int offset, int &len)
         else {
             n = script_h.enc.getBytes(string_buffer[i]);
             i += n;
-            len += n;
+            if (script_h.enc.getEncoding() == Encoding::CODE_CP932)
+                len += n;
+            else {
+                char check_text[5] = {'\0', '\0', '\0', '\0', '\0'};
+                for (int j=0; j<n; j++) {
+                    check_text[j] = string_buffer[i+j];
+                    check_text[j+1] = '\0';
+                }
+                len += strpxlen(check_text, &sentence_font);
+            }
         }
 
         /*

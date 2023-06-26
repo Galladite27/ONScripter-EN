@@ -28,6 +28,7 @@
  */
 
 #include "FontInfo.h"
+#include "Encoding.h"
 #include <stdio.h>
 #include <SDL_ttf.h>
 
@@ -141,6 +142,9 @@ int Fontinfo::y()
 
 void Fontinfo::setXY( int x, int y )
 {
+    // Is it worth changin the doubling multiplier for UTF-8 mode? It
+    // would mean rewriting sections which call setXY and other XY-
+    // related functions, but it would make it clearer to read code...
     if ( x != -1 ) xy[0] = x*2;
     if ( y != -1 ) xy[1] = y*2;
 }
