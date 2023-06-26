@@ -293,7 +293,6 @@ void ONScripterLabel::drawChar( char* text, Fontinfo *info, bool flush_flag,
         }
     }
 
-    // FIXME this will break when proportionality gets added
     if ( info->isEndOfLine() ){
         info->newLine();
         for (int i=0 ; i<indent_offset ; i++)
@@ -301,7 +300,6 @@ void ONScripterLabel::drawChar( char* text, Fontinfo *info, bool flush_flag,
                 sentence_font.advanceCharInHankaku(2);
             } else {
                 // Don't worry about it (untested)
-                printf("New line: advancing %d pixels\n", info->pitch_xy[0]);
                 sentence_font.advanceCharInHankaku(info->pitch_xy[0]);
             }
 

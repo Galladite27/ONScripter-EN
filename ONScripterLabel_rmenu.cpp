@@ -633,7 +633,6 @@ bool ONScripterLabel::executeSystemYesNo( int caller, int file_no )
     flush( refreshMode() );
 
     int offset1, offset2;
-    printf("Name: >>%s<<\n", name);
     if (script_h.enc.getEncoding() == Encoding::CODE_CP932) {
         offset1 = strlen(name)/5;
         offset2 = strlen(name)/2 - offset1;
