@@ -1736,7 +1736,6 @@ int ONScripterLabel::findNextBreak(int offset, int &len)
 
         else {
             n = script_h.enc.getBytes(string_buffer[i]);
-            i += n;
             if (script_h.enc.getEncoding() == Encoding::CODE_CP932)
                 len += n;
             else {
@@ -1747,6 +1746,7 @@ int ONScripterLabel::findNextBreak(int offset, int &len)
                 }
                 len += strpxlen(check_text, &sentence_font);
             }
+            i += n;
         }
 
         /*
