@@ -33,8 +33,6 @@ BUGS OR MISFEATURES
 * UTF-8 Lookback mode: it seems like multibyte characters cause all
   subsequently drawn characters to have far too much spacing
 
-* Rmenu needs fixing - still assuming columns
-
 * Linewrap algorithm (UTF-8) - characters going slightly off-screen
   with default text area width - this is due to only 1px of the area
   needing to be free for it to begin drawing the character, which then
@@ -42,14 +40,11 @@ BUGS OR MISFEATURES
   screen). 1px now used to be one column. This will likely be fixed
   when I fix the linerap algorithm for UTF-8 mode.
 
-* Ruby text doesn't display properly in UTF-8 mode - probably still
-  assuming columns
-
 * Ruby text doesn't work on line 1 in UTF-8 mode (I hate this error)
 * Body is not centred beneath ruby
 
-* Rmenu isn't wide enough.
-* Need to work on executeSystemSave and executeSystemLoad
+* UTF-8 save and load menus are *slightly* misaligned due to space
+  sizes in proportional fonts. This will be a right pain to fix.
 
 FEATURES REQUESTED
   

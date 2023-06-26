@@ -584,6 +584,8 @@ void ONScripterLabel::restoreTextBuffer(SDL_Surface *surface)
             // current_page, taking into account the offset
             for (int j=0; j<n; j++) {
                 out_text[j] = current_page->text[i+j];
+                out_text[j+1] = '\0'; // To prevent overflowing into
+                                      // adjacent characters
             }
             if (out_text[0] == '('){
                 startRuby(current_page->text + i + 1, f_info);

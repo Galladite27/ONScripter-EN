@@ -195,7 +195,6 @@ void ONScripterLabel::executeSystemMenu()
     text_info.fill( 0, 0, 0, 0 );
     flush( refreshMode() );
 
-    // Num_XY: the number of columns (or in UTF-8, pixles) and rows
     menu_font.num_xy[0] = rmenu_link_width;
     if (script_h.enc.getEncoding() == Encoding::CODE_UTF8)
         menu_font.num_xy[0] *= menu_font.pitch_xy[0];
@@ -332,11 +331,34 @@ bool ONScripterLabel::executeSystemLoad()
 
     text_info.fill( 0, 0, 0, 0 );
 
-    menu_font.num_xy[0] = (strlen(save_item_name)+1)/2+2+13;
+//    menu_font.num_xy[0] = (strlen(save_item_name)+1)/2+2+13;
+//    menu_font.num_xy[1] = num_save_file+2;
+//    menu_font.top_xy[0] = (ContractPos(screen_width) - menu_font.num_xy[0] * menu_font.pitch_xy[0]) / 2;
+//    menu_font.top_xy[1] = (ContractPos(screen_height) - menu_font.num_xy[1] * menu_font.pitch_xy[1]) / 2;
+//    menu_font.setXY( (menu_font.num_xy[0] - (strlen( load_menu_name )+1) / 2) / 2, 0 );
+
+    // Number of columns / UTF-8 px width
+    if (script_h.enc.getEncoding() == Encoding::CODE_CP932)
+        menu_font.num_xy[0] = (strlen(save_item_name)+1)/2+2+13;
+    else {
+        if (menu_font.ttf_font == NULL) menu_font.openFont(font_file, screen_ratio1, screen_ratio2);
+        menu_font.num_xy[0] = strpxlen(save_item_name, &menu_font) + strpxlen("5  ------------------------", &menu_font);
+    }
     menu_font.num_xy[1] = num_save_file+2;
-    menu_font.top_xy[0] = (ContractPos(screen_width) - menu_font.num_xy[0] * menu_font.pitch_xy[0]) / 2;
+
+    // Text origin in px
+    if (script_h.enc.getEncoding() == Encoding::CODE_CP932)
+        menu_font.top_xy[0] = (ContractPos(screen_width) - menu_font.num_xy[0] * menu_font.pitch_xy[0]) / 2;
+    else
+        menu_font.top_xy[0] = ((ContractPos(screen_width) - menu_font.num_xy[0]) / 2) / 2;
     menu_font.top_xy[1] = (ContractPos(screen_height) - menu_font.num_xy[1] * menu_font.pitch_xy[1]) / 2;
-    menu_font.setXY( (menu_font.num_xy[0] - (strlen( load_menu_name )+1) / 2) / 2, 0 );
+
+    // XY pos
+    if (script_h.enc.getEncoding() == Encoding::CODE_CP932)
+        menu_font.setXY((menu_font.num_xy[0] - (strlen( load_menu_name )+1) / 2 ) / 2, 0);
+    else
+        menu_font.setXY((menu_font.num_xy[0] - (strpxlen(load_menu_name, &menu_font) +1) / 2) / 2 , 0);
+
     //Mion: fixed the menu title bug noted in the past by Seung Park:
     // the menu title must be drawn close to last during refresh,
     // not in the textwindow, since there could be sprites above the
@@ -358,7 +380,15 @@ bool ONScripterLabel::executeSystemLoad()
     SaveFileInfo save_file_info;
     for ( unsigned int i=1 ; i<=num_save_file ; i++ ){
         searchSaveFile( save_file_info, i );
-        menu_font.setXY( (menu_font.num_xy[0] - ((strlen( save_item_name )+1) / 2 + 15) ) / 2 );
+        if (script_h.enc.getEncoding() == Encoding::CODE_CP932)
+            menu_font.setXY( (menu_font.num_xy[0] - ((strlen( save_item_name )+1) / 2 + 15) ) / 2 );
+        else
+            // Probably still wrong lol
+            // All this is close enough to being correct that I'll
+            // leave it here for now and log the slight discrepancies
+            // as a "bug". I really need to get the linewrap algorithm
+            // done.
+            menu_font.setXY( ( menu_font.num_xy[0] - ((strpxlen( save_item_name, &menu_font ) + strpxlen("5  ------------------------", &menu_font)) / 2 ) ) / 2 );
 
         if ( save_file_info.valid ){
             sprintf( buffer, getMessageString(MESSAGE_SAVE_EXIST),
@@ -450,25 +480,24 @@ void ONScripterLabel::executeSystemSave()
     // Number of columns / UTF-8 px width
     if (script_h.enc.getEncoding() == Encoding::CODE_CP932)
         menu_font.num_xy[0] = (strlen(save_item_name)+1)/2+2+13;
-    else
-        // Is this right??    No, it's broken
-        menu_font.num_xy[0] = strpxlen(save_item_name, &menu_font)+(15*menu_font.pitch_xy[0]);
+    else {
+        if (menu_font.ttf_font == NULL) menu_font.openFont(font_file, screen_ratio1, screen_ratio2);
+        menu_font.num_xy[0] = strpxlen(save_item_name, &menu_font) + strpxlen("5  ------------------------", &menu_font);
+    }
     menu_font.num_xy[1] = num_save_file+2;
 
+    // Text origin in px
     if (script_h.enc.getEncoding() == Encoding::CODE_CP932)
         menu_font.top_xy[0] = (ContractPos(screen_width) - menu_font.num_xy[0] * menu_font.pitch_xy[0]) / 2;
     else
-        menu_font.top_xy[0] = (ContractPos(screen_width) - menu_font.num_xy[0]) / 2;
+        menu_font.top_xy[0] = ((ContractPos(screen_width) - menu_font.num_xy[0]) / 2) / 2;
     menu_font.top_xy[1] = (ContractPos(screen_height) - menu_font.num_xy[1] * menu_font.pitch_xy[1]) / 2;
 
+    // XY pos
     if (script_h.enc.getEncoding() == Encoding::CODE_CP932)
         menu_font.setXY((menu_font.num_xy[0] - (strlen( save_menu_name )+1) / 2 ) / 2, 0);
     else
-        menu_font.setXY((menu_font.num_xy[0] - (strlen( save_menu_name )*menu_font.pitch_xy[0] +1) / 2 ) / 2, 0);
-
-    //menu_font.setXY( (menu_font.num_xy[0] - (rmenu_link_width * menu_font.pitch_xy[0])) / 2,
-    //                 (menu_font.num_xy[1] - rmenu_link_num) / 2 );
-
+        menu_font.setXY((menu_font.num_xy[0] - (strpxlen(save_menu_name, &menu_font) +1) / 2) / 2 , 0);
 
     //Mion: fixed the menu title bug noted in the past by Seung Park:
     // the menu title must be drawn close to last during refresh,
@@ -491,7 +520,15 @@ void ONScripterLabel::executeSystemSave()
     for ( unsigned int i=1 ; i<=num_save_file ; i++ ){
         SaveFileInfo save_file_info;
         searchSaveFile( save_file_info, i );
-        menu_font.setXY( (menu_font.num_xy[0] - ((strlen( save_item_name )+1) / 2 + 15) ) / 2 );
+        if (script_h.enc.getEncoding() == Encoding::CODE_CP932)
+            menu_font.setXY( (menu_font.num_xy[0] - ((strlen( save_item_name )+1) / 2 + 15) ) / 2 );
+        else
+            // Probably still wrong lol
+            // All this is close enough to being correct that I'll
+            // leave it here for now and log the slight discrepancies
+            // as a "bug". I really need to get the linewrap algorithm
+            // done.
+            menu_font.setXY( ( menu_font.num_xy[0] - ((strpxlen( save_item_name, &menu_font ) + strpxlen("5  ------------------------", &menu_font)) / 2 ) ) / 2 );
 
         if ( save_file_info.valid ){
             sprintf( buffer, getMessageString(MESSAGE_SAVE_EXIST),
@@ -570,10 +607,17 @@ bool ONScripterLabel::executeSystemYesNo( int caller, int file_no )
         strcpy( name, getMessageString(MESSAGE_END_CONFIRM) );
 
 
-    menu_font.num_xy[0] = strlen(name)/2;
+    if (script_h.enc.getEncoding() == Encoding::CODE_CP932)
+        menu_font.num_xy[0] = strlen(name)/2;
+    else
+        menu_font.num_xy[0] = strpxlen(name, &menu_font);
     menu_font.num_xy[1] = 3;
-    menu_font.top_xy[0] = (ContractPos(screen_width) - menu_font.num_xy[0] * menu_font.pitch_xy[0]) / 2;
+    if (script_h.enc.getEncoding() == Encoding::CODE_CP932)
+        menu_font.top_xy[0] = (ContractPos(screen_width) - menu_font.num_xy[0] * menu_font.pitch_xy[0]) / 2;
+    else
+        menu_font.top_xy[0] = (ContractPos(screen_width) - menu_font.num_xy[0]) / 2;
     menu_font.top_xy[1] = (ContractPos(screen_height) - menu_font.num_xy[1] * menu_font.pitch_xy[1]) / 2;
+
     menu_font.setXY(0, 0);
     //Mion: fixed the menu title bug noted in the past by Seung Park:
     // the menu title must be drawn close to last during refresh,
@@ -588,16 +632,29 @@ bool ONScripterLabel::executeSystemYesNo( int caller, int file_no )
 
     flush( refreshMode() );
 
-    int offset1 = strlen(name)/5;
-    int offset2 = strlen(name)/2 - offset1;
+    int offset1, offset2;
+    printf("Name: >>%s<<\n", name);
+    if (script_h.enc.getEncoding() == Encoding::CODE_CP932) {
+        offset1 = strlen(name)/5;
+        offset2 = strlen(name)/2 - offset1;
+    } else {
+        offset1 = strpxlen(name, &menu_font)/10;
+        offset2 = strpxlen(name, &menu_font)/4;
+    }
     strcpy( name, getMessageString(MESSAGE_YES) );
-    menu_font.setXY(offset1-2, 2);
+    if (script_h.enc.getEncoding() == Encoding::CODE_CP932)
+        menu_font.setXY(offset1-2, 2);
+    else
+        menu_font.setXY(offset1, 2);
     ButtonLink *button = getSelectableSentence( name, &menu_font, false );
     root_button_link.insert( button );
     button->no = 1;
 
     strcpy( name, getMessageString(MESSAGE_NO) );
-    menu_font.setXY(offset2, 2);
+    if (script_h.enc.getEncoding() == Encoding::CODE_CP932)
+        menu_font.setXY(offset2, 2);
+    else
+        menu_font.setXY(offset2, 2);
     button = getSelectableSentence( name, &menu_font, false );
     root_button_link.insert( button );
     button->no = 2;
