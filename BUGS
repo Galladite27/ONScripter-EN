@@ -36,6 +36,8 @@ BUGS OR MISFEATURES
 * UTF-8 save and load menus are *slightly* misaligned due to space
   sizes in proportional fonts. This will be a right pain to fix.
 
+* The linewrap bug (not fun)
+
 FEATURES REQUESTED
   
 * Allow the specification of a "fallback" font to use for characters
@@ -79,7 +81,6 @@ TODO LIST
 * UTF-8 features which need properly testing
   - ScriptParser_command (basic kinsoku functionality,
     addkinsokuCommand, setkinsokuCommand)
-
 * Continue working on Windows support with insani
   - Building with internal libraries
   - Integrating custom configure and Makefile into main ones

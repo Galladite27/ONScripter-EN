@@ -191,7 +191,6 @@ SDL_Surface *ONScripterLabel::renderGlyph(TTF_Font *font, Uint16 text)
 
     gc->text = text;
     gc->font = font;
-    printf("Checking to free surface\n");
     if (gc->surface != NULL) SDL_FreeSurface(gc->surface);
 
     /* Initializing SDL_Color.unused here to silence warnings about unused
@@ -1515,7 +1514,9 @@ bool ONScripterLabel::processBreaks(bool cont_line, LineBreakType style)
 // cont_line: is this a continuation of a prior line (using "/")?
 // style: SPACEBREAK or KINSOKU linebreak rules
 {
+    int debug_msg = 1;
     char *string_buffer = script_h.getStringBuffer();
+    if (debug_msg) printf("\n\nBeginning processbreaks for string buffer:\n>>%s<<\n", string_buffer);
     unsigned int i=0, j=0;
     unsigned int len;
     if (script_h.enc.getEncoding() == Encoding::CODE_CP932)
@@ -1535,6 +1536,7 @@ bool ONScripterLabel::processBreaks(bool cont_line, LineBreakType style)
     // first skip past starting text commands
     do {
         cmd = isTextCommand(string_buffer + i);
+        if (debug_msg && cmd != 0) printf("Command char: %c\n", string_buffer[i]);
         if (cmd > 0) i += cmd;
     } while (cmd > 0);
     // don't allow break before first char unless it's a continuation
@@ -1545,11 +1547,13 @@ bool ONScripterLabel::processBreaks(bool cont_line, LineBreakType style)
         //printf("Can't break before:%s", string_buffer + i);
     }
     if (cmd < 0) {
+        if (debug_msg) printf("At a ruby command\n");
         // at a ruby command
         processRuby(i,cmd);
     }
 
     if (style == KINSOKU) {
+        if (debug_msg) printf("Got to kinsoku linebreak\n");
         // straight kinsoku, using current kinsoku char sets
         return_val = false; // does it contain any printable ASCII?
         while (i<strlen(string_buffer)) {
@@ -1562,6 +1566,7 @@ bool ONScripterLabel::processBreaks(bool cont_line, LineBreakType style)
             }
             else {
                 j = script_h.enc.getBytes(string_buffer[i]);
+                //if (debug_msg) printf("Inspecting char: %.*s\n", j, string_buffer+i);
                 //j = (IS_TWO_BYTE(string_buffer[i])) ? 2 : 1;
                 do {
                     cmd = isTextCommand(string_buffer + i + j);
@@ -1608,9 +1613,12 @@ bool ONScripterLabel::processBreaks(bool cont_line, LineBreakType style)
         return return_val;
     }
     else { // style == SPACEBREAK
+        if (debug_msg) printf("Got to spacebreak linebreak\n");
         // straight space-breaking
         bool return_val = false; // does it contain space?
-        while (i<strlen(string_buffer)) {
+        if (debug_msg) printf("u8strlen: %d\n", u8strlen(string_buffer));
+        if (debug_msg) printf("strlen: %d\n", strlen(string_buffer));
+        while (i<u8strlen(string_buffer)) {
             is_ruby = false;
             if (cmd < 0) {
                 is_ruby = true;
@@ -1618,9 +1626,11 @@ bool ONScripterLabel::processBreaks(bool cont_line, LineBreakType style)
             } else
                 //j = (IS_TWO_BYTE(string_buffer[i])) ? 2 : 1;
                 j = script_h.enc.getBytes(string_buffer[i]);
+            if (debug_msg) printf("Inspecting char: >%.*s<\t", j, string_buffer+i);
             bool had_wait = false;
             do {
                 cmd = isTextCommand(string_buffer + i + j);
+                printf("CMD: %s\n", cmd ? "yes" : "no");
                 if (string_buffer[i+j] == '@' || string_buffer[i+j] == '\\')
                     had_wait = true;
                 if (cmd > 0) j += cmd;
@@ -1628,7 +1638,9 @@ bool ONScripterLabel::processBreaks(bool cont_line, LineBreakType style)
             if (cmd < 0) {
                 string_buffer_breaks[i+j] = false;
             }
-            else if (!IS_TWO_BYTE(string_buffer[i+j]) &&
+            // Well THIS needs to be changed...
+            //else if (!IS_TWO_BYTE(string_buffer[i+j]) &&
+            else if (script_h.enc.getBytes(string_buffer[i+j] == 1) &&
                 (string_buffer[i+j] == 0x0a ||
                  string_buffer[i+j] == 0x00 ||
                  string_buffer[i+j] == '/' ||
@@ -1672,13 +1684,17 @@ int ONScripterLabel::findNextBreak(int offset, int &len)
     //
     // In UTF-8 mode, len needs to contain the value in pixels
     char *string_buffer = script_h.getStringBuffer();
+    int debug_msg = 0;
+    if (debug_msg) printf("\n\nString buffer: >>%s<<\n", string_buffer);
     int i = 0, cmd = 0, ruby_end = 0, n = 0;
     bool in_ruby = false;
     len = 0;
 
+    if (debug_msg) printf("Command characters: ");
     while (i<offset) {
         // skip over text commands, chars until offset reached
         cmd = isTextCommand(string_buffer + i);
+        if (debug_msg) printf("%d", cmd);
         if (cmd > 0) {
             i += cmd;
         } else if (cmd < 0) {
@@ -1697,14 +1713,17 @@ int ONScripterLabel::findNextBreak(int offset, int &len)
             //perfectly good ? and : -Galladite
             i += script_h.enc.getBytes(string_buffer[i]);
     }
+    if (debug_msg) printf("\n");
 
     int toCheck;
     if (script_h.enc.getEncoding() == Encoding::CODE_CP932)
         toCheck = (int)(strlen(string_buffer)+2);
     else
         toCheck = u8strlen(string_buffer); // What is the +2 for?
+    if (debug_msg) printf("To check: %d\n", toCheck);
 
     while (i<toCheck) {
+        if (debug_msg) printf("In while loop\n");
         if (in_ruby && (string_buffer[i] == '/')) {
             // done with ruby body; skip past ruby command
             len += 3; // seems we need to do this to match Nscr
@@ -1727,6 +1746,7 @@ int ONScripterLabel::findNextBreak(int offset, int &len)
             }
         }
         if (string_buffer_breaks[i]) {
+            if (debug_msg) printf("Breaks here\n");
             return i;
         } else if (cmd < 0) {
             // skip the begin paren of a ruby
@@ -1744,7 +1764,11 @@ int ONScripterLabel::findNextBreak(int offset, int &len)
                     check_text[j] = string_buffer[i+j];
                     check_text[j+1] = '\0';
                 }
+                if (debug_msg) printf("Checking char: %x-%x-%x-%x [%s]\n", check_text[0], check_text[1], check_text[2], check_text[3], check_text);
+                if (debug_msg) printf("\tAdded length: %f\n", strpxlen(check_text, &sentence_font));
                 len += strpxlen(check_text, &sentence_font);
+                if (debug_msg) printf("\tLen: %d\n", len);
+                if (debug_msg) printf("\tAdvancing to next character by %d bytes\n", n);
             }
             i += n;
         }

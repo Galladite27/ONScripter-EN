@@ -1,8 +1,9 @@
 2023-06-26
   Fixed rmenu (mostly) and fixed multibyte lookback bug.
 
-  FINALLY worked on the linewrap alogrithm. I think it's done, but I
-  might find bugs in the future.
+  FINALLY worked on the linewrap alogrithm. It's pretty much
+  functional, but there's a nasty pointer arithmatic bug that I'm
+  trying to hunt down before release.
 
 2023-06-24
   Added setwindow4 command for option use in UTF-8 mode - allows for
