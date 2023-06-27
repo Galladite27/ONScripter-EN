@@ -1517,7 +1517,7 @@ bool ONScripterLabel::processBreaks(bool cont_line, LineBreakType style)
     int debug_msg = 1;
     char *string_buffer = script_h.getStringBuffer();
     if (debug_msg) printf("\n\nBeginning processbreaks for string buffer:\n>>%s<<\n", string_buffer);
-    unsigned int i=0, j=0;
+    unsigned int i=0, j=0, o=0;
     unsigned int len;
     if (script_h.enc.getEncoding() == Encoding::CODE_CP932)
         len = strlen(string_buffer);
@@ -1552,11 +1552,20 @@ bool ONScripterLabel::processBreaks(bool cont_line, LineBreakType style)
         processRuby(i,cmd);
     }
 
+    printf("I: %d\n", i);
     if (style == KINSOKU) {
         if (debug_msg) printf("Got to kinsoku linebreak\n");
+        if (debug_msg) printf("u8strlen: %d\n", u8strlen(string_buffer));
+        if (debug_msg) printf("strlen: %d\n", strlen(string_buffer));
+
+        // The offset used to be also tracked by i, but now we have
+        // multibyte characters in this section, so...
+        o = i; //offset
+
+        // TODO this also needs giving a once-over
         // straight kinsoku, using current kinsoku char sets
         return_val = false; // does it contain any printable ASCII?
-        while (i<strlen(string_buffer)) {
+        while (i<u8strlen(string_buffer)) {
 
             is_ruby = false;
             if (cmd < 0) {
@@ -1565,49 +1574,50 @@ bool ONScripterLabel::processBreaks(bool cont_line, LineBreakType style)
                 cmd = 0;
             }
             else {
-                j = script_h.enc.getBytes(string_buffer[i]);
-                //if (debug_msg) printf("Inspecting char: %.*s\n", j, string_buffer+i);
-                //j = (IS_TWO_BYTE(string_buffer[i])) ? 2 : 1;
+                j = script_h.enc.getBytes(string_buffer[o]);
+                //if (debug_msg) printf("Inspecting char: %.*s\n", j, string_buffer+o);
+                //j = (IS_TWO_BYTE(string_buffer[o])) ? 2 : 1;
                 do {
-                    cmd = isTextCommand(string_buffer + i + j);
+                    cmd = isTextCommand(string_buffer + o + j);
                     // skip over regular text commands
                     if (cmd > 0) j += cmd;
                 } while (cmd > 0);
             }
 
-            if ((cmd >= 0) && ((unsigned char) string_buffer[i+j] < 0x80) &&
-                !(string_buffer[i+j] == ' ' || string_buffer[i+j] == 0x00 ||
-                  string_buffer[i+j] == 0x0a)) {
+            if ((cmd >= 0) && ((unsigned char) string_buffer[o+j] < 0x80) &&
+                !(string_buffer[o+j] == ' ' || string_buffer[o+j] == 0x00 ||
+                  string_buffer[o+j] == 0x0a)) {
                 return_val = true;
-                //printf("Found ASCII at %s", string_buffer + i + j);
+                //printf("Found ASCII at %s", string_buffer + o + j);
             }
             if (cmd < 0) {
-                if (is_ruby || !isEndKinsoku(string_buffer + i))
-                    string_buffer_breaks[i+j] = true;
+                if (is_ruby || !isEndKinsoku(string_buffer + o))
+                    string_buffer_breaks[o+j] = true;
                 else
-                    string_buffer_breaks[i+j] = false;
+                    string_buffer_breaks[o+j] = false;
             }
-            else if (isEndKinsoku(string_buffer + i) ||
-                (!is_ruby && isStartKinsoku(string_buffer + i + j))) {
+            else if (isEndKinsoku(string_buffer + o) ||
+                (!is_ruby && isStartKinsoku(string_buffer + o + j))) {
                 // don't break before start-kinsoku or after end-kinsoku
-                string_buffer_breaks[i+j] = false;
-                //printf("Can't break before:%s", string_buffer + i + j);
+                string_buffer_breaks[o+j] = false;
+                //printf("Can't break before:%s", string_buffer + o + j);
             } else {
-                if ((cmd >= 0) && ((unsigned char) string_buffer[i+j] < 0x80) &&
-                    !(string_buffer[i+j] == ' ' || string_buffer[i+j] == 0x00 ||
-                      string_buffer[i+j] == 0x0a)) {
+                if ((cmd >= 0) && ((unsigned char) string_buffer[o+j] < 0x80) &&
+                    !(string_buffer[o+j] == ' ' || string_buffer[o+j] == 0x00 ||
+                      string_buffer[o+j] == 0x0a)) {
                     // treat standard ASCII as start-kinsoku,
                     // except for space or line-end
-//                    printf("Can't break before:%s", string_buffer + i + j);
-                    string_buffer_breaks[i+j] = false;
+//                    printf("Can't break before:%s", string_buffer + o + j);
+                    string_buffer_breaks[o+j] = false;
                 }
                 else
-                    string_buffer_breaks[i+j] = true;
+                    string_buffer_breaks[o+j] = true;
             }
-            i += j;
+            i++;
+            o += j;
             if (cmd < 0) {
                 // at a ruby command
-                processRuby(i,cmd);
+                processRuby(o,cmd);
             }
         }
         return return_val;
@@ -1618,6 +1628,10 @@ bool ONScripterLabel::processBreaks(bool cont_line, LineBreakType style)
         bool return_val = false; // does it contain space?
         if (debug_msg) printf("u8strlen: %d\n", u8strlen(string_buffer));
         if (debug_msg) printf("strlen: %d\n", strlen(string_buffer));
+
+        // The offset used to be also tracked by i, but now we have
+        // multibyte characters in this section, so...
+        o = i; //offset
         while (i<u8strlen(string_buffer)) {
             is_ruby = false;
             if (cmd < 0) {
@@ -1625,51 +1639,52 @@ bool ONScripterLabel::processBreaks(bool cont_line, LineBreakType style)
                 j = -cmd;
             } else
                 //j = (IS_TWO_BYTE(string_buffer[i])) ? 2 : 1;
-                j = script_h.enc.getBytes(string_buffer[i]);
-            if (debug_msg) printf("Inspecting char: >%.*s<\t", j, string_buffer+i);
+                j = script_h.enc.getBytes(string_buffer[o]);
+            if (debug_msg) printf("Inspecting char: >%.*s<\n", j, string_buffer+o);
             bool had_wait = false;
             do {
-                cmd = isTextCommand(string_buffer + i + j);
+                cmd = isTextCommand(string_buffer + o + j);
                 printf("CMD: %s\n", cmd ? "yes" : "no");
-                if (string_buffer[i+j] == '@' || string_buffer[i+j] == '\\')
+                if (string_buffer[o+j] == '@' || string_buffer[o+j] == '\\')
                     had_wait = true;
                 if (cmd > 0) j += cmd;
             } while (cmd > 0);
             if (cmd < 0) {
-                string_buffer_breaks[i+j] = false;
+                string_buffer_breaks[o+j] = false;
             }
-            // Well THIS needs to be changed...
-            //else if (!IS_TWO_BYTE(string_buffer[i+j]) &&
-            else if (script_h.enc.getBytes(string_buffer[i+j] == 1) &&
-                (string_buffer[i+j] == 0x0a ||
-                 string_buffer[i+j] == 0x00 ||
-                 string_buffer[i+j] == '/' ||
-                 ((string_buffer[i+j] == ' ' || string_buffer[i+j] == '\t') &&
-                  (had_wait || !(string_buffer[i] == ' ' || string_buffer[i] == '\t'))))) {
+            //else if (!IS_TWO_BYTE(string_buffer[o+j]) &&
+            else if (script_h.enc.getBytes(string_buffer[o+j] == 1) &&
+                (string_buffer[o+j] == 0x0a ||
+                 string_buffer[o+j] == 0x00 ||
+                 string_buffer[o+j] == '/' ||
+                 ((string_buffer[o+j] == ' ' || string_buffer[o+j] == '\t') &&
+                  (had_wait || !(string_buffer[o] == ' ' || string_buffer[o] == '\t'))))) {
                 // allow break before newline or line-cont command
                 // allow a break before a run of spaces/tabs but not within,
                 // except to allow break after a clickwait/newpage within the run
-                //printf("Can break before %s", string_buffer + i + j);
-                string_buffer_breaks[i+j] = true;
-                if (string_buffer[i+j] == ' ' || string_buffer[i+j] == '\t') {
+                //printf("Can break before %s", string_buffer + o + j);
+                string_buffer_breaks[o+j] = true;
+                if (string_buffer[o+j] == ' ' || string_buffer[o+j] == '\t') {
                     return_val = true;
                 }
             }
-            else if ((unsigned char) string_buffer[i] == 0x81 &&
-                     string_buffer[i+1] == 0x40) {
+            else if ((unsigned char) string_buffer[o] == 0x81 &&
+                     string_buffer[o+1] == 0x40) {
                 // allow breaks _after_ fullwidth spaces
-                string_buffer_breaks[i+j] = true;
+                string_buffer_breaks[o+j] = true;
             } else {
-                string_buffer_breaks[i+j] = false;
-                if ((unsigned char) string_buffer[i+j] < 0x80) {
-                    //printf("found ASCII: %d", string_buffer[i + j]);
+                string_buffer_breaks[o+j] = false;
+                if ((unsigned char) string_buffer[o+j] < 0x80) {
+                    //printf("found ASCII: %d", string_buffer[o + j]);
                     return_val = true; // found ASCII
                 }
             }
-            i += j;
+            //i += j;
+            i++;
+            o += j;
             if (cmd < 0) {
                 // at a ruby command
-                processRuby(i,cmd);
+                processRuby(o,cmd);
             }
         }
         return return_val;
@@ -1693,6 +1708,7 @@ int ONScripterLabel::findNextBreak(int offset, int &len)
     if (debug_msg) printf("Command characters: ");
     while (i<offset) {
         // skip over text commands, chars until offset reached
+        // TODO Does isTextCommand need to be modified to return bytes?
         cmd = isTextCommand(string_buffer + i);
         if (debug_msg) printf("%d", cmd);
         if (cmd > 0) {
@@ -1722,19 +1738,27 @@ int ONScripterLabel::findNextBreak(int offset, int &len)
         toCheck = u8strlen(string_buffer); // What is the +2 for?
     if (debug_msg) printf("To check: %d\n", toCheck);
 
+    printf("Value of o and i: %d\n", i);
+    //int o = i;
     while (i<toCheck) {
+        // i is int - tracks chars
+        // toCheck is int - tracks max chars
+        // o is int - tracks byte offset
         if (debug_msg) printf("In while loop\n");
         if (in_ruby && (string_buffer[i] == '/')) {
             // done with ruby body; skip past ruby command
             len += 3; // seems we need to do this to match Nscr
                       // How would this even be adapted to use px?
                       // -Galladite 2023-06-26
+            //TODO TODO TODO FIXME
             i = ruby_end;
+            printf("Ruby end: %d\n", ruby_end);
             in_ruby = false;
             ruby_end = 0;
         }
         if (!in_ruby) {
             // don't look for text commands while inside a ruby
+            //TODO TODO TODO FIXME
             do {
                 cmd = isTextCommand(string_buffer + i);
                 if (cmd > 0) i += cmd;
@@ -1745,6 +1769,8 @@ int ONScripterLabel::findNextBreak(int offset, int &len)
                 ruby_end = i - cmd;
             }
         }
+        // Gives in index in chars, not bytes
+        //TODO TODO TODO FIXME
         if (string_buffer_breaks[i]) {
             if (debug_msg) printf("Breaks here\n");
             return i;
