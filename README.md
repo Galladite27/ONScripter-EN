@@ -58,7 +58,7 @@ For *maximum compatibility with Japanese language games*, you will want a defaul
 - [Sazanami Gothic](https://osdn.net/projects/efont/releases/)
 
 #### Proportional fonts
-UTF-8 mode experimentally supports proportional fonts. See the [UTF-8](#utf-8 mode) section for more information.
+UTF-8 mode experimentally supports proportional fonts. See the [UTF-8](#utf-8-mode) section for more information.
 
 ## Packaging Games
 ONScripter-EN includes some features designed to make packaging new games or translations in a platform-appropriate fashion easier and neater.
