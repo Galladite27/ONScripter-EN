@@ -36,8 +36,6 @@ BUGS OR MISFEATURES
 * UTF-8 save and load menus are *slightly* misaligned due to space
   sizes in proportional fonts. This will be a right pain to fix.
 
-* The linewrap bug (not fun)
-
 FEATURES REQUESTED
   
 * Allow the specification of a "fallback" font to use for characters
@@ -67,14 +65,13 @@ DOCUMENTATION UPDATING LIST
 
 * setwindow4: add notes about subtracting text window X inset from
   text display area X to prevent overfowing screen
+* setwindow4: typo (script -> scripts)
 
 
 TODO LIST
 
 * Update Windows makefiles
 * Bring over UTF-8 suport from onscripter-insani
-  - Make a version of the current linewrap algorithm for use with
-    proportional fonts
   - Interpret font styles
     * Hold more font styles in FontInfo
     * Recognise ~ tags in script

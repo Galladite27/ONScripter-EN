@@ -2,7 +2,7 @@
 *An enhanced portable open-source NScripter implementation*
 
 ## Last Updated
-17 April 2023
+28 June 2023
 
 ## History
 Naoki Takahashi's [NScripter](https://nscripter.com/) is a popular Japanese game engine used for both commercial and free novel games.  It attained popularity due to its liberal terms of use and relative simplicity.  However, it is closed source software and only available for Windows.
@@ -57,6 +57,9 @@ For *maximum compatibility with Japanese language games*, you will want a defaul
 - [Migu 2M/2M Bold](http://mix-mplus-ipa.osdn.jp/)
 - [Sazanami Gothic](https://osdn.net/projects/efont/releases/)
 
+#### Proportional fonts
+UTF-8 mode experimentally supports proportional fonts. See the [UTF-8](#utf-8) section for more information.
+
 ## Packaging Games
 ONScripter-EN includes some features designed to make packaging new games or translations in a platform-appropriate fashion easier and neater.
 
@@ -79,7 +82,7 @@ ONScripter is based on SDL, and should run on any platform for which SDL is avai
 
 ONScripter-EN has slightly more strict requirements, however.  Since ONScripter's original build system is extremely difficult to use (requiring the creation of a custom makefile for every minor platform variation), it has been replaced in this branch with a more conventional configure-build system; this depends on a POSIX-like environment with GNU make.  The code has been tested primarily with the GNU C++ compiler; Intel C++ 10 has also been tried successfully.
 
-The primary test environment is GNU/Linux (x86-64).  Assuming standard build tools are installed, the full-source distribution is likely to compile out-of-the-box or with only minimal changes on truly POSIX-conformant platforms (*e.g.* GNU/Linux, *BSD).  The primary target environment, on the other hand, is 32-bit Windows (i686).  [MSYS2](https://msys2.org) on Windows 10+ is assumed for these builds, and due to multiple incompatibilities between MSYS2 and the original configure script, specially-modified Makefile for both x86-64 and i686 Windows compilation are provided.  Development of those Makefiles can be found [here](https://github.com/insani-org/onscripter-en-msys2-configure-makefile).
+The primary test environment is GNU/Linux (x86-64).  Assuming standard build tools are installed, the full-source distribution is likely to compile out-of-the-box or with only minimal changes on truly POSIX-conformant platforms (\*e.g.\* GNU/Linux, \*BSD).  The primary target environment, on the other hand, is 32-bit Windows (i686).  [MSYS2](https://msys2.org) on Windows 10+ is assumed for these builds, and due to multiple incompatibilities between MSYS2 and the original configure script, specially-modified Makefile for both x86-64 and i686 Windows compilation are provided.  Development of those Makefiles can be found [here](https://github.com/insani-org/onscripter-en-msys2-configure-makefile).
 
 Please see ```INSTALL``` in the source distribution for other specific build instructions.
 
@@ -105,6 +108,15 @@ language japanese
 It is recommended that you just set the language once at startup, but you can switch between them during the game if you need to (if you do, and your game uses the built-in menus, be sure to switch back to your primary language before any point at which the player can bring up a menu, or they will probably be very confused).
 
 The default mode is determined by the name of the ONScripter binary (or app bundle, on macOS).  If it is something like ```onscripter-en``` or ```ONScripter-EN.exe```, the default mode will be English; otherwise it will be Japanese (this is intended to allow users to play existing games in an appropriate mode -- if releasing a game yourself, you should use an explicit language command instead of relying on this).  You can also use the command-line option ```--english``` or ```--japanese``` to specify the default mode.
+
+## UTF-8 mode
+As of version 2023-06-28, ONScripter-EN experimentally supports UTF-8 and proportional fonts. These can be enabled by naming your script ```0.utf```, ```0.utf.txt```, or ```pscript.dat``` (archive format). It is planned for you to be able to use UTF-8 within ```nscript.dat``` in the future. By enabling UTF-8 mode, proportional font support is automatically enabled. However, monospaced fonts will still work as before.
+It is recommended that you enable english mode immediately within your script.
+
+With UTF-8 mode, you can save your script with UTF-8 encoding. All non-SJIS text _should_ just work, although for consistency you should use backtick quotes, like in SJIS english mode.
+The default text window is optimised for 640x480 resolution. If you are using a larger screen size (see also: the new [;$](http://galladite.net/~galladite/nscripter/mirrors/archives/reference/NScrAPI.html#_semicoldollar) directive), you should use the (also new) [setwindow4](http://galladite.net/~galladite/nscripter/mirrors/archives/reference/NScrAPI.html#setwindow4) command for more precise control; however, the other setwindow commands will still work.
+
+This mode is still experimental; please report bugs to [@Galladite27](https://github.com/Galladite27) or [@lightbinder](https://github.com/lightbinder), but preferably Galladite. Please check the [BUGS](https://github.com/Galladite27/ONScripter-EN/blob/master/BUGS) file first to see if it is a known issue.
 
 ## Contact Information
 The author of ONScripter itself is Ogapee, who can be reached through his ONScripter project website:

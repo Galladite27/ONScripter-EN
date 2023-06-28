@@ -1,3 +1,8 @@
+2023-06-28
+  Linewrap algorithm fixed. Many bugfixes. Ready for release!
+
+  Changes to README.md for UTF-8 and proportional font support
+
 2023-06-26
   Fixed rmenu (mostly) and fixed multibyte lookback bug.
 
