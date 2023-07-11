@@ -363,7 +363,7 @@ int ONScripterLabel::playSound(const char *filename, int format, bool loop_flag,
             }
             if (id3v2_size > 0) {
                 id3v2_size += 10;
-                printf("found ID3v2 tag, size %d bytes\n", id3v2_size);
+                if (debug_level > 0) printf("Found ID3v2 tag, size %d bytes\n", id3v2_size);
             }
         }
 
