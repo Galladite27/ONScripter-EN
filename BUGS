@@ -36,6 +36,11 @@ BUGS OR MISFEATURES
 * UTF-8 save and load menus are *slightly* misaligned due to space
   sizes in proportional fonts. This will be a right pain to fix.
 
+* KINSOKU mode needs fixing in processBreaks like SPACEBREAK mode
+
+* Bugs 2 and 3 on gh - looks like midi issues - try with old version
+  of SDL_mixer as well
+
 FEATURES REQUESTED
   
 * Allow the specification of a "fallback" font to use for characters

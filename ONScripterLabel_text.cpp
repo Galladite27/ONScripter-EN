@@ -1540,6 +1540,7 @@ bool ONScripterLabel::processBreaks(bool cont_line, LineBreakType style)
 // Mion: for text processing
 // cont_line: is this a continuation of a prior line (using "/")?
 // style: SPACEBREAK or KINSOKU linebreak rules
+// TODO FIXME the kinsoku mode still needs converting
 {
     int debug_msg = 0;
     if (debug_level > 1) debug_msg = 1;
