@@ -1542,6 +1542,7 @@ bool ONScripterLabel::processBreaks(bool cont_line, LineBreakType style)
 // style: SPACEBREAK or KINSOKU linebreak rules
 {
     int debug_msg = 0;
+    if (debug_level > 1) debug_msg = 1;
     char *string_buffer = script_h.getStringBuffer();
     if (debug_msg) printf("\n\nBeginning processbreaks for string buffer:\n>>%s<<\n", string_buffer);
     unsigned int i=0, j=0, o=0;
@@ -1642,16 +1643,17 @@ bool ONScripterLabel::processBreaks(bool cont_line, LineBreakType style)
         if (debug_msg) printf("u8strlen: %d\n", u8strlen(string_buffer));
         if (debug_msg) printf("strlen: %d\n", (int)strlen(string_buffer));
 
-        // We have several main variables here. FIXME OLD ADVICE
+        // We have several main variables here.
         //
         // i - tracks bytes moved along string buffer.
         // j - tracks an additional number of bytes. Used temporarily
         //     for checking characters after the current one, without
-        //     advancing o
+        //     advancing i
         // string_buffer - the current string
-        // string_buffer_breaks - an array of the u8strlen of
+        // string_buffer_breaks - an array of the strlen of
         //     string_buffer, which holds boolean values for if each
-        //     character is a break
+        //     character is a break. Remember, undefined behaviour is
+        //     undefined!
         while (i<(int)strlen(string_buffer)) {
             if (debug_msg) printf("\nInspecting buffer: [%s]\n", string_buffer+i);
             is_ruby = false;
@@ -1729,18 +1731,20 @@ bool ONScripterLabel::processBreaks(bool cont_line, LineBreakType style)
             }
 
             // Debug
-            if (debug_msg) printf("Current %d\nBreaks:", return_val);
-            for (int uniq=0; uniq<len; uniq++) {
-                if (debug_msg) printf(" %d", string_buffer_breaks[uniq]);
+            if (debug_msg) {
+                printf("Current %d\nBreaks:", return_val);
+                for (int uniq=0; uniq<len; uniq++) {
+                    if (debug_msg) printf(" %d", string_buffer_breaks[uniq]);
+                }
+                printf("\n");
             }
-            if (debug_msg) printf("\n");
 
         }
 
         if (debug_msg) {
             printf("Returning %d\nBreaks (remember, undefined behaviour is undefined!!!): ", return_val);
             for (int uniq=0; uniq<len; uniq++) {
-                if (debug_msg) printf("%d", string_buffer_breaks[uniq]);
+                printf("%d", string_buffer_breaks[uniq]);
             }
             printf("\n");
         }
@@ -1761,6 +1765,7 @@ int ONScripterLabel::findNextBreak(int offset, int &len)
     char *string_buffer = script_h.getStringBuffer();
 
     int debug_msg = 0;
+    if (debug_level > 1) debug_msg = 1;
     if (debug_msg) printf("\n\nString buffer: >>%s<<\n", string_buffer);
 
     int i = 0, cmd = 0, ruby_end = 0, n = 0;
