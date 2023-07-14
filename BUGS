@@ -35,6 +35,7 @@ BUGS OR MISFEATURES
 
 * UTF-8 save and load menus are *slightly* misaligned due to space
   sizes in proportional fonts. This will be a right pain to fix.
+* rmenuCommand probably needs fixing - still assuming columns
 
 * KINSOKU mode needs fixing in processBreaks like SPACEBREAK mode
 
