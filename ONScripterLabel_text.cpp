@@ -1644,17 +1644,18 @@ bool ONScripterLabel::processBreaks(bool cont_line, LineBreakType style)
         if (debug_msg) printf("u8strlen: %d\n", u8strlen(string_buffer));
         if (debug_msg) printf("strlen: %d\n", (int)strlen(string_buffer));
 
-        // We have several main variables here.
-        //
-        // i - tracks bytes moved along string buffer.
-        // j - tracks an additional number of bytes. Used temporarily
-        //     for checking characters after the current one, without
-        //     advancing i
-        // string_buffer - the current string
-        // string_buffer_breaks - an array of the strlen of
-        //     string_buffer, which holds boolean values for if each
-        //     character is a break. Remember, undefined behaviour is
-        //     undefined!
+        /* We have several main variables here.
+         *
+         * i - tracks bytes moved along string buffer.
+         * j - tracks an additional number of bytes. Used temporarily
+         *     for checking characters after the current one, without
+         *     advancing i
+         * string_buffer - the current string
+         * string_buffer_breaks - an array of the strlen of
+         *     string_buffer, which holds boolean values for if each
+         *     character is a break. Remember, undefined behaviour is
+         *     undefined!
+         */
         while (i<(int)strlen(string_buffer)) {
             if (debug_msg) printf("\nInspecting buffer: [%s]\n", string_buffer+i);
             is_ruby = false;
