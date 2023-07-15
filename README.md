@@ -7,7 +7,7 @@
 ## History
 Naoki Takahashi's [NScripter](https://nscripter.com/) is a popular Japanese game engine used for both commercial and free novel games.  It attained popularity due to its liberal terms of use and relative simplicity.  However, it is closed source software and only available for Windows.
 
-A number of cross-platform clones exist, and Ogapee's [ONScripter](https://onscripter.osdn.jp/onscripter.html) is the most popular of these.  Due to the ease with which it can be modified to support languages other than Japanese, ONScripter has been adopted by the novel game localisation community as the engine of choice for translated NScripter games; the patch to support English even made it into the main ONScripter source code in 2005.  An English-language centric fork of ONScripter, originally known as onscripter-insani (because it was maintained by [insani](http://nscripter.insani.org/)), was founded at that time, in order to better suit the needs of the English localization community.  Maintenance of this fork was passed on to [Haeleth](http://haeleth.net/) in 2006, and it was renamed ONScripter-EN at that time.  Maintenance then was passed on to [Uncle Mion of Sonozaki Futago-Tachi](https://web.archive.org/web/http://unclemion.com/onscripter/) in 2007, and he maintained this project until 2011.  At that time the project was abandoned.  Between 2011 and 2023, OS-level incompatibility caused the following to occur:
+A number of cross-platform clones exist, and Ogapee's [ONScripter](https://onscripter.osdn.jp/onscripter.html) is the most popular of these.  Due to the ease with which it can be modified to support languages other than Japanese, ONScripter has been adopted by the novel game localisation community as the engine of choice for translated NScripter games; the patch to support English even made it into the main ONScripter source code in 2005.  An English-language centric fork of ONScripter, originally known as onscripter-insani (because it was maintained by [insani](http://nscripter.insani.org/)), was founded at that time, in order to better suit the needs of the English localization community.  Maintenance of this fork was passed on to [Haeleth](http://haeleth.net/) in 2006, and it was renamed ONScripter-EN at that time.  Maintenance then was passed on to [Uncle Mion of Sonozaki Futago-Tachi](https://web.archive.org/web/http://unclemion.com/onscripter/) in 2007, and she maintained this project until 2011.  At that time the project was abandoned.  Between 2011 and 2023, OS-level incompatibility caused the following to occur:
 
 - ONScripter-EN no longer worked on modern macOS
 - ONScripter-EN accrued a set of bugs on Windows related to the initial libraries becoming outdated, *etc*.
@@ -139,7 +139,7 @@ The previous maintainer, "Uncle" Mion Sonozaki, may be reachable at:
 
 - *E-mail*: UncleMion@gmail.com
 
-We do not recommend reaching out to him about ONScripter-EN issues, though, as he is not currently involved with our project.
+We do not recommend reaching out to her about ONScripter-EN issues, though, as she is not currently involved with our project.
 
 Portions of this README were written primarily by a previous maintainer, Haeleth, whose website is still up as of 2023:
 
