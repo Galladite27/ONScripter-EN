@@ -42,6 +42,8 @@ BUGS OR MISFEATURES
 * Bugs 2 and 3 on gh - looks like midi issues - try with old version
   of SDL_mixer as well
 
+* Random crashing when using movie (but not mpegplay) on Linux
+
 FEATURES REQUESTED
   
 * Allow the specification of a "fallback" font to use for characters
