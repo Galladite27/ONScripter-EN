@@ -46,6 +46,9 @@ BUGS OR MISFEATURES
   Linux
   \--> Only happens on Void, and not on Gentoo
 
+* Need to test - does linewrap algorithm properly ignore inline text
+  commands, or are their widths counted?
+
 FEATURES REQUESTED
   
 * Allow the specification of a "fallback" font to use for characters
