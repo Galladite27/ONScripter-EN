@@ -71,12 +71,6 @@ DOCUMENTATION UPDATING LIST
 * ~ and ^ may (will) need updating in relation to onsen's and onani's
   UTF-8 integration
 
-* strsp and strsph say INT instead of STR in options
-
-* setwindow4: add notes about subtracting text window X inset from
-  text display area X to prevent overfowing screen
-* setwindow4: typo (script -> scripts)
-
 
 TODO LIST
 
