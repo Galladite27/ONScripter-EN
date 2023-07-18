@@ -381,9 +381,8 @@ void ONScripterLabel::drawChar( char* text, Fontinfo *info, bool flush_flag,
             current_page->add( text[1] );
         */
         int n = script_h.enc.getBytes(text[0]);
-        for (int i=0; i<n; i++) {
+        for (int i=0; i<n; i++)
             current_page->add(text[i]);
-        }
     }
 }
 
@@ -1906,9 +1905,10 @@ int ONScripterLabel::u8strlen(const char *s)
  * A function to return the pixels taken up by a given string.  A critical part
  * of the insani linewrap algorithm for all non-CJK modes.
  */
-// I've temporarily lobotomised this function while font styles don't
-// exist; I want to be able to fully focus on proportionalit for now.
-// -Galladite 2023-6-22
+/* I've temporarily lobotomised this function while font styles don't
+ * exist; I want to be able to fully focus on proportionality for now.
+ * -Galladite 2023-6-22
+ */
 /*
 float ONScripter::strpxlen(const char *buf, Fontinfo *fi, bool *bold_flag, bool *italics_flag)
 {
