@@ -49,6 +49,9 @@ BUGS OR MISFEATURES
 * Need to test - does linewrap algorithm properly ignore inline text
   commands, or are their widths counted?
 
+* Similarly, are whitespace characters being drawn with the correct
+  width in UTF-8 mode?
+
 FEATURES REQUESTED
   
 * Allow the specification of a "fallback" font to use for characters
