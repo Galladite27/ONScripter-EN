@@ -38,6 +38,8 @@ BUGS OR MISFEATURES
 * rmenuCommand probably needs fixing - still assuming columns
 
 * KINSOKU mode needs fixing in processBreaks like SPACEBREAK mode
+  \--> Hopefully this is fine but I'm leaving this here for now since
+       I haven't properly tested it
 
 * Bugs 2 and 3 on gh - looks like midi issues - try with old version
   of SDL_mixer as well

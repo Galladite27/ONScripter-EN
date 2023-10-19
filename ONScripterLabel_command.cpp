@@ -4086,6 +4086,11 @@ int ONScripterLabel::btnwaitCommand()
         textbtn_flag = true;
         remove_window_flag = false;
     }
+    else if ( script_h.isName( "selectbtnwait" ) ){
+        // Normal select command doesn't leave text display mode, so
+        // neither should this by default
+        remove_window_flag = false;
+    }
 
     if (remove_window_flag)
         leaveTextDisplayMode(remove_window_flag);

@@ -1639,7 +1639,7 @@ bool ONScripterLabel::processBreaks(bool cont_line, LineBreakType style)
         if (debug_msg) printf("Got to spacebreak linebreak\n");
         if (debug_msg) printf("Current buffer:\n>>>%s\n", string_buffer+i);
         // straight space-breaking
-        bool return_val = false; // does it contain space?
+        return_val = false; // does it contain space?
         if (debug_msg) printf("u8strlen: %d\n", u8strlen(string_buffer));
         if (debug_msg) printf("strlen: %d\n", (int)strlen(string_buffer));
 
@@ -1655,7 +1655,7 @@ bool ONScripterLabel::processBreaks(bool cont_line, LineBreakType style)
          *     character is a break. Remember, undefined behaviour is
          *     undefined!
          */
-        while (i<(int)strlen(string_buffer)) {
+        while (i<strlen(string_buffer)) {
             if (debug_msg) printf("\nInspecting buffer: [%s]\n", string_buffer+i);
             is_ruby = false;
 
