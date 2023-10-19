@@ -14,11 +14,11 @@ if test ! -f Makefile.onscripter; then
 fi
 
 cat >"$(pwd)/extlib/bin/freetype-config" << EOF
-if test "$1" = "--ftversion"; then
+if test "\$1" = "--ftversion"; then
     echo "2.13.0"
-elif test "$1" = "--cflags"; then
+elif test "\$1" = "--cflags"; then
     echo "-I$(pwd)/extlib/include/freetype2 -I$(pwd)/extlib/include"
-elif test "$1" = "--libs"; then
+elif test "\$1" = "--libs"; then
     echo "-L$(pwd)/extlib/lib -lfreetype -lz"
 else
     echo "This is a hacky fix for the new freetype version seemingly not generating freetype-config. Hopefully it doesn't break too easily."
