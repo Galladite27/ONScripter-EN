@@ -1,9 +1,19 @@
 #!/bin/sh
+# This has just got wierder and wierder
+#
+# The purpose of this file is to, during the configure stage,
+# construct a freetype-config file that will give correct file paths.
+# The reason this isn't done dynamically in freetype-config itself is
+# that we don't know where it will be run from.
+#
+# -Galladite 2023-10-19
+
 if test ! -f Makefile.onscripter; then
     echo "freetype-config: error: run from incorrect directory"
     exit 1
 fi
 
+cat >"$(pwd)/extlib/bin/freetype-config" << EOF
 if test "$1" = "--ftversion"; then
     echo "2.13.0"
 elif test "$1" = "--cflags"; then
@@ -19,3 +29,6 @@ else
     echo
     echo "-Galladite 2023-5-16"
 fi
+EOF
+
+chmod +x "$(pwd)/extlib/bin/freetype-config"

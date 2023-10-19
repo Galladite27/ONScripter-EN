@@ -792,6 +792,12 @@ fi
 cd ..
 rm -rf .configtest
 
+if $INTERNAL_FREETYPE
+then
+    # See the file itself for explaination
+    ./extlib/bin/freetype-config-setup
+fi
+
 DEPS=
 MLIB=
 require() {
