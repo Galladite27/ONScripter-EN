@@ -1,4 +1,9 @@
 #!/bin/sh
+if test ! -f Makefile.onscripter; then
+    echo "freetype-config: error: run from incorrect directory"
+    exit 1
+fi
+
 if test "$1" = "--ftversion"; then
     echo "2.13.0"
 elif test "$1" = "--cflags"; then
