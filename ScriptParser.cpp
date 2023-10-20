@@ -495,12 +495,13 @@ int ScriptParser::open_screen()
         script_height=800;
 
         if ( loadFileIOBuf( "screen.dat" ) == 0 ) {
-            // CHANGE this
+            // FIXME This all needs giving a once-over once cres command is implemented
             printf("Debug: file available to read: %sscreen.dat\n", script_h.save_path);
 
             // We need to be able to read at least 8 bytes
             int x=640, y=480;
             if (file_io_buf_ptr+7 >= file_io_buf_len ) goto cres_skip;
+            printf("Debug - file correctly formatted\n");
 
             x =
                 (unsigned int)file_io_buf[file_io_buf_ptr+3] << 24 |
@@ -517,6 +518,17 @@ int ScriptParser::open_screen()
             file_io_buf_ptr += 4;
 
 cres_skip:
+            printf("Debug: raw vals: %d %d\n",
+                (unsigned int)file_io_buf[file_io_buf_ptr+3] << 24 |
+                (unsigned int)file_io_buf[file_io_buf_ptr+2] << 16 |
+                (unsigned int)file_io_buf[file_io_buf_ptr+1] << 8 |
+                (unsigned int)file_io_buf[file_io_buf_ptr],
+
+                (unsigned int)file_io_buf[file_io_buf_ptr+7] << 24 |
+                (unsigned int)file_io_buf[file_io_buf_ptr+6] << 16 |
+                (unsigned int)file_io_buf[file_io_buf_ptr+5] << 8 |
+                (unsigned int)file_io_buf[file_io_buf_ptr+4] );
+
             printf("Width: %d Height: %d\n", x, y);
         }
         // If the file isn't found, there's no need to make it since

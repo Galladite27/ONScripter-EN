@@ -1,5 +1,6 @@
 2023-10-20
-  Started working on variable screen resolution.
+  Started working on variable screen resolution. Can detect for cres
+  usage in ;$, read screen.dat file.
 
 2023-10-19
   Several bugfixes. freetype-config now works better. Fixed the
