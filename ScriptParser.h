@@ -306,7 +306,8 @@ protected:
            RET_CONTINUE  = 2,
            RET_NO_READ   = 4,
            RET_EOL       = 8, // end of line (0x0a is found)
-           RET_EOT       = 16 // end of text (the end of string_buffer is reached)
+           RET_EOT       = 16, // end of text (the end of string_buffer is reached)
+           RET_RESTART   = 32 // to facilitate full engine resets (mainly setres)
     };
     enum { CLICK_NONE    = 0,
            CLICK_WAIT    = 1,

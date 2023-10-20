@@ -139,6 +139,7 @@ static struct FuncLUT{
     {"setwindow3",   &ONScripterLabel::setwindow3Command},
     {"setwindow2",   &ONScripterLabel::setwindow2Command},
     {"setwindow",   &ONScripterLabel::setwindowCommand},
+    {"setres", &ONScripterLabel::setresCommand},
     {"seteffectspeed",   &ONScripterLabel::seteffectspeedCommand},
     {"setcursor",   &ONScripterLabel::setcursorCommand},
     {"selnum",   &ONScripterLabel::selectCommand},
@@ -246,6 +247,7 @@ static struct FuncLUT{
     {"getsevol", &ONScripterLabel::getsevolCommand},
     {"getscreenshot", &ONScripterLabel::getscreenshotCommand},
     {"getsavestr", &ONScripterLabel::getsavestrCommand},
+    {"getres",    &ONScripterLabel::getresCommand},
     {"getret", &ONScripterLabel::getretCommand},
     {"getreg", &ONScripterLabel::getregCommand},
     {"getpageup", &ONScripterLabel::getpageupCommand},
@@ -277,6 +279,7 @@ static struct FuncLUT{
     {"erasetextwindow", &ONScripterLabel::erasetextwindowCommand},
     {"erasetextbtn", &ONScripterLabel::erasetextbtnCommand},
     {"effectskip", &ONScripterLabel::effectskipCommand},
+    {"enginereset", &ONScripterLabel::engineresetCommand},
     {"end", &ONScripterLabel::endCommand},
     {"dwavestop", &ONScripterLabel::dwavestopCommand},
     {"dwaveplayloop", &ONScripterLabel::dwaveCommand},
@@ -1935,6 +1938,7 @@ void ONScripterLabel::mouseOverCheck( int x, int y )
 void ONScripterLabel::executeLabel()
 {
     int last_token_line = -1;
+    int restart_return = 0;
 
   executeLabelTop:
 
@@ -1989,6 +1993,19 @@ void ONScripterLabel::executeLabel()
         if ( ret & RET_EOT ) processEOT();
         
         if (!(ret & RET_NO_READ)) readToken();
+
+        if ( ret & RET_RESTART ) {
+            printf("Trying engine restart...\n");
+            restart_return = 1;
+            break;
+        }
+    }
+
+    if ( restart_return ) {
+        // Returns to onscripter.cpp main function for total engine
+        // reset, mainly for setres -Galladite 2023-10-20
+        quit();
+        return;
     }
 
     current_label_info = script_h.lookupLabelNext( current_label_info.name );

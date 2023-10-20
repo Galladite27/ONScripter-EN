@@ -30,6 +30,9 @@
 #include "ONScripterLabel.h"
 #include "version.h"
 
+#include "SDL.h"
+#include "SDL_main.h"
+
 #include <cstdio>
 
 #define CFG_FILE "ons.cfg"
@@ -462,8 +465,21 @@ int main( int argc, char **argv )
     // ----------------------------------------
     // Run ONScripter
 
-    if (ons.init()) exit(-1);
-    ons.executeLabel();
+    // This facilitates semi-hard engine restarts - they won't affect
+    // anything like the command-line flags or such, but they cause
+    // the engine to entirely restart its setup and execution process.
+    //
+    // Ways of exiting such as the end command and reaching the end of
+    // a script all still work; they all handle their own exiting
+    // procedures.
+    //
+    // Useful for setres command.
+    for (;;) {
+        if (ons.init()) exit(-1);
+        ons.executeLabel();
+        SDL_Quit();
+        printf("Engine restarting...\n\n");
+    }
     
     exit(0);
 }

@@ -2990,6 +2990,17 @@ int ONScripterLabel::getretCommand()
     return RET_CONTINUE;
 }
 
+int ONScripterLabel::getresCommand()
+{
+    script_h.readInt();
+    script_h.setInt( &script_h.current_variable, script_h.screen_width );
+
+    script_h.readInt();
+    script_h.setInt( &script_h.current_variable, script_h.screen_height );
+
+    return RET_CONTINUE;
+}
+
 int ONScripterLabel::getregCommand()
 {
     script_h.readVariable();
@@ -3471,6 +3482,11 @@ int ONScripterLabel::erasetextbtnCommand()
     return RET_CONTINUE;
 }
 
+int ONScripterLabel::engineresetCommand()
+{
+    return RET_RESTART;
+}
+
 int ONScripterLabel::endCommand()
 {
     printf("Quitting...\n");
@@ -3839,6 +3855,37 @@ int ONScripterLabel::cselbtnCommand()
     button->sprite_no   = csel_no;
 
     sentence_font.ttf_font = csel_info.ttf_font;
+
+    return RET_CONTINUE;
+}
+
+int ONScripterLabel::setresCommand()
+{
+    int cres_x = script_h.readInt();
+    int cres_y = script_h.readInt();
+
+    // I hope I'm doing this properly...
+    file_io_buf_ptr = 8;
+    allocFileIOBuf();
+    file_io_buf_ptr = 0;
+
+    // To write the individual bytes of an int
+    file_io_buf[file_io_buf_ptr++] = cres_x & 0xff;
+    file_io_buf[file_io_buf_ptr++] = (cres_x >> 8) & 0xff;
+    file_io_buf[file_io_buf_ptr++] = (cres_x >> 16) & 0xff;
+    file_io_buf[file_io_buf_ptr++] = (cres_x >> 24) & 0xff;
+
+    file_io_buf[file_io_buf_ptr++] = cres_y & 0xff;
+    file_io_buf[file_io_buf_ptr++] = (cres_y >> 8) & 0xff;
+    file_io_buf[file_io_buf_ptr++] = (cres_y >> 16) & 0xff;
+    file_io_buf[file_io_buf_ptr++] = (cres_y >> 24) & 0xff;
+
+    if (saveFileIOBuf( "screen.dat" ))
+        errorAndExit( "can't open 'screen.dat' for writing", NULL, "I/O Error", true );
+    else
+        // New return code - we want to fully restart the engine to apply changes
+        // Managing this gracefully in the script is the user's job
+        return RET_RESTART;
 
     return RET_CONTINUE;
 }

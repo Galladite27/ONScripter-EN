@@ -223,6 +223,7 @@ public:
     int setwindow3Command();
     int setwindow2Command();
     int setwindowCommand();
+    int setresCommand();
     int seteffectspeedCommand();
     int setcursorCommand();
     int selectCommand();
@@ -305,6 +306,7 @@ public:
     int getscreenshotCommand();
     int getsavestrCommand();
     int getretCommand();
+    int getresCommand();
     int getregCommand();
     int getpageupCommand();
     int getpageCommand();
@@ -327,6 +329,7 @@ public:
     int exbtnCommand();
     int erasetextwindowCommand();
     int erasetextbtnCommand();
+    int engineresetCommand();
     int endCommand();
     int effectskipCommand();
     int dwavestopCommand();

@@ -488,20 +488,15 @@ int ScriptParser::open()
 
 int ScriptParser::open_screen()
 {
-    // New code for cres - still incomplete!
     if (script_h.screen_width == -1 || script_h.screen_height == -1) {
-        printf("Debug: cres command used\n");
         script_width=800;
         script_height=800;
 
         if ( loadFileIOBuf( "screen.dat" ) == 0 ) {
-            // FIXME This all needs giving a once-over once cres command is implemented
-            printf("Debug: file available to read: %sscreen.dat\n", script_h.save_path);
+            int x=640, y=480;
 
             // We need to be able to read at least 8 bytes
-            int x=640, y=480;
-            if (file_io_buf_ptr+7 >= file_io_buf_len ) goto cres_skip;
-            printf("Debug - file correctly formatted\n");
+            if ( file_io_buf_ptr+7 >= file_io_buf_len ) goto cres_skip;
 
             x =
                 (unsigned int)file_io_buf[file_io_buf_ptr+3] << 24 |
@@ -518,26 +513,19 @@ int ScriptParser::open_screen()
             file_io_buf_ptr += 4;
 
 cres_skip:
-            printf("Debug: raw vals: %d %d\n",
-                (unsigned int)file_io_buf[file_io_buf_ptr+3] << 24 |
-                (unsigned int)file_io_buf[file_io_buf_ptr+2] << 16 |
-                (unsigned int)file_io_buf[file_io_buf_ptr+1] << 8 |
-                (unsigned int)file_io_buf[file_io_buf_ptr],
 
-                (unsigned int)file_io_buf[file_io_buf_ptr+7] << 24 |
-                (unsigned int)file_io_buf[file_io_buf_ptr+6] << 16 |
-                (unsigned int)file_io_buf[file_io_buf_ptr+5] << 8 |
-                (unsigned int)file_io_buf[file_io_buf_ptr+4] );
-
-            printf("Width: %d Height: %d\n", x, y);
+            // If we didn't read these properly, we should use the
+            // default 640x480 set above
+            //
+            // This also needs to be set correctly for it to be able
+            // to be read by getres
+            script_h.screen_width = x;
+            script_h.screen_height = y;
         }
-        // If the file isn't found, there's no need to make it since
-        // it will be made when a new resolution is set
-
-    } else {
-        script_width = script_h.screen_width;
-        script_height = script_h.screen_height;
     }
+
+    script_width = script_h.screen_width;
+    script_height = script_h.screen_height;
 
 #ifndef PDA
     screen_ratio1 = 1;
