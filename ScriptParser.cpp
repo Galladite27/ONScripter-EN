@@ -476,8 +476,56 @@ int ScriptParser::open()
 
     if ( script_h.readScript( archive_path ) ) return -1;
 
-    script_width = script_h.screen_width;
-    script_height = script_h.screen_height;
+    /* All the code used for setting the screen side and such have
+     * been moved to a new function, open_screen (beneath). This is
+     * because for variable screen resolutions, we need access to the
+     * save path before setting the resolution.
+     * -Galladite 2023-10-20
+     */
+
+    return 0;
+}
+
+int ScriptParser::open_screen()
+{
+    // New code for cres - still incomplete!
+    if (script_h.screen_width == -1 || script_h.screen_height == -1) {
+        printf("Debug: cres command used\n");
+        script_width=800;
+        script_height=800;
+
+        if ( loadFileIOBuf( "screen.dat" ) == 0 ) {
+            // CHANGE this
+            printf("Debug: file available to read: %sscreen.dat\n", script_h.save_path);
+
+            // We need to be able to read at least 8 bytes
+            int x=640, y=480;
+            if (file_io_buf_ptr+7 >= file_io_buf_len ) goto cres_skip;
+
+            x =
+                (unsigned int)file_io_buf[file_io_buf_ptr+3] << 24 |
+                (unsigned int)file_io_buf[file_io_buf_ptr+2] << 16 |
+                (unsigned int)file_io_buf[file_io_buf_ptr+1] << 8 |
+                (unsigned int)file_io_buf[file_io_buf_ptr];
+            file_io_buf_ptr += 4;
+
+            y =
+                (unsigned int)file_io_buf[file_io_buf_ptr+3] << 24 |
+                (unsigned int)file_io_buf[file_io_buf_ptr+2] << 16 |
+                (unsigned int)file_io_buf[file_io_buf_ptr+1] << 8 |
+                (unsigned int)file_io_buf[file_io_buf_ptr];
+            file_io_buf_ptr += 4;
+
+cres_skip:
+            printf("Width: %d Height: %d\n", x, y);
+        }
+        // If the file isn't found, there's no need to make it since
+        // it will be made when a new resolution is set
+
+    } else {
+        script_width = script_h.screen_width;
+        script_height = script_h.screen_height;
+    }
 
 #ifndef PDA
     screen_ratio1 = 1;
@@ -486,6 +534,7 @@ int ScriptParser::open()
         screen_ratio1 = preferred_width;
         screen_ratio2 = script_width;
     }
+
     screen_width  = script_width * screen_ratio1 / screen_ratio2;
     screen_height = script_height * screen_ratio1 / screen_ratio2;
 #else

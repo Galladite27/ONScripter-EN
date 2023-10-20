@@ -1754,6 +1754,40 @@ int ScriptHandler::readScript( DirPaths &path )
                 }
                 else if (*buf == 's' || *buf == 'S') {
                     buf++;
+
+                    if (*buf == '?') {
+                        // Purely temporary values - this is to use custom resolution
+                        screen_width = -1;
+                        screen_height = -1;
+                        buf++;
+
+                        /*
+                        // START of temporary code
+                        // This is code to write two ints to a file (hopefully)
+                        file_io_buf_ptr = 8;
+                        allocFileIOBuf();
+                        file_io_buf_ptr = 0;
+
+                        // To write the individual bytes of an int
+                        file_io_buf[file_io_buf_ptr++] = screen_width & 0xff;
+                        file_io_buf[file_io_buf_ptr++] = (screen_width >> 8) & 0xff;
+                        file_io_buf[file_io_buf_ptr++] = (screen_width >> 16) & 0xff;
+                        file_io_buf[file_io_buf_ptr++] = (screen_width >> 24) & 0xff;
+
+                        // To write the individual bytes of an int
+                        file_io_buf[file_io_buf_ptr++] = screen_height & 0xff;
+                        file_io_buf[file_io_buf_ptr++] = (screen_height >> 8) & 0xff;
+                        file_io_buf[file_io_buf_ptr++] = (screen_height >> 16) & 0xff;
+                        file_io_buf[file_io_buf_ptr++] = (screen_height >> 24) & 0xff;
+
+                        if (saveFileIOBuf( "screen.dat" ) && !no_error)
+                            errorAndExit( "can't open 'screen.dat' for writing", NULL, "I/O Error", true );
+                        // END of temporary code
+                        */
+
+                        goto after_cres;
+                    }
+
                     if (!(*buf >= '0' && *buf <= '9')) break;
                     screen_width = 0;
                     while (*buf >= '0' && *buf <= '9')
@@ -1762,6 +1796,8 @@ int ScriptHandler::readScript( DirPaths &path )
                     screen_height = 0;
                     while (*buf >= '0' && *buf <= '9')
                         screen_height = screen_height*10 + *buf++ - '0';
+after_cres:
+                    ;
                 }
                 else if (*buf == 'l' || *buf == 'L') { // This command was unimplemented in ONScripter
                     buf++;

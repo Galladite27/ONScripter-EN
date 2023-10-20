@@ -1141,6 +1141,12 @@ int ONScripterLabel::init()
         archive_path = new_path;
     }
 
+    // This function takes all of the screen resolution-setting
+    // features of open() and puts them after we have access to the
+    // save path. This is necessary for variable resolutions.
+    // -Galladite 2023-10-20
+    if ( open_screen() ) return -1;
+
 #ifdef USE_LUA
     lua_handler.init(this, &script_h);
 #endif

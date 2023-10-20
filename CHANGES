@@ -1,3 +1,6 @@
+2023-10-20
+  Started working on variable screen resolution.
+
 2023-10-19
   Several bugfixes. freetype-config now works better. Fixed the
   behaviour of the selectbtnwait command, particularly prevalent in

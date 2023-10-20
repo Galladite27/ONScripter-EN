@@ -115,6 +115,7 @@ public:
     void reset();
     void resetDefineFlags(); // for resetting (non-pointer) variables
     int open();
+    int open_screen(); // Need access to save path before setting variable screen res -Galladite 2023-10-20
     int parseLine();
     void setCurrentLabel( const char *label );
     void gosubReal( const char *label, char *next_script, bool textgosub_flag=false, int rgosub_state=CLICK_NONE, bool rgosub_1byte=false );
