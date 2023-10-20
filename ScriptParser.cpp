@@ -492,36 +492,34 @@ int ScriptParser::open_screen()
         script_width=800;
         script_height=800;
 
+        int x=640, y=480;
+
         if ( loadFileIOBuf( "screen.dat" ) == 0 ) {
-            int x=640, y=480;
-
             // We need to be able to read at least 8 bytes
-            if ( file_io_buf_ptr+7 >= file_io_buf_len ) goto cres_skip;
+            if ( !( file_io_buf_ptr+7 >= file_io_buf_len ) ) {
+                x =
+                    (unsigned int)file_io_buf[file_io_buf_ptr+3] << 24 |
+                    (unsigned int)file_io_buf[file_io_buf_ptr+2] << 16 |
+                    (unsigned int)file_io_buf[file_io_buf_ptr+1] << 8 |
+                    (unsigned int)file_io_buf[file_io_buf_ptr];
+                file_io_buf_ptr += 4;
 
-            x =
-                (unsigned int)file_io_buf[file_io_buf_ptr+3] << 24 |
-                (unsigned int)file_io_buf[file_io_buf_ptr+2] << 16 |
-                (unsigned int)file_io_buf[file_io_buf_ptr+1] << 8 |
-                (unsigned int)file_io_buf[file_io_buf_ptr];
-            file_io_buf_ptr += 4;
-
-            y =
-                (unsigned int)file_io_buf[file_io_buf_ptr+3] << 24 |
-                (unsigned int)file_io_buf[file_io_buf_ptr+2] << 16 |
-                (unsigned int)file_io_buf[file_io_buf_ptr+1] << 8 |
-                (unsigned int)file_io_buf[file_io_buf_ptr];
-            file_io_buf_ptr += 4;
-
-cres_skip:
-
-            // If we didn't read these properly, we should use the
-            // default 640x480 set above
-            //
-            // This also needs to be set correctly for it to be able
-            // to be read by getres
-            script_h.screen_width = x;
-            script_h.screen_height = y;
+                y =
+                    (unsigned int)file_io_buf[file_io_buf_ptr+3] << 24 |
+                    (unsigned int)file_io_buf[file_io_buf_ptr+2] << 16 |
+                    (unsigned int)file_io_buf[file_io_buf_ptr+1] << 8 |
+                    (unsigned int)file_io_buf[file_io_buf_ptr];
+                file_io_buf_ptr += 4;
+            }
         }
+
+        // If we didn't read these properly, we should use the
+        // default 640x480 set above
+        //
+        // This also needs to be set correctly for it to be able
+        // to be read by getres
+        script_h.screen_width = x;
+        script_h.screen_height = y;
     }
 
     script_width = script_h.screen_width;
