@@ -48,8 +48,6 @@ BUGS OR MISFEATURES
   Linux
   \--> Only happens on Void, and not on Gentoo
 
-* Setres with no options causes infinite loop
-
 FEATURES REQUESTED
   
 * Allow the specification of a "fallback" font to use for characters

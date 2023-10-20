@@ -3864,6 +3864,9 @@ int ONScripterLabel::setresCommand()
     int cres_x = script_h.readInt();
     int cres_y = script_h.readInt();
 
+    if (cres_x < 1 || cres_y < 1)
+        errorAndExit( "Invalid values given for setres", NULL, "Script error", true );
+
     // I hope I'm doing this properly...
     file_io_buf_ptr = 8;
     allocFileIOBuf();
