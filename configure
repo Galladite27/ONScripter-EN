@@ -975,7 +975,7 @@ _EOF
 ;;
 Posix)
 case "$POSIX" in
-Linux)   INTERNAL_LDFLAGS="-ldl -lasound -lX11 -pthread -lpulse-simple -lpulse" ;; # Why is linker flags :(
+Linux)   INTERNAL_LDFLAGS="-ldl -lasound -lX11 -lXext -lXrandr -pthread -lpulse-simple -lpulse" ;; # Why is linker flags :(
 FreeBSD) INTERNAL_LDFLAGS="-L/usr/X11R6/lib -lX11 -lXi -lXrandr -liconv"
          EXTRA_DEPS="-DCONST_ICONV" ;;
 NetBSD)  INTERNAL_LDFLAGS="\$(foreach x,11 i randr ext render,/usr/X11R6/lib/libX\$(x).a) -lossaudio" ;;
