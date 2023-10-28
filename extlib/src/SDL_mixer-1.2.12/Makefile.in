@@ -21,6 +21,7 @@ EXE	= @EXE@
 SHELL	= @SHELL@
 CC      = @CC@
 CXX     = g++
+CXXLD   = g++
 CFLAGS  = @BUILD_CFLAGS@
 EXTRA_CFLAGS = @EXTRA_CFLAGS@
 LDFLAGS = @BUILD_LDFLAGS@
@@ -66,10 +67,10 @@ $(objects)/$(TARGET): $(OBJECTS) $(VERSION_OBJECTS)
 	$(LIBTOOL) --mode=link $(CC) -o $@ $(OBJECTS) $(VERSION_OBJECTS) $(LDFLAGS) $(EXTRA_LDFLAGS) $(LT_LDFLAGS)
 
 $(objects)/playwave$(EXE): $(objects)/playwave.lo $(objects)/$(TARGET)
-	$(LIBTOOL) --mode=link $(CC) -o $@ $(objects)/playwave.lo $(SDL_CFLAGS) $(SDL_LIBS) $(objects)/$(TARGET)
+	$(LIBTOOL) --mode=link $(CXXLD) -o $@ $(objects)/playwave.lo $(SDL_CFLAGS) $(SDL_LIBS) $(objects)/$(TARGET)
 
 $(objects)/playmus$(EXE): $(objects)/playmus.lo $(objects)/$(TARGET)
-	$(LIBTOOL) --mode=link $(CC) -o $@ $(objects)/playmus.lo $(SDL_CFLAGS) $(SDL_LIBS) $(objects)/$(TARGET)
+	$(LIBTOOL) --mode=link $(CXXLD) -o $@ $(objects)/playmus.lo $(SDL_CFLAGS) $(SDL_LIBS) $(objects)/$(TARGET)
 
 install: all install-hdrs install-lib #install-bin
 install-hdrs:
