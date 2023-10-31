@@ -1,0 +1,7 @@
+*.o
+*.lo
+*.a
+*.la
+/resources.cpp
+/embed
+/onscripter-en
