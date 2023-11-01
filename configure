@@ -1138,7 +1138,7 @@ cat >> Makefile <<_EOF
 
 .PHONY: dist
 dist:
-	svn export . onscripter-en-$VERSION
+	git archive --prefix=onscripter-en-$VERSION/ HEAD
 	tar cf onscripter-en-$VERSION-fullsrc.tar onscripter-en-$VERSION
 	rm -rf onscripter-en-$VERSION/extlib onscripter-en-$VERSION/win_dll \\
 			onscripter-en-$VERSION/tools/libgnurx
