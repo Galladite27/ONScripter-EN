@@ -243,6 +243,7 @@ internalise_SDL() {
     INTERNAL_SDL_TTF=true
     INTERNAL_SMPEG=true
     SDL_CONFIG=./extlib/bin/sdl-config
+    SDLOTHERCONFIG=--disable-rpath
     SMPEG_CONFIG=./extlib/bin/smpeg-config
 }
 
