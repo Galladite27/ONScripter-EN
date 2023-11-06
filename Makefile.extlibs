@@ -49,7 +49,7 @@ $(SDLSRC)/Makefile: $(if $(INTERNAL_LIBPNG),$(EL)/libpng$(LIBSUFFIX))
 	    $(addprefix --disable-,shared joystick nas $(addprefix video-,fbcon directfb svga vgl wscons opengl)) \
 	    $(REDIR)
 	@cp $(ES)/required/libtool $(SDLSRC)/libtool # This line fixes a libtool issue by just using the copy of libtool from the old build of ONSCripter-EN. It's not pretty, but it works. -Galladite, 2022-2-9
-	@sed -i 's/$$(objects)\/SDL_dummy_main\.lo: \.\/src\/main\/dummy\/SDL_dummy_main\.c \\/$$(objects)\/SDL_dummy_main.o: .\/src\/main\/dummy\/SDL_dummy_main.c \\/g' $(SDLSRC)/build-deps # This line fixes an issue baked into SDL's configure.in whereby the wrong extension was given, changing the name of a critically important target. These externsions are given out in a generic manner, however, so I'd rather do this than try and understand whatever autoconf is doing. -Galladite, 2022-2-9
+	@sed -i '/^$$(objects)\/SDL_dummy_main/s/\.lo/\.o/' $(SDLSRC)/build-deps # This line fixes an issue baked into SDL's configure.in whereby the wrong extension was given, changing the name of a critically important target. These extensions are given out in a generic manner, however, so I'd rather do this than try and understand whatever autoconf is doing. -Galladite, 2022-2-9
 
 $(EB)/sdl-config: $(SDLSRC)/Makefile
 	@echo Building internal SDL...
