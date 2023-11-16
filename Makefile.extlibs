@@ -12,6 +12,12 @@ EI = extlib/include
 EB = extlib/bin
 ES = extlib/src
 
+OUTDIRS += $(EL)
+OUTDIRS += $(EI)
+OUTDIRS += $(EB)
+
+OUTDIRS := $(OUTDIRS)
+
 SDLSRC  = $(ES)/SDL-1.2.15
 SDLISRC = $(ES)/SDL_image-1.2.12
 ZSRC    = $(ES)/zlib-1.2.3
@@ -51,7 +57,7 @@ $(SDLSRC)/Makefile: $(if $(INTERNAL_LIBPNG),$(EL)/libpng$(LIBSUFFIX))
 	@cp $(ES)/required/libtool $(SDLSRC)/libtool # This line fixes a libtool issue by just using the copy of libtool from the old build of ONSCripter-EN. It's not pretty, but it works. -Galladite, 2022-2-9
 	@sed -i '/^$$(objects)\/SDL_dummy_main/s/\.lo/\.o/' $(SDLSRC)/build-deps # This line fixes an issue baked into SDL's configure.in whereby the wrong extension was given, changing the name of a critically important target. These extensions are given out in a generic manner, however, so I'd rather do this than try and understand whatever autoconf is doing. -Galladite, 2022-2-9
 
-$(EB)/sdl-config: $(SDLSRC)/Makefile
+$(EB)/sdl-config: $(SDLSRC)/Makefile | $(EB)
 	@echo Building internal SDL...
 	@$(MAKE) -C $(SDLSRC) $(REDSO)
 	@$(MAKE) -C $(SDLSRC) install $(REDSO)
@@ -98,7 +104,7 @@ $(SDLISRC)/Makefile: $(if $(INTERNAL_SDL),$(EB)/sdl-config) \
 	    exit 1; \
 	fi
 
-$(EL)/libSDL_image$(LIBSUFFIX): $(SDLISRC)/Makefile
+$(EL)/libSDL_image$(LIBSUFFIX): $(SDLISRC)/Makefile | $(EL) $(EI)
 	@echo Building internal SDL_image...
 	@$(MAKE) -C $(SDLISRC) $(REDSO)
 	@$(MAKE) -C $(SDLISRC) install $(REDSO)
@@ -114,12 +120,12 @@ $(PNGSRC)/Makefile: $(EL)/libz$(LIBSUFFIX)
 	@cd $(PNGSRC) && \
 	./configure --prefix="$(LPREFIX)" --disable-shared --disable-dependency-tracking $(OTHERCONFIG) $(REDIR)
 
-$(EL)/libpng$(LIBSUFFIX): $(PNGSRC)/Makefile 
+$(EL)/libpng$(LIBSUFFIX): $(PNGSRC)/Makefile | $(EL)
 	@echo Building internal libpng...
 	@$(MAKE) -C $(PNGSRC) $(REDSO)
 	@$(MAKE) -C $(PNGSRC) install $(REDSO)
 
-$(EL)/libz$(LIBSUFFIX):
+$(EL)/libz$(LIBSUFFIX): | $(EL)
 	@echo Building internal zlib...
 	@$(MAKE) -C $(ZSRC) install prefix="$(LPREFIX)" $(REDSO)
 
@@ -128,7 +134,7 @@ $(JPEGSRC)/Makefile:
 	@cd $(JPEGSRC) && \
 	./configure --prefix="$(LPREFIX)" --disable-shared --enable-static $(OTHERCONFIG) $(REDIR)
 
-$(EL)/libjpeg$(LIBSUFFIX): $(JPEGSRC)/Makefile 
+$(EL)/libjpeg$(LIBSUFFIX): $(JPEGSRC)/Makefile | $(EL)
 	@echo Building internal libjpeg...
 	@$(MAKE) -C $(JPEGSRC) install-lib $(REDSO)
 
@@ -159,7 +165,7 @@ $(SDLMSRC)/Makefile: $(if $(INTERNAL_SDL),$(EB)/sdl-config) \
 	    $(addprefix --disable-,shared $(addprefix music-,cmd timidity-midi)) \
 	    $(REDIR)
 
-$(EL)/libSDL_mixer$(LIBSUFFIX): $(SDLMSRC)/Makefile
+$(EL)/libSDL_mixer$(LIBSUFFIX): $(SDLMSRC)/Makefile | $(EL)
 	@echo Building internal SDL_mixer...
 	@$(MAKE) -C $(SDLMSRC) $(REDSO)
 	@$(MAKE) -C $(SDLMSRC) install $(REDSO)
@@ -175,18 +181,18 @@ $(OGGSRC)/Makefile:
 	@cd $(OGGSRC) && \
 	./configure --prefix="$(LPREFIX)" --disable-shared --disable-dependency-tracking $(OTHERCONFIG) $(REDIR)
 
-$(EL)/libogg$(LIBSUFFIX): $(OGGSRC)/Makefile
+$(EL)/libogg$(LIBSUFFIX): $(OGGSRC)/Makefile | $(EL)
 	@echo Building internal libogg...
 	@$(MAKE) -C $(OGGSRC) $(REDSO)
 	@$(MAKE) -C $(OGGSRC) install $(REDSO)
 
-$(VORBSRC)/Makefile:
+$(VORBSRC)/Makefile: $(EL)/libogg$(LIBSUFFIX)
 	@echo Configuring internal libvorbis...
 	@cd $(VORBSRC) && \
 	./configure --prefix="$(LPREFIX)" $(addprefix --disable-,shared dependency-tracking docs) $(OTHERCONFIG) $(REDIR)
 
 $(EL)/libvorbisfile$(LIBSUFFIX): $(EL)/libvorbis$(LIBSUFFIX)
-$(EL)/libvorbis$(LIBSUFFIX): $(EL)/libogg$(LIBSUFFIX) $(VORBSRC)/Makefile
+$(EL)/libvorbis$(LIBSUFFIX): $(VORBSRC)/Makefile | $(EL)
 	@echo Building internal libvorbis...
 	@$(MAKE) -C $(VORBSRC) $(REDSO)
 	@$(MAKE) -C $(VORBSRC) install $(REDSO)
@@ -210,7 +216,7 @@ $(SMPGSRC)/Makefile: $(if $(INTERNAL_SDL),$(EB)/sdl-config)
 	    $(REDIR)
 	@sed -i '/hufftable\.lo: audio\/hufftable\.cpp/{n;s/$$(CXXFLAGS)/$$(CXXFLAGS) -Wno-narrowing/}' $(SMPGSRC)/Makefile # Fix for unnecessary error -Galladite 2023-2-9
 
-$(EB)/smpeg-config: $(SMPGSRC)/Makefile
+$(EB)/smpeg-config: $(SMPGSRC)/Makefile | $(EB)
 	@echo Building internal smpeg...
 	@$(MAKE) -C $(SMPGSRC) $(REDSO)
 	@$(MAKE) -C $(SMPGSRC) prefix="$(LPREFIX)" install $(REDSO)
@@ -233,7 +239,7 @@ $(FTCONFIGURE): $(if $(INTERNAL_LIBPNG),$(EL)/libz$(LIBSUFFIX))
 	@cd $(FTSRC) && \
 	./configure --prefix="$(LPREFIX)" --disable-shared --without-harfbuzz --without-brotli $(OTHERCONFIG) $(REDIR)
 
-$(EB)/freetype-config: $(FTCONFIGURE)
+$(EB)/freetype-config: $(FTCONFIGURE) | $(EB)
 	@echo Building internal Freetype...
 	@$(MAKE) -C $(FTSRC) $(REDSO)
 	@$(MAKE) -C $(FTSRC) install $(REDSO)
@@ -257,7 +263,7 @@ $(SDLTSRC)/Makefile: $(if $(INTERNAL_SDL),$(EB)/sdl-config) $(if $(INTERNAL_FREE
 	@cd $(SDLTSRC) && \
 	./configure --prefix="$(LPREFIX)" --disable-shared $(OTHERCONFIG) $(REDIR)
 
-$(EL)/libSDL_ttf$(LIBSUFFIX): $(SDLTSRC)/Makefile
+$(EL)/libSDL_ttf$(LIBSUFFIX): $(SDLTSRC)/Makefile | $(EL)
 	@echo Building internal SDL_ttf...
 	@$(MAKE) -C $(SDLTSRC) $(REDSO)
 	@$(MAKE) -C $(SDLTSRC) install $(REDSO)
@@ -272,7 +278,7 @@ internal_bzip2 = $(EL)/libbz2$(LIBSUFFIX) $(EI)/bzlib.h
 clean_bzip2:
 	rm -f $(EL)/libbz2$(LIBSUFFIX) $(EI)/bzlib.h $(BZSRC)/*$(OBJSUFFIX)
 
-$(EL)/libbz2$(LIBSUFFIX): $(foreach fn,$(BZOBJS),$(BZSRC)/$(fn)$(OBJSUFFIX))
+$(EL)/libbz2$(LIBSUFFIX): $(foreach fn,$(BZOBJS),$(BZSRC)/$(fn)$(OBJSUFFIX)) | $(EL)
 	rm -f $@
 	$(AR) cq $@ $^
 	@if [ -f "$(RANLIB)" -o -f /usr/bin/ranlib -o \
@@ -280,5 +286,8 @@ $(EL)/libbz2$(LIBSUFFIX): $(foreach fn,$(BZOBJS),$(BZSRC)/$(fn)$(OBJSUFFIX))
 	    $(if $(RANLIB),$(RANLIB),ranlib) $@ ; \
 	fi
 
-$(EI)/bzlib.h: $(BZSRC)/bzlib.h
+$(EI)/bzlib.h: $(BZSRC)/bzlib.h | $(EI)
 	cp $< $@
+
+$(sort $(OUTDIRS)):
+	mkdir -p $@

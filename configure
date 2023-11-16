@@ -1081,7 +1081,7 @@ include Makefile.extlibs
 include Makefile.onscripter
 
 .PHONY: libtoolreplace
-libtoolreplace:
+libtoolreplace: | \$(EB)
 	@cp \$(ES)/required/freetype-config \$(EB)
 
 clean: pclean \$(CLEAN_TARGETS) libtoolreplace
