@@ -38,4 +38,5 @@ jobs:
         autoupdate
     - name: build
       run: |
-        make VERBOSE=true
+        NCPUS=$(getconf _NPROCESSORS_ONLN)
+        make -j $NCPUS VERBOSE=true
