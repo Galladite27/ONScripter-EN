@@ -1077,7 +1077,7 @@ RCCLEAN = resources.cpp embed$EXE \$(OTHER_OBJS)
 resources\$(OBJSUFFIX): \$(RC_HDRS)
 
 resources.cpp: embed$EXE \$(filter-out =%,\$(RESOURCES))
-	./embed$EXE \$(patsubst =%,%,\$(RESOURCES)) > \$@
+	./embed$EXE -o \$@ \$(patsubst =%,%,\$(RESOURCES))
 
 embed$EXE: embed.cpp
 	\$(CXX) \$(CXXSTD) \$< -o \$@
