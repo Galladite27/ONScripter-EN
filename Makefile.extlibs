@@ -216,11 +216,17 @@ clean_smpeg:
 dclean_smpeg: clean_smpeg
 	@-if [ -f $(SMPGSRC)/Makefile ]; then $(MAKE) -C $(SMPGSRC) distclean; fi
 
+ifdef DEBUG
+	SMPEG_DEBUG=
+else
+	SMPEG_DEBUG=debug
+endif
+
 $(SMPGSRC)/Makefile: $(if $(INTERNAL_SDL),$(EB)/sdl-config)
 	@echo Configuring internal smpeg...
 	@cd $(SMPGSRC) && \
 	./configure --prefix="$(LPREFIX)" $(OTHERCONFIG) \
-	    $(addprefix --disable-,shared gtk-player opengl-player debug) \
+	    $(addprefix --disable-,shared gtk-player opengl-player $(SMPEG_DEBUG)) \
 	    $(REDIR)
 	@sed -i '/hufftable\.lo: audio\/hufftable\.cpp/{n;s/$$(CXXFLAGS)/$$(CXXFLAGS) -Wno-narrowing/}' $(SMPGSRC)/Makefile # Fix for unnecessary error -Galladite 2023-2-9
 

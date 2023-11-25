@@ -1,0 +1,14 @@
+# -*- makefile-gmake -*-
+#
+# Makefile.unittest - General makefile rules for ONScripter's unit tests
+#
+
+#ifdef COVERAGE
+OSCFLAGS += -fprofile-arcs -ftest-coverage
+LDFLAGS += -fprofile-arcs -ftest-coverage
+CLEANUP += $(ONSCRIPTER_OBJS:.o=.gcda) $(ONSCRIPTER_OBJS:.o=.gcno)
+#endif
+
+.PHONY: check
+check: $(TARGET)$(EXESUFFIX) test/Makefile
+	$(MAKE) -C test CXX="$(CXX)" OBJSUFFIX="$(OBJSUFFIX)" EXESUFFIX="$(EXESUFFIX)" LIBSUFFIX="$(LIBSUFFIX)" COVERAGE=$(COVERAGE)

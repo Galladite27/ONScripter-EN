@@ -109,6 +109,7 @@ RC_HDRS =
 
 #include Makefile.extlibs
 include Makefile.onscripter
+include Makefile.unittest
 
 .PHONY: libtoolreplace
 libtoolreplace:
