@@ -72,10 +72,10 @@ depend:
 include $(depend)
 
 $(objects)/$(TARGET): $(OBJECTS)
-	$(LIBTOOL) --mode=link $(CC) -o $@ $^ $(LDFLAGS) $(EXTRA_LDFLAGS) $(LT_LDFLAGS)
+	$(LIBTOOL) --tag=CC --mode=link $(CC) -o $@ $^ $(LDFLAGS) $(EXTRA_LDFLAGS) $(LT_LDFLAGS)
 
 $(objects)/$(SDLMAIN_TARGET): $(SDLMAIN_OBJECTS)
-	$(LIBTOOL) --mode=link $(CC) -o $@ $^ $(LDFLAGS) $(EXTRA_LDFLAGS) $(LT_LDFLAGS) $(SDLMAIN_LDFLAGS)
+	$(LIBTOOL) --tag=CC --mode=link $(CC) -o $@ $^ $(LDFLAGS) $(EXTRA_LDFLAGS) $(LT_LDFLAGS) $(SDLMAIN_LDFLAGS)
 
 
 install: all install-bin install-hdrs install-lib install-data

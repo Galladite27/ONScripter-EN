@@ -51,7 +51,7 @@ do  echo "Generating dependencies for $src"
     case $ext in
         c) cat >>${output}.new <<__EOF__
 
-	\$(LIBTOOL) --mode=compile \$(CC) \$(CFLAGS) \$(EXTRA_CFLAGS) -c $src  -o \$@
+	\$(LIBTOOL) --tag=CC --mode=compile \$(CC) \$(CFLAGS) \$(EXTRA_CFLAGS) -c $src  -o \$@
 
 __EOF__
         ;;
@@ -69,7 +69,7 @@ __EOF__
         ;;
         asm) cat >>${output}.new <<__EOF__
 
-	\$(LIBTOOL) --tag=CC --mode=compile \$(auxdir)/strip_fPIC.sh \$(NASM) -I\$(srcdir)/src/hermes/ $src -o \$@
+	\$(LIBTOOL) --mode=compile \$(auxdir)/strip_fPIC.sh \$(NASM) -I\$(srcdir)/src/hermes/ $src -o \$@
 
 __EOF__
         ;;
