@@ -364,6 +364,13 @@ then
     esac
 fi
 
+# dependency generation
+DEPFLAGS=
+case "$CXX_TMP" in
+g++* | *apple*g++*) DEPFLAGS="-MMD -MF \$(@:.o=.d) -MT \$@" ;;
+*) $echo_n "error determining compiler dependency options" >&2 ;;
+esac
+
 case "$CXX_TMP" in
 g++* | *apple*g++*) CFLAGSEXTRA=-Wall ;;
 esac
@@ -929,6 +936,7 @@ export AR      := $AR
 export RANLIB  := $RANLIB
 
 # ONScripter variables
+DEPFLAGS = $DEPFLAGS
 OSCFLAGSEXTRA = $CFLAGSEXTRA \$(OSCTMPFLAGS)
 INCS = -Iextlib/include \$(shell \$(SDL_CONFIG) --cflags)      \\
                         \$(shell $SMPEG_CONFIG --cflags)    \\
@@ -1125,7 +1133,7 @@ win32rc.o: \$(RCFILE) \$(WICONFILE)
 	sed -e "s/@Y@/$\$y/g;s/@0M@/$\$m/g;s/@M@/$\$mn/g;s/@0D@/$\$d/g;s/@D@/$\$dn/g;s%@I@%$\$i%g" \$< > \$@
 
 SDL_win32_main.o: SDL_win32_main.c
-	\$(CC) \$(CSTD) \$(OSCFLAGS) \$(INCS) \$(DEFS) -c \$< -o \$@
+	\$(CC) \$(CSTD) \$(OSCFLAGS) \$(INCS) \$(DEPFLAGS) \$(DEFS) -c \$< -o \$@
 
 \$(GNURX_DIR)/libgnurx.a:
 	\$(MAKE) -C \$(GNURX_DIR) libgnurx.a
@@ -1142,17 +1150,17 @@ then
 cat >> Makefile <<_EOF
 
 graphics_sse2.o: graphics_sse2.cpp graphics_sse2.h graphics_common.h graphics_sum.h graphics_blend.h
-	\$(CXX) \$(CXXSTD) \$(OSCFLAGS) \$(INCS) \$(DEFS) $GFX_SSE2_FLAGS -c \$< -o \$@
+	\$(CXX) \$(CXXSTD) \$(OSCFLAGS) \$(INCS) \$(DEPFLAGS) \$(DEFS) $GFX_SSE2_FLAGS -c \$< -o \$@
 
 graphics_mmx.o: graphics_mmx.cpp graphics_mmx.h graphics_common.h graphics_sum.h
-	\$(CXX) \$(CXXSTD) \$(OSCFLAGS) \$(INCS) \$(DEFS) $GFX_MMX_FLAGS -c \$< -o \$@
+	\$(CXX) \$(CXXSTD) \$(OSCFLAGS) \$(INCS) \$(DEPFLAGS) \$(DEFS) $GFX_MMX_FLAGS -c \$< -o \$@
 _EOF
 elif $USE_PPC_GFX
 then
 cat >> Makefile <<_EOF
 
 graphics_maltivec.o: graphics_maltivec.cpp graphics_maltivec.h graphics_common.h graphics_sum.h
-	\$(CXX) \$(CXXSTD) \$(OSCFLAGS) \$(INCS) \$(DEFS) $GFX_MALTIVEC_FLAGS -c \$< -o \$@
+	\$(CXX) \$(CXXSTD) \$(OSCFLAGS) \$(INCS) \$(DEPFLAGS) \$(DEFS) $GFX_MALTIVEC_FLAGS -c \$< -o \$@
 _EOF
 fi
 

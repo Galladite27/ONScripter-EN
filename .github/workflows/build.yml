@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - cc-dep-flags
   pull_request:
     branches:
       - master
