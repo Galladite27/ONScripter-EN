@@ -133,6 +133,7 @@ $(TDIR)nscmake$(EXESUFFIX): $(TDIR)nscmake$(OBJSUFFIX)
 $(TDIR)nbzdec$(EXESUFFIX): $(NBZDEC_OBJS)
 	$(CXX) -o $@ $(LDFLAGS) $(NBZDEC_OBJS) $(TOOL_LIBS)
 
+CLEANUP += $(ONSCRIPTER_OBJS:.o=.d)
 
 pclean:
 	-$(RM) *$(OBJSUFFIX) $(CLEANUP) $(RCCLEAN)
@@ -190,15 +191,7 @@ $(TDIR)sjis2utf16$(OBJSUFFIX): sjis2utf16.cpp
 	$(CXX) -c -o $@ $(CXXSTD) $(OSCFLAGS) $(TOOL_INCS) $(TOOL_DEFS) $<
 
 .cpp$(OBJSUFFIX):
-	$(CXX) -c $(CXXSTD) $(OSCFLAGS) $(INCS) $(DEFS) $<
-
-SarReader$(OBJSUFFIX):    $(READER_HEADER) SarReader.h
-NsaReader$(OBJSUFFIX):    $(READER_HEADER) SarReader.h NsaReader.h 
-DirectReader$(OBJSUFFIX): $(READER_HEADER) DirectReader.h
-ScriptHandler$(OBJSUFFIX): ScriptHandler.h Encoding.h
-ScriptParser$(OBJSUFFIX): $(PARSER_HEADER)
-ScriptParser_command$(OBJSUFFIX): $(PARSER_HEADER)
-Encoding$(OBJSUFFIX): Encoding.h
+	$(CXX) -c $(CXXSTD) $(OSCFLAGS) $(INCS) $(DEPFLAGS) $(DEFS) $<
 
 $(TDIR)sardec$(OBJSUFFIX): $(READER_HEADER) SarReader.h
 $(TDIR)sarconv$(OBJSUFFIX): $(READER_HEADER) SarReader.h
@@ -217,29 +210,4 @@ $(TDIR)DirectReader$(OBJSUFFIX): $(READER_HEADER) DirectReader.h
 $(TDIR)DirPaths$(OBJSUFFIX): DirPaths.h 
 $(TDIR)resize_image$(OBJSUFFIX): resize_image.h
 
-onscripter$(OBJSUFFIX): $(ONSCRIPTER_HEADER) version.h
-ONScripterReporter$(OBJSUFFIX): $(ONSCRIPTER_HEADER) ONScripterReporter.h Reporter.h
-ONScripterLabel$(OBJSUFFIX): $(ONSCRIPTER_HEADER) graphics_common.h graphics_cpu.h graphics_resize.h
-ONScripterLabel_command$(OBJSUFFIX): $(ONSCRIPTER_HEADER) graphics_common.h graphics_resize.h version.h
-ONScripterLabel_text$(OBJSUFFIX): $(ONSCRIPTER_HEADER) Encoding.h
-ONScripterLabel_effect$(OBJSUFFIX): $(ONSCRIPTER_HEADER)
-ONScripterLabel_effect_breakup$(OBJSUFFIX): $(ONSCRIPTER_HEADER)
-ONScripterLabel_effect_cascade$(OBJSUFFIX): $(ONSCRIPTER_HEADER)
-ONScripterLabel_effect_trig$(OBJSUFFIX): $(ONSCRIPTER_HEADER)
-ONScripterLabel_event$(OBJSUFFIX): $(ONSCRIPTER_HEADER)
-ONScripterLabel_rmenu$(OBJSUFFIX): $(ONSCRIPTER_HEADER)
-ONScripterLabel_animation$(OBJSUFFIX): $(ONSCRIPTER_HEADER)
-ONScripterLabel_sound$(OBJSUFFIX): $(ONSCRIPTER_HEADER)
-ONScripterLabel_file$(OBJSUFFIX): $(ONSCRIPTER_HEADER)
-ONScripterLabel_file2$(OBJSUFFIX): $(ONSCRIPTER_HEADER)
-ONScripterLabel_image$(OBJSUFFIX): $(ONSCRIPTER_HEADER) graphics_common.h graphics_blend.h
-AnimationInfo$(OBJSUFFIX): AnimationInfo.h graphics_common.h graphics_sum.h graphics_blend.h graphics_resize.h
-FontInfo$(OBJSUFFIX): FontInfo.h Encoding.h
-DirtyRect$(OBJSUFFIX): DirtyRect.h
-DirPaths$(OBJSUFFIX): DirPaths.h
-graphics_routines$(OBJSUFFIX): graphics_common.h graphics_cpu.h graphics_sum.h graphics_blend.h graphics_resize.h resize_image.h
-resize_image$(OBJSUFFIX): resize_image.h
-Layer$(OBJSUFFIX): Layer.h AnimationInfo.h graphics_common.h graphics_sum.h
-MadWrapper$(OBJSUFFIX): MadWrapper.h
-AVIWrapper$(OBJSUFFIX): AVIWrapper.h
-LUAHandler$(OBJSUFFIX): $(ONSCRIPTER_HEADER) LUAHandler.h
+-include $(wildcard $(ONSCRIPTER_OBJS:.o=.d))
