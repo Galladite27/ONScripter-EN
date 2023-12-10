@@ -347,6 +347,37 @@ esac
 
 # Compiler (gcc, g++, icpc)
 
+compilerver() {
+    compiler=$1
+    __COMPILERVER=
+    rm -rf .vertest
+    mkdir .vertest
+    cd .vertest
+    cat > ver.c <<-_EOF
+    #include <stdio.h>
+    int main(int argc, char** argv) {
+        int ret = 0;
+        const char* version;
+    #if defined(__clang__)
+        version = __clang_version__;
+    #elif defined(__INTEL_COMPILER) || defined(__INTEL_LLVM_COMPILER) || defined(__GNUC__)
+        version = __VERSION__;
+    #else
+        version = "unknown";
+        ret = -1;
+    #endif
+        fprintf(stdout, "%s", version);
+        return ret;
+    }
+_EOF
+    $compiler ver.c -o ver >/dev/null 2>&1
+    __COMPILERVER=`./ver | tr -d '\r\n'`
+    cd ..
+    rm -rf .vertest
+
+    unset compiler
+}
+
 # Make the script detect clang as a supported
 # compiler on OpenBSD and FreeBSD (untested
 # on FreeBSD, but it ought to work).
@@ -362,12 +393,35 @@ then
     echo "Unsupported compiler requested; please don't complain if anything doesn't work!"
 else
     $echo_n "Checking C compiler... ${nobr}"
-    CC_TMP=`($CC --version) 2>/dev/null | head -1`
-    case "$CC_TMP" in
-    gcc* | *apple*gcc* | *clang*) CC_VER=`expr "x$CC_TMP" : 'x.* \(.*\)$'`; echo "$CC $CC_VER" ;;
-    icc*) echo icc ;;
-    *)  echo "error"
-        cat <<-_ERR
+    rm -rf .configtest
+    mkdir .configtest
+    cd .configtest
+    cat > test.c <<-_EOF
+    #include <stdio.h>
+    int main(int argc, char** argv) {
+      int ret = 0;
+    #if defined(__INTEL_COMPILER) || defined(__INTEL_LLVM_COMPILER)
+      fprintf(stdout, "intel");
+    #elif defined(__clang__)
+      fprintf(stdout, "clang");
+    #elif defined(__GNUC__)
+      fprintf(stdout, "gcc");
+    #else
+      fprintf(stdout, "unsupported");
+      ret = -1;
+    #endif
+      return ret;
+    }
+_EOF
+    $CC test.c -o ctest >/dev/null 2>&1
+    case $? in
+    0) CC_TYPE=`./ctest`
+       compilerver "$CC"
+       CC_VER=$__COMPILERVER
+       echo "$CC_TYPE $CC_VER"
+       ;;
+    *) echo "error" >&2
+        cat >&2 <<-_ERR
 
 	Compiler not recognised, or no compiler found.
 	Please install a supported C compiler (e.g. gcc). If you already have one installed, try setting the environment variable CC appropriately.
@@ -375,26 +429,58 @@ else
 	_ERR
         exit 1 ;;
     esac
+    cd ..
+    rm -rf .configtest
 fi
 
 if [ -z "$CXX" ]
-then case "x$CC" in
+then case "x$CC_TYPE" in
 xgcc | x) CXX=g++ ;;
-xicc) CXX=icpc ;;
 xclang) CXX=clang++ ;; # same story as with C compiler. -grodzio1
+xintel)
+   if command -v icpx >/dev/null
+   then
+     CXX=icpx
+   else
+     CXX=icpc
+   fi
+   ;;
 *) CXX=$CC ;;
 esac
 fi
 
-CXX_TMP=`($CXX --version) 2>/dev/null | head -1`
 if not $UNSUPPORTED_COMPILER 
 then
     $echo_n "Checking C++ compiler... ${nobr}"
-    case "$CXX_TMP" in
-    g++* | *apple*g++* | *clang*) CXX_VER=`expr "x$CXX_TMP" : 'x.* \(.*\)$'`; echo "$CXX $CXX_VER" ;;
-    icpc*) echo icpc ;;
-    *)  echo "error"
-        cat <<-_ERR
+    rm -rf .configtest
+    mkdir .configtest
+    cd .configtest
+    cat > test.cc <<-_EOF
+    #include <iostream>
+    int main(int argc, char** argv) {
+      int ret = 0;
+    #if defined(__INTEL_COMPILER) || defined(__INTEL_LLVM_COMPILER)
+      std::cout << "intel++";
+    #elif defined(__clang__)
+      std::cout << "clang++";
+    #elif defined(__GNUC__)
+      std::cout << "g++";
+    #else
+      std::cout << "unsupported";
+      ret = -1;
+    #endif
+      return ret;
+    }
+_EOF
+    $CXX test.cc -o cxxtest >/dev/null 2>&1
+    case $? in
+    0) CXX_TYPE=`./cxxtest`
+       compilerver "$CXX"
+       CXX_VER=$__COMPILERVER
+       echo "$CXX_TYPE $CXX_VER"
+       ;;
+    *)  echo "error" >&2
+        cat >&2 <<-_ERR
 
 	Compiler not recognised, or no compiler found.
 	Please install a supported C++ compiler (e.g. g++). If you already have one installed, try setting the environment variable CXX appropriately.
@@ -402,10 +488,12 @@ then
 	_ERR
         exit 1 ;;
     esac
+    cd ..
+    rm -rf .configtest
 fi
 
-case "$CXX_TMP" in
-g++* | *apple*g++*) CFLAGSEXTRA=-Wall ;;
+case "$CXX_TYPE" in
+g++) CFLAGSEXTRA=-Wall ;;
 esac
 
 # compiler sanitization support
@@ -434,8 +522,8 @@ then
     xppc)    VECFLAGS=-maltivec ;;
     esac
 
-    case "x$CC_VER" in
-    x4.*) VECFLAGS="$FASTMATH -ftree-vectorize $VECFLAGS"
+    case "x$CC_TYPE$CC_VER" in
+    xgcc4.*) VECFLAGS="$FASTMATH -ftree-vectorize $VECFLAGS"
           if [ $VECTORIZE_LEVEL != 0 ]
           then
               VECFLAGS="$VECFLAGS -ftree-vectorizer-verbose=$VECTORIZE_LEVEL"
