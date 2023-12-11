@@ -303,6 +303,16 @@ case "$PLATFORM" in
 esac
 
 # Compiler (gcc, g++, icpc)
+
+# Make the script detect clang as a supported
+# compiler on OpenBSD and FreeBSD (untested
+# on FreeBSD, but it ought to work).
+# onscripter-en compiles without fail with clang. -grodzio1
+case "$POSIX" in
+OpenBSD) CC=clang ;;
+FreeBSD) CC=clang ;;
+esac
+
 if [ -z "$CC" ]; then CC=gcc; fi
 if $UNSUPPORTED_COMPILER
 then
@@ -311,7 +321,7 @@ else
     $echo_n "Checking C compiler... ${nobr}"
     CC_TMP=`($CC --version) 2>/dev/null | head -1`
     case "$CC_TMP" in
-    gcc* | *apple*gcc*) CC_VER=`expr "x$CC_TMP" : 'x.* \(.*\)$'`; echo "gcc $CC_VER" ;;
+    gcc* | *apple*gcc* | *clang*) CC_VER=`expr "x$CC_TMP" : 'x.* \(.*\)$'`; echo "gcc $CC_VER" ;;
     icc*) echo icc ;;
     *)  echo "error"
         cat <<-_ERR
@@ -328,6 +338,7 @@ if [ -z "$CXX" ]
 then case "x$CC" in
 xgcc | x) CXX=g++ ;;
 xicc) CXX=icpc ;;
+xclang) CXX=clang++ ;; # same story as with C compiler. -grodzio1
 *) CXX=$CC ;;
 esac
 fi
@@ -337,7 +348,7 @@ if not $UNSUPPORTED_COMPILER
 then
     $echo_n "Checking C++ compiler... ${nobr}"
     case "$CXX_TMP" in
-    g++* | *apple*g++*) CXX_VER=`expr "x$CXX_TMP" : 'x.* \(.*\)$'`; echo "g++ $CXX_VER" ;;
+    g++* | *apple*g++* | *clang*) CXX_VER=`expr "x$CXX_TMP" : 'x.* \(.*\)$'`; echo "g++ $CXX_VER" ;;
     icpc*) echo icpc ;;
     *)  echo "error"
         cat <<-_ERR
@@ -722,6 +733,11 @@ then
 	unsigned char bz[]={66,90,104,57,49,65,89,38,83,89,41,212,246,171,0,0,0,16,0,64,0,32,0,33,24,70,130,238,72,167,10,18,5,58,158,213,96};
 	int main(int argc, char**argv){char out[2];unsigned int olen=2;out[0]='.';return(BZ2_bzBuffToBuffDecompress(out,&olen,(char*)bz,37,0,0)==BZ_OK&&olen==1&&out[0]==' ')?0:1;}
 	_EOF
+    # Make the bzip2 check find bzip2 libraries and headers on OpenBSD. -grodzio1
+    case "$POSIX" in
+    OpenBSD) $CXX -I/usr/local/include -L/usr/local/lib -lbz2 test.cc -o btest >/dev/null 2>&1 ;;
+    esac
+    else
     $CXX -lbz2 test.cc -o btest >/dev/null 2>&1
     if ./btest 2>/dev/null
     then echo "yes"
