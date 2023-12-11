@@ -1018,10 +1018,10 @@ OSCFLAGS = -O0 -g -pg -ggdb -pipe -Wpointer-arith $WERROR $STRICT \$(OSCFLAGSEXT
 export LDFLAGS  := -pg \$(LDFLAGS)
 else
   ifdef PROF
-  OSCFLAGS = -O3 -pg -pipe -Wpointer-arith $WERROR $STRICT \$(OSCFLAGSEXTRA)
+  OSCFLAGS = -O2 -pg -pipe -Wpointer-arith $WERROR $STRICT \$(OSCFLAGSEXTRA)
   export LDFLAGS  := -pg \$(LDFLAGS)
   else
-  OSCFLAGS = -O3 -fomit-frame-pointer -pipe -Wpointer-arith $WERROR $STRICT \$(OSCFLAGSEXTRA)
+  OSCFLAGS = -O2 -fomit-frame-pointer -pipe -Wpointer-arith $WERROR $STRICT \$(OSCFLAGSEXTRA)
   endif
 endif
 
