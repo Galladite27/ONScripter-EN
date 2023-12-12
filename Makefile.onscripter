@@ -40,32 +40,35 @@ ONSCRIPTER_OBJS = onscripter$(OBJSUFFIX) $(DECODER_OBJS)		\
                   DirPaths$(OBJSUFFIX) Layer$(OBJSUFFIX)		\
                   Encoding$(OBJSUFFIX)
 SARDEC_OBJS   = $(TDIR)sardec$(OBJSUFFIX) $(TDIR)DirectReader$(OBJSUFFIX)	\
-                $(TDIR)SarReader$(OBJSUFFIX) $(TDIR)DirPaths$(OBJSUFFIX)
+                $(TDIR)SarReader$(OBJSUFFIX) $(TDIR)DirPaths$(OBJSUFFIX)        \
+                $(TDIR)sjis2utf16$(OBJSUFFIX)
 SARMAKE_OBJS  = $(TDIR)sarmake$(OBJSUFFIX) $(TDIR)DirectReader$(OBJSUFFIX)	\
-                $(TDIR)SarReader$(OBJSUFFIX) $(TDIR)DirPaths$(OBJSUFFIX)
+                $(TDIR)SarReader$(OBJSUFFIX) $(TDIR)DirPaths$(OBJSUFFIX)        \
+                $(TDIR)sjis2utf16$(OBJSUFFIX)
 SARCONV_OBJS  = $(TDIR)sarconv$(OBJSUFFIX) $(TDIR)DirectReader$(OBJSUFFIX)	\
                 $(TDIR)SarReader$(OBJSUFFIX) $(TDIR)DirPaths$(OBJSUFFIX)	\
-                $(TDIR)resize_image$(OBJSUFFIX) $(TDIR)conv_shared$(OBJSUFFIX)
+                $(TDIR)resize_image$(OBJSUFFIX) $(TDIR)conv_shared$(OBJSUFFIX)  \
+                $(TDIR)sjis2utf16$(OBJSUFFIX)
 NSADEC_OBJS   = $(TDIR)nsadec$(OBJSUFFIX) $(TDIR)DirectReader$(OBJSUFFIX)	\
                 $(TDIR)SarReader$(OBJSUFFIX) $(TDIR)NsaReader$(OBJSUFFIX)	\
-                $(TDIR)DirPaths$(OBJSUFFIX)
+                $(TDIR)DirPaths$(OBJSUFFIX) $(TDIR)sjis2utf16$(OBJSUFFIX)
 NSACONV_OBJS  = $(TDIR)nsaconv$(OBJSUFFIX) $(TDIR)DirectReader$(OBJSUFFIX)	\
                 $(TDIR)SarReader$(OBJSUFFIX) $(TDIR)NsaReader$(OBJSUFFIX)	\
                 $(TDIR)DirPaths$(OBJSUFFIX) $(TDIR)resize_image$(OBJSUFFIX)	\
-                $(TDIR)conv_shared$(OBJSUFFIX)
+                $(TDIR)conv_shared$(OBJSUFFIX) $(TDIR)sjis2utf16$(OBJSUFFIX)
 NSAMAKE_OBJS  = $(TDIR)nsamake$(OBJSUFFIX) $(TDIR)DirectReader$(OBJSUFFIX)	\
                 $(TDIR)SarReader$(OBJSUFFIX) $(TDIR)NsaReader$(OBJSUFFIX)	\
-                $(TDIR)DirPaths$(OBJSUFFIX)
+                $(TDIR)DirPaths$(OBJSUFFIX) $(TDIR)sjis2utf16$(OBJSUFFIX)
 NS2DEC_OBJS   = $(TDIR)ns2dec$(OBJSUFFIX) $(TDIR)DirectReader$(OBJSUFFIX)	\
                 $(TDIR)SarReader$(OBJSUFFIX) $(TDIR)NsaReader$(OBJSUFFIX)	\
-                $(TDIR)DirPaths$(OBJSUFFIX)
+                $(TDIR)DirPaths$(OBJSUFFIX) $(TDIR)sjis2utf16$(OBJSUFFIX)
 NS2CONV_OBJS  = $(TDIR)ns2conv$(OBJSUFFIX) $(TDIR)DirectReader$(OBJSUFFIX)	\
                 $(TDIR)SarReader$(OBJSUFFIX) $(TDIR)NsaReader$(OBJSUFFIX)	\
                 $(TDIR)DirPaths$(OBJSUFFIX) $(TDIR)resize_image$(OBJSUFFIX)	\
-                $(TDIR)conv_shared$(OBJSUFFIX)
+                $(TDIR)conv_shared$(OBJSUFFIX) $(TDIR)sjis2utf16$(OBJSUFFIX)
 NS2MAKE_OBJS  = $(TDIR)ns2make$(OBJSUFFIX) $(TDIR)DirectReader$(OBJSUFFIX)	\
                 $(TDIR)SarReader$(OBJSUFFIX) $(TDIR)NsaReader$(OBJSUFFIX)	\
-                $(TDIR)DirPaths$(OBJSUFFIX)
+                $(TDIR)DirPaths$(OBJSUFFIX) $(TDIR)sjis2utf16$(OBJSUFFIX)
 BATCONV_OBJS  = $(TDIR)batchconv$(OBJSUFFIX) $(TDIR)resize_image$(OBJSUFFIX)	\
                 $(TDIR)conv_shared$(OBJSUFFIX)
 READER_HEADER = BaseReader.h DirectReader.h DirPaths.h
@@ -168,6 +171,9 @@ $(TDIR)DirPaths$(OBJSUFFIX): DirPaths.cpp
 	$(CXX) -c -o $@ $(CXXSTD) $(OSCFLAGS) $(TOOL_INCS) $(TOOL_DEFS) $<
 
 $(TDIR)resize_image$(OBJSUFFIX): resize_image.cpp
+	$(CXX) -c -o $@ $(CXXSTD) $(OSCFLAGS) $(TOOL_INCS) $(TOOL_DEFS) $<
+
+$(TDIR)sjis2utf16$(OBJSUFFIX): sjis2utf16.cpp
 	$(CXX) -c -o $@ $(CXXSTD) $(OSCFLAGS) $(TOOL_INCS) $(TOOL_DEFS) $<
 
 .cpp$(OBJSUFFIX):

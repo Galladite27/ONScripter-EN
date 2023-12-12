@@ -367,7 +367,7 @@ size_t rescalePNGWrite( unsigned int width, unsigned int height, int byte_per_pi
         return 0;
     }
 
-    png_set_write_fn(png_dst_ptr, (voidp) &png_dst_mgr, my_write_data,
+    png_set_write_fn(png_dst_ptr, (png_voidp) &png_dst_mgr, my_write_data,
                      my_flush_data);
 
     png_dst_mgr.info_ptr = png_create_info_struct(png_dst_ptr);
@@ -495,7 +495,7 @@ size_t rescalePNG( unsigned char *original_buffer, size_t length,
         return 0;
     }
 
-    png_set_read_fn(png_src_ptr, (voidp) &png_src_mgr, my_read_data);
+    png_set_read_fn(png_src_ptr, (png_voidp) &png_src_mgr, my_read_data);
 
     png_src_mgr.info_ptr = png_create_info_struct(png_src_ptr);
     if (!png_src_mgr.info_ptr){
