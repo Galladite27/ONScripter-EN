@@ -733,12 +733,9 @@ then
 	unsigned char bz[]={66,90,104,57,49,65,89,38,83,89,41,212,246,171,0,0,0,16,0,64,0,32,0,33,24,70,130,238,72,167,10,18,5,58,158,213,96};
 	int main(int argc, char**argv){char out[2];unsigned int olen=2;out[0]='.';return(BZ2_bzBuffToBuffDecompress(out,&olen,(char*)bz,37,0,0)==BZ_OK&&olen==1&&out[0]==' ')?0:1;}
 	_EOF
-    # Make the bzip2 check find bzip2 libraries and headers on OpenBSD. -grodzio1
-    case "$POSIX" in
-    OpenBSD) $CXX -I/usr/local/include -L/usr/local/lib -lbz2 test.cc -o btest >/dev/null 2>&1 ;;
-    esac
-    else
-    $CXX -lbz2 test.cc -o btest >/dev/null 2>&1
+    # Make the bzip2 check find bzip2 libraries and headers on OpenBSD
+    # and possibly other operating systems. -grodzio1
+    $CXX -I/usr/local/include -L/usr/local/lib -lbz2 test.cc -o btest >/dev/null 2>&1
     if ./btest 2>/dev/null
     then echo "yes"
     else echo "no"
