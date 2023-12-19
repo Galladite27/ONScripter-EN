@@ -240,6 +240,7 @@ $(EB)/freetype-config: $(FTCONFIGURE)
 	@-if [ -h $(EI)/freetype ]; then rm -r $(EI)/freetype; fi
 	@-if [ -f $(EI)/ft2config.h ]; then rm $(EI)/ft2config.h; fi
 	@cp -r $(EI)/freetype2/* $(EI)
+	@touch $@
 
 #-- SDL_ttf -------------------------------------------------------------------
 
