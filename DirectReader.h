@@ -39,7 +39,7 @@
 class DirectReader : public BaseReader
 {
 public:
-    DirectReader( DirPaths &path, const unsigned char *key_table=NULL );
+    DirectReader( PathProvider &provider, const unsigned char *key_table=NULL );
     ~DirectReader();
 
     int open( const char *name=NULL );
@@ -64,7 +64,7 @@ protected:
     char *capital_name;
     char *capital_name_tmp;
 
-    DirPaths *archive_path;
+    PathProvider *archive_path;
     unsigned char key_table[256];
     bool key_table_flag;
     int  getbit_mask;

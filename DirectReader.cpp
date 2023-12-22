@@ -67,7 +67,7 @@ extern int convUTF16ToUTF8( unsigned char dst[4], unsigned short src );
 #define N (1 << EI)  /* buffer size */
 #define F ((1 << EJ) + P)  /* lookahead buffer size */
 
-DirectReader::DirectReader( DirPaths &path, const unsigned char *key_table )
+DirectReader::DirectReader( PathProvider &provider, const unsigned char *key_table )
 {
     file_full_path = NULL;
     file_sub_path = NULL;
@@ -76,7 +76,7 @@ DirectReader::DirectReader( DirPaths &path, const unsigned char *key_table )
     capital_name = new char[MAX_FILE_NAME_LENGTH*2+1];
     capital_name_tmp = new char[MAX_FILE_NAME_LENGTH*3+1];
 
-    archive_path = &path;
+    archive_path = &provider;
 
     int i;
     if (key_table){

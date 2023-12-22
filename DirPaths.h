@@ -29,6 +29,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "PathProvider.h"
+
 #ifdef WIN32
 #define DELIMITER '\\'
 #define PATH_DELIMITER ';'
@@ -38,7 +40,7 @@
 #endif
 
 
-class DirPaths
+class DirPaths : public PathProvider
 {
 public:
     DirPaths( const char *new_paths=NULL );

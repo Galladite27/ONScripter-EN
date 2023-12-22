@@ -36,8 +36,8 @@
 #define NSA_ARCHIVE_NAME "arc"
 #define NSA_ARCHIVE_NAME2 "arc%d"
 
-NsaReader::NsaReader( DirPaths &path, int nsaoffset, const unsigned char *key_table )
-        :SarReader( path, key_table )
+NsaReader::NsaReader( PathProvider &provider, int nsaoffset, const unsigned char *key_table )
+        :SarReader( provider, key_table )
 {
     sar_flag = true;
     nsa_offset = nsaoffset;
@@ -63,7 +63,7 @@ int NsaReader::open( const char *nsa_path )
     return processArchives(paths);
 }
 
-int NsaReader::processArchives( const DirPaths &path )
+int NsaReader::processArchives( const PathProvider &provider )
 {
     int i,j,k,n,nd;
     FILE *fp;
@@ -76,7 +76,7 @@ int NsaReader::processArchives( const DirPaths &path )
         sar_flag = false;
     }
 
-    const DirPaths *nsa_path = &path;
+    const PathProvider *nsa_path = &provider;
 
     i = j = -1;
     n = nd = 0;
