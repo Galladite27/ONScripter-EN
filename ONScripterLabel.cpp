@@ -1288,7 +1288,10 @@ int ONScripterLabel::init()
             font_picker = -1;
             break;
     }
-    if(font_picker == -1)
+    if (default_font) {
+        font_file = default_font;
+    }
+    else if(font_picker == -1)
     {
         fprintf( stderr, "no font file detected; exiting\n" );
         return -1;
