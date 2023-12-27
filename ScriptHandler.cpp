@@ -1271,10 +1271,10 @@ int ScriptHandler::checkClickstr(const char *buf, bool recursive_flag)
         if (n > 1 && m == n) {
             for (int i=0; i<n; i++) {
                 if (click_buf[i] != buf[i]) goto ccs_skip;
-
-                if (!recursive_flag && checkClickstr(buf+n, true) != 0) return 0;
-                return 2;
             }
+
+            if (!recursive_flag && checkClickstr(buf + n, true) != 0) return 0;
+            return 2;
         }
 ccs_skip:
         // goto isn't *that* cursed, right? ...right?
