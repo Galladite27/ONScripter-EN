@@ -82,7 +82,11 @@ ALL: $(TARGET)$(EXESUFFIX) tools
 $(TARGET)$(EXESUFFIX): $(ONSCRIPTER_OBJS)
 	$(CXX) -o $@ $(LDFLAGS) $(ONSCRIPTER_OBJS) $(LIBS)
 
+$(ONSCRIPTER_OBJS): $(EXTRADEPS)
+
 tools: $(TOOL_EXTRADEPS) $(TOOLS)
+
+$(TOOLS): $(EXTRADEPS)
 
 $(TDIR)sardec$(EXESUFFIX): $(SARDEC_OBJS)
 	$(CXX) -o $@ $(LDFLAGS) $(SARDEC_OBJS) $(TOOL_LIBS)
@@ -179,7 +183,7 @@ $(TDIR)sjis2utf16$(OBJSUFFIX): sjis2utf16.cpp
 .cpp$(OBJSUFFIX):
 	$(CXX) -c $(CXXSTD) $(OSCFLAGS) $(INCS) $(DEFS) $<
 
-SarReader$(OBJSUFFIX):    $(READER_HEADER) SarReader.h 
+SarReader$(OBJSUFFIX):    $(READER_HEADER) SarReader.h
 NsaReader$(OBJSUFFIX):    $(READER_HEADER) SarReader.h NsaReader.h 
 DirectReader$(OBJSUFFIX): $(READER_HEADER) DirectReader.h
 ScriptHandler$(OBJSUFFIX): ScriptHandler.h Encoding.h
@@ -220,11 +224,11 @@ ONScripterLabel_file2$(OBJSUFFIX): $(ONSCRIPTER_HEADER)
 ONScripterLabel_image$(OBJSUFFIX): $(ONSCRIPTER_HEADER) graphics_common.h graphics_blend.h
 AnimationInfo$(OBJSUFFIX): AnimationInfo.h graphics_common.h graphics_sum.h graphics_blend.h graphics_resize.h
 FontInfo$(OBJSUFFIX): FontInfo.h Encoding.h
-DirtyRect$(OBJSUFFIX) : DirtyRect.h
+DirtyRect$(OBJSUFFIX): DirtyRect.h
 DirPaths$(OBJSUFFIX): DirPaths.h
 graphics_routines$(OBJSUFFIX): graphics_common.h graphics_cpu.h graphics_sum.h graphics_blend.h graphics_resize.h resize_image.h
 resize_image$(OBJSUFFIX): resize_image.h
-Layer$(OBJSUFFIX): $(EXTRADEPS) Layer.h AnimationInfo.h graphics_common.h graphics_sum.h
+Layer$(OBJSUFFIX): Layer.h AnimationInfo.h graphics_common.h graphics_sum.h
 MadWrapper$(OBJSUFFIX): MadWrapper.h
 AVIWrapper$(OBJSUFFIX): AVIWrapper.h
 LUAHandler$(OBJSUFFIX): $(ONSCRIPTER_HEADER) LUAHandler.h
