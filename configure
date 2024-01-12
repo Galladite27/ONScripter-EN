@@ -21,6 +21,8 @@ not() {
 
 # ---------- Program begins here ----------
 
+srcdir=$(cd $(dirname "$0"); pwd)
+
 # Default options
 PREFIX=/usr/local
 if [ -z "$MAKE"   ]; then MAKE=make; fi
@@ -888,6 +890,8 @@ cat > Makefile <<_EOF
 # version a different filename.
 #
 # Makefile for ONScripter-EN
+
+TOPSRC=${srcdir}
 
 WIN32=$W32
 OBJSUFFIX=$OBJ
