@@ -18,6 +18,9 @@ OUTDIRS += $(EB)
 
 OUTDIRS := $(OUTDIRS)
 
+PKG_CONFIG_PATH := $(TOPSRC)/$(EL)/pkgconfig:$(PKG_CONFIG_PATH)
+export PKG_CONFIG_PATH
+
 SDLSRC  = $(ES)/SDL-1.2.15
 SDLISRC = $(ES)/SDL_image-1.2.12
 ZSRC    = $(ES)/zlib-1.2.3
