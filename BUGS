@@ -76,6 +76,7 @@ DOCUMENTATION UPDATING LIST
 
 TODO LIST
 
+* --key doesn't do anything? Also see OnscripterYuri
 * OGG video support for 1080p
 * Update Windows makefiles
 * Bring over UTF-8 suport from onscripter-insani
