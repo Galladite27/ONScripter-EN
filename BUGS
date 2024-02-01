@@ -24,9 +24,6 @@ BUGS OR MISFEATURES
   successfully. This behaviour is the same even when running several
   pop-ups one after another.
 
-* The freetype-config replacement needs to check that it is being
-  executed from the correct folder
-
 * Sound bug related to Plumerai and using -s option (or ons.cfg
   equivalent). See bug 1 on github.
 
@@ -100,6 +97,8 @@ TODO LIST
 
 COMPLETED
 
+* The freetype-config replacement checks that it is being
+  executed from the correct folder
 * Updated dependencies
 * Fix to allow saving and loading game during choice selections
 * Fix for this fix to allow rgosub to be used in such situations
