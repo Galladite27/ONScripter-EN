@@ -22,6 +22,7 @@ not() {
 # ---------- Program begins here ----------
 
 srcdir=$(cd $(dirname "$0"); pwd)
+builddir=${srcdir}
 
 # Default options
 PREFIX=/usr/local
@@ -811,7 +812,11 @@ rm -rf .configtest
 if $INTERNAL_FREETYPE
 then
     # See the file itself for explaination
-    ./extlib/bin/freetype-config-setup
+    $(cd ${srcdir}; ${srcdir}/extlib/bin/freetype-config-setup --build ${builddir})
+    if [ $? -ne 0 ]; then
+        echo "Error: failed to configure internal FreeType" >&2
+        exit 1
+    fi
 fi
 
 DEPS=

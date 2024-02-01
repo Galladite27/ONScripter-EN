@@ -13,13 +13,22 @@ if test ! -f Makefile.onscripter; then
     exit 1
 fi
 
-cat >"$(pwd)/extlib/bin/freetype-config" << EOF
+builddir=.
+if test "$1" = "--build"; then
+    builddir=$(cd "$2" && pwd)
+else
+    echo >&2 "Unknown argument: $1" && exit 1
+fi
+
+ftconfig=${builddir}/extlib/bin/freetype-config
+
+cat >"${ftconfig}" << EOF
 if test "\$1" = "--ftversion"; then
     echo "2.13.0"
 elif test "\$1" = "--cflags"; then
-    echo "-I$(pwd)/extlib/include/freetype2 -I$(pwd)/extlib/include"
+    echo "-I${builddir}/extlib/include/freetype2 -I${builddir}/extlib/include"
 elif test "\$1" = "--libs"; then
-    echo "-L$(pwd)/extlib/lib -lfreetype -lz"
+    echo "-L${builddir}/extlib/lib -lfreetype -lz"
 else
     echo "This is a hacky fix for the new freetype version seemingly not generating freetype-config. Hopefully it doesn't break too easily."
     echo "Accepted options:"
@@ -31,4 +40,4 @@ else
 fi
 EOF
 
-chmod +x "$(pwd)/extlib/bin/freetype-config"
+chmod +x "${ftconfig}" || exit 1
