@@ -1533,7 +1533,7 @@ int ScriptHandler::readScript( DirPaths &path )
     archive_path = &path;
 
     FILE *fp = NULL;
-    char filename[10];
+    char filename[12];
     char *file_extension = "";
     int i, n=0, encrypt_mode = 0;
     while ((fp == NULL) && (n<archive_path->get_num_paths())) {
