@@ -1534,7 +1534,7 @@ int ScriptHandler::readScript( DirPaths &path )
 
     FILE *fp = NULL;
     char filename[10];
-    char *file_extension;
+    char *file_extension = "";
     int i, n=0, encrypt_mode = 0;
     while ((fp == NULL) && (n<archive_path->get_num_paths())) {
         const char *curpath = archive_path->get_path(n);
