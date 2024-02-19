@@ -1533,8 +1533,8 @@ int ScriptHandler::readScript( DirPaths &path )
     archive_path = &path;
 
     FILE *fp = NULL;
-    char filename[10];
-    char *file_extension;
+    char filename[12];
+    char *file_extension = "";
     int i, n=0, encrypt_mode = 0;
     while ((fp == NULL) && (n<archive_path->get_num_paths())) {
         const char *curpath = archive_path->get_path(n);
@@ -2288,12 +2288,13 @@ void ScriptHandler::parseStr( char **buf )
         current_variable.type |= VAR_CONST;
     }
     else{ // str alias
-        char ch, alias_buf[512];
-        int alias_buf_len = 0;
+        const char* fmt = "Undefined string alias '%s'";
+        char ch, alias_buf[MAX_ERRBUF_LEN - (strlen(fmt) - 2)]; // minus 2 accounts for the %s format specifier
+        unsigned int alias_buf_len = 0;
         bool first_flag = true;
 
         while(1){
-            if ( alias_buf_len == 511 ) break;
+            if ( alias_buf_len == sizeof(alias_buf) - 1 ) break;
             ch = **buf;
 
             if ( (ch >= 'a' && ch <= 'z') ||
@@ -2321,7 +2322,7 @@ void ScriptHandler::parseStr( char **buf )
         }
 
         if (!findStrAlias( (const char*)alias_buf, str_string_buffer )) {
-            snprintf(errbuf, MAX_ERRBUF_LEN, "Undefined string alias '%s'", alias_buf);
+            snprintf(errbuf, MAX_ERRBUF_LEN, fmt, alias_buf);
             errorAndExit(errbuf);
         }
         current_variable.type |= VAR_CONST;

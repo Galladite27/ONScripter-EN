@@ -302,7 +302,7 @@ getcolor(const char *colorname)
 void
 initfont(void)
 {
-	int	i, cnt;
+	int	i = 0, cnt;
 	char	*def, **lst;
 	XRectangle	ink, log;
 	XFontStruct	**fsl;
