@@ -414,7 +414,7 @@ static bool parseOptionFile(const char *filename, ONScripterLabel &ons, bool &ha
         for (int i=0; i<=numlines; i++)
             if (argv[i] != NULL)
                 delete[] argv[i];
-        delete argv;
+        delete[] argv;
         return true;
     }
     return false;
