@@ -445,7 +445,7 @@ int ScriptParser::rmenuCommand()
         const char *buf = script_h.readStr();
         setStr( &link->next->label, buf );
 
-        int n = script_h.enc.getNum((const unsigned char*)buf);
+        unsigned int n = script_h.enc.getNum((const unsigned char*)buf);
         // Well, even if getNum gets fixed, this probably needs
         // changing to work in px
         if ( rmenu_link_width < n/2 + 1 )
