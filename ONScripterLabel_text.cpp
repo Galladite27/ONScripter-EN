@@ -849,7 +849,7 @@ void ONScripterLabel::startRuby(char *buf, Fontinfo &info)
         int n;
     }
 
-    int n;
+    int n = 0;
     char check_text[5] = {'\0', '\0', '\0', '\0', '\0'};
 
     while(1){
