@@ -1734,7 +1734,7 @@ bool ONScripterLabel::processBreaks(bool cont_line, LineBreakType style)
             // Debug
             if (debug_msg) {
                 printf("Current %d\nBreaks:", return_val);
-                for (int uniq=0; uniq<len; uniq++) {
+                for (unsigned int uniq=0; uniq<len; uniq++) {
                     if (debug_msg) printf(" %d", string_buffer_breaks[uniq]);
                 }
                 printf("\n");
@@ -1744,7 +1744,7 @@ bool ONScripterLabel::processBreaks(bool cont_line, LineBreakType style)
 
         if (debug_msg) {
             printf("Returning %d\nBreaks (remember, undefined behaviour is undefined!!!): ", return_val);
-            for (int uniq=0; uniq<len; uniq++) {
+            for (unsigned int uniq=0; uniq<len; uniq++) {
                 printf("%d", string_buffer_breaks[uniq]);
             }
             printf("\n");
