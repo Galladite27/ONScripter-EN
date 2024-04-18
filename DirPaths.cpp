@@ -135,7 +135,7 @@ void DirPaths::add( const char *new_paths )
             //was an "empty path"
             //keep the "" as the first of the paths by making it a "."
             paths[0] = new char[3];
-            snprintf(paths[0], 2, "%s%c", ".", DELIMITER);
+            snprintf(paths[0], 3, "%s%c", ".", DELIMITER);
         }
     }
     const char *ptr2 = ptr1 = new_paths;
