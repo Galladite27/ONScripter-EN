@@ -522,12 +522,12 @@ then
     fi
 
     $echo_n "Checking for ranlib... ${nobr}"
-    if ($RANLIB -V >/dev/null) 2>/dev/null
+    if ($RANLIB -v >/dev/null) 2>/dev/null
     then
 	echo $RANLIB
     else
 	RANLIB=granlib
-	if ($RANLIB -V >/dev/null) 2>/dev/null
+	if ($RANLIB -v >/dev/null) 2>/dev/null
 	then echo $RANLIB
 	else echo "not found"
 	     echo "Unable to locate ranlib. If it's installed, try setting the environment variable RANLIB appropriately. (If your platform does not need ranlib, just set RANLIB=true.)"
