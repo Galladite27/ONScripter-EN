@@ -112,5 +112,3 @@ COMPLETED
 * Pretext tags have been converted to UTF-8 (also they're cool)
 * Captions and clickwait characters can be UTF-8
 * Modified linewrap algorithm to work with proportional fonts
-
-This line was added as a test to check if the webhook is working 2024-05-13. It can now be removed whenever I remember.
