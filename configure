@@ -298,7 +298,7 @@ esac
 $echo_n "         cpu type...      ${nobr}"
 ARCH=
 case "$PLATFORM" in
-*86_64*)   echo "x86_64";   ARCH=x86_64;;
+*86_64*|amd64*)   echo "x86_64";   ARCH=x86_64;;
 *86*)      ARCH=`expr "x$PLATFORM" : 'x\(.*86\).*'`; \
            echo "$ARCH";;
 *powerpc*) echo "PowerPC";  ARCH=ppc;;
