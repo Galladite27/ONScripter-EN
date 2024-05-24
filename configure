@@ -1061,8 +1061,8 @@ OTHER_OBJS =
 RC_HDRS =
 _EOF
 
-if [ "$POSIX" = "Linux" ]; then
-    OTHER_OBJS="Linux_messagebox\$(OBJSUFFIX)"
+if [ x$POSIX != x ]; then
+    OTHER_OBJS="X11_messagebox\$(OBJSUFFIX)"
 fi
 
 if [ "$SYS" != "MinGW" ] && [ "$SYS" != "MacOSX" ]; then

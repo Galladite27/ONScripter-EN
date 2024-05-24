@@ -1,6 +1,6 @@
 /* -*- C++ -*-
  *
- *  Linux_messagebox.cpp - yesnobox and okaycancelbox implementation for Linux systems (and maybe other systems which use X11)
+ *  X11_messagebox.cpp - yesnobox and okaycancelbox implementation for Linux systems (and maybe other systems which use X11)
  *
  *  Modified from https://github.com/flimberger/smessage
  *
