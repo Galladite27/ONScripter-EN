@@ -819,6 +819,38 @@ then
     fi
 fi
 
+X11_CFLAGS=
+X11_LIBS=
+
+case $POSIX in
+  Linux|*BSD)
+    rm -rf .configtest
+    mkdir .configtest
+    cd .configtest
+
+    $echo_n "Checking for Xlib... ${nobr}"
+    have_xlib=no
+    cat > test.cc <<-_EOF
+	#include <X11/Xlib.h>
+	int main(int argc, char **argv){return 0;}
+	_EOF
+    X11_CFLAGS=$(pkg-config --cflags x11) || true
+    X11_LIBS=$(pkg-config --libs x11) || true
+    $CXX $X11_CFLAGS test.cc $X11_LIBS -o ttest >/dev/null 2>&1 || $CXX -lX11 test.cc -o ttest >/dev/null 2>&1
+    if test "$?" = 0
+    then echo "yes"; have_xlib=yes
+    else echo "no";
+    fi
+
+    cd ..
+    rm -rf .configtest
+
+    if test "x$have_xlib" = "xno"; then
+    echo "Error: ONScripter-EN requires X11 on $POSIX" >&2; exit 1
+    fi
+    ;;
+esac
+
 DEPS=
 MLIB=
 require() {
@@ -930,7 +962,7 @@ export RANLIB  := $RANLIB
 
 # ONScripter variables
 OSCFLAGSEXTRA = $CFLAGSEXTRA \$(OSCTMPFLAGS)
-INCS = -Iextlib/include \$(shell \$(SDL_CONFIG) --cflags)      \\
+INCS = $X11_CFLAGS -Iextlib/include \$(shell \$(SDL_CONFIG) --cflags)      \\
                         \$(shell $SMPEG_CONFIG --cflags)    \\
                         \$(shell $FREETYPE_CONFIG --cflags) \\
        \$(shell [ -d extlib/include/SDL ] && echo -Iextlib/include/SDL)
@@ -1011,7 +1043,7 @@ cat >> Makefile <<_EOF
 TOOL_LIBS = -Lextlib/lib \\
             $LINKjpeg $LINKpng $LINKz \\
             $LINKbz2
-LIBS = -Lextlib/lib \\
+LIBS = $X11_LIBS -Lextlib/lib \\
        $LINKSDL_image \$(if \$(findstring true,$INTERNAL_SDL_IMAGE),$LINKjpeg $LINKpng $LINKz) \\
        $LINKSDL_mixer \$(if \$(or \$(findstring true,$INTERNAL_SDL_MIXER),\$(findstring true,$EXPLICIT_OGGLIBS)),$LINKvorbisfile $LINKvorbis $LINKogg) \\
        \$(shell \$(SDL_CONFIG) --libs)      \\
