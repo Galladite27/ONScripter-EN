@@ -29,6 +29,7 @@ Playing an existing game with ONScripter-EN requires two additional files to be 
 
 - A default font.  See [Fonts](#fonts) subsection below.
 - Optionally, ```game.id```, a text file containing simply the name of the game.  This is used to identify a separate directory where saved data is stored; unlike the original ONScripter, which places saved games in the game directory, ONScripter-EN does not require games to be kept in a world-writable location.
+- NOTE to developers: you can also use the [;gameid](https://galladite.net/~galladite/nscripter/mirrors/archives/reference/NScrAPI.html#gameid) directive to prevent another file cluttering the directory
 
 This done, the game can be played either by dropping the onscripter-en executable into the game directory and running it, or by running it with the ```-r``` command-line option to identify the desired game.
 
