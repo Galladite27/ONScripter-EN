@@ -11,7 +11,8 @@ TOOLS = $(TDIR)sardec$(EXESUFFIX) $(TDIR)nsadec$(EXESUFFIX)	\
         $(TDIR)sarconv$(EXESUFFIX) $(TDIR)nsaconv$(EXESUFFIX)	\
         $(TDIR)ns2conv$(EXESUFFIX) $(TDIR)batchconv$(EXESUFFIX)	\
         $(TDIR)sarmake$(EXESUFFIX) $(TDIR)nsamake$(EXESUFFIX)	\
-        $(TDIR)ns2make$(EXESUFFIX) $(TDIR)nscmake$(EXESUFFIX)
+        $(TDIR)ns2make$(EXESUFFIX) $(TDIR)nscmake$(EXESUFFIX)	\
+        $(TDIR)nbzdec$(EXESUFFIX)
 TOOL_INCS = -I`pwd` -Iextlib/include $(TOOL_EXTRA_INCS)
 TOOL_DEFS = $(DEFS) -DTOOLS_BUILD
 
@@ -71,6 +72,9 @@ NS2MAKE_OBJS  = $(TDIR)ns2make$(OBJSUFFIX) $(TDIR)DirectReader$(OBJSUFFIX)	\
                 $(TDIR)DirPaths$(OBJSUFFIX) $(TDIR)sjis2utf16$(OBJSUFFIX)
 BATCONV_OBJS  = $(TDIR)batchconv$(OBJSUFFIX) $(TDIR)resize_image$(OBJSUFFIX)	\
                 $(TDIR)conv_shared$(OBJSUFFIX)
+NBZDEC_OBJS   = $(TDIR)nbzdec$(OBJSUFFIX) $(TDIR)DirectReader$(OBJSUFFIX)	\
+                $(TDIR)SarReader$(OBJSUFFIX) $(TDIR)DirPaths$(OBJSUFFIX)	\
+                $(TDIR)sjis2utf16$(OBJSUFFIX)
 READER_HEADER = BaseReader.h DirectReader.h DirPaths.h
 PARSER_HEADER = $(EXTRADEPS) SarReader.h NsaReader.h DirectReader.h	\
                 $(READER_HEADER) ScriptHandler.h ScriptParser.h $(RC_HDRS)	\
@@ -123,6 +127,9 @@ $(TDIR)nscdec$(EXESUFFIX): $(TDIR)nscdec$(OBJSUFFIX)
 
 $(TDIR)nscmake$(EXESUFFIX): $(TDIR)nscmake$(OBJSUFFIX)
 	$(CXX) -o $@ $(LDFLAGS) $< $(TOOL_LIBS)
+
+$(TDIR)nbzdec$(EXESUFFIX): $(NBZDEC_OBJS)
+	$(CXX) -o $@ $(LDFLAGS) $(NBZDEC_OBJS) $(TOOL_LIBS)
 
 
 pclean:
@@ -200,6 +207,7 @@ $(TDIR)nsamake$(OBJSUFFIX): $(READER_HEADER) SarReader.h NsaReader.h
 $(TDIR)ns2dec$(OBJSUFFIX): $(READER_HEADER) SarReader.h NsaReader.h
 $(TDIR)ns2conv$(OBJSUFFIX): $(READER_HEADER) SarReader.h NsaReader.h
 $(TDIR)ns2make$(OBJSUFFIX): $(READER_HEADER) SarReader.h NsaReader.h
+$(TDIR)nbzdec$(OBJSUFFIX): $(READER_HEADER) SarReader.h
 $(TDIR)conv_shared$(OBJSUFFIX): resize_image.h
 $(TDIR)SarReader$(OBJSUFFIX):    $(READER_HEADER) SarReader.h 
 $(TDIR)NsaReader$(OBJSUFFIX):    $(READER_HEADER) SarReader.h NsaReader.h 
