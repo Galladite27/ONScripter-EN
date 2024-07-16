@@ -495,6 +495,10 @@ const char *ScriptHandler::readToken(bool check_pretext)
                     /* TODO: integer variables are not interpolated
                      * into text when in one byte mode. Should this be
                      * fixed? -Galladite 2023-06-20
+                     *
+                     * Update: no it shouldn't. I don't remember the
+                     * reason, but ChaosKaiser said it's like that on
+                     * purpose. -Galladite 2024-07-16
                      */
                     if ((ch == '_') && (checkClickstr(buf+1) > 0)) {
                         ignore_click_flag = true;
@@ -585,6 +589,22 @@ const char *ScriptHandler::readToken(bool check_pretext)
                     }
                     else if (ch == '$'){
                         addStrVariable(&buf);
+                        // Fix - we should create a save point whenever printing anything
+                        // through interpolating variables, etc. because if text is
+                        // printed like this without printing text normally beforehand,
+                        // there will be no point set to return to from an rmenu call and
+                        // so the engine will crash.
+                        //
+                        // In other words, only through printing text through a variable
+                        // can a clickwait be initiated (and thus a custom rmenu be
+                        // gosubbed to) before any save points have been created to jump
+                        // back to after the rgosub routine is returned from.
+                        //
+                        // - Galladite 2024-07-16
+                        if (rgosub_flag){
+                            rgosub_wait_1byte[num_rgosub_waits] = in_1byte_mode;
+                            rgosub_wait_pos[num_rgosub_waits++] = buf+1;
+                        }
                     }
                     else if (ch == '<'){
                         addStringBuffer(TXTBTN_START);
