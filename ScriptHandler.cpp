@@ -126,9 +126,16 @@ ScriptHandler::~ScriptHandler()
 
 void ScriptHandler::reset()
 {
-    for (int i=0 ; i<VARIABLE_RANGE ; i++)
+    //for (int i=0 ; i<VARIABLE_RANGE ; i++)
+    // This should NEVER have got to release... Anything like definereset
+    // will wipe global variables when using the old comparison.
+    // -Galladite 2024-07-16
+    for (int i=0 ; i<global_variable_border ; i++)
         variable_data[i].reset(true);
 
+    // However, I'm not doing anything about this because global variables
+    // don't work with extended_variable_data, at least for now.
+    // -Galladite 2024-07-16
     if (extended_variable_data) delete[] extended_variable_data;
     extended_variable_data = NULL;
     num_extended_variable_data = 0;
