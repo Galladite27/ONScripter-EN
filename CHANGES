@@ -1,3 +1,18 @@
+2024-07-16
+  I apologise for not updating this file for far too long. Since the
+  last update changes have really been limited to bugfixes. I will try
+  and update this file whenever I do engine work from now on.
+
+  Fixed major bug causing the definereset command to wipe all global
+  variable data.
+
+  Started working on fixing a bug causing rgosub to crash the game
+  when returning.
+
+  Started updating this and other files ready for release since engine
+  resets as well as setres and getres were never included in a release
+  for 9 months of their existence (major oops, my apologies).
+
 2023-10-20
   Started working on variable screen resolution. New commands: getres
   and setres. Added engine functionality for full resets (even more

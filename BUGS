@@ -33,6 +33,8 @@ BUGS OR MISFEATURES
 * UTF-8 save and load menus are *slightly* misaligned due to space
   sizes in proportional fonts. This will be a right pain to fix.
 * rmenuCommand probably needs fixing - still assuming columns
+* Seung is working on a fix for this in onscripter-insani which can
+  probably be adapted to onsen later down the line. Thanks Seung!
 
 * KINSOKU mode needs fixing in processBreaks like SPACEBREAK mode
   \--> Hopefully this is fine but I'm leaving this here for now since
@@ -70,6 +72,9 @@ DOCUMENTATION UPDATING LIST
 * ~ and ^ may (will) need updating in relation to onsen's and onani's
   UTF-8 integration
 
+* Enginereset didn't appear to be on the documentation page, was it
+  ever added or does my website just need updating? (Galladite)
+
 
 TODO LIST
 
@@ -93,6 +98,7 @@ TODO LIST
 * "Requested features"
 * Implement a fix for the PDA build for the sake of completion
 * Redo the "dist" target to make building releases easier
+* The devkit desperately needs me to start making it lol
 
 
 COMPLETED
@@ -112,3 +118,4 @@ COMPLETED
 * Pretext tags have been converted to UTF-8 (also they're cool)
 * Captions and clickwait characters can be UTF-8
 * Modified linewrap algorithm to work with proportional fonts
+* Major bug causing enginereset to wipe global variables

@@ -119,6 +119,13 @@ The default text window is optimised for 640x480 resolution. If you are using a 
 
 This mode is still experimental; please report bugs to [@Galladite27](https://github.com/Galladite27) or [@lightbinder](https://github.com/lightbinder), but preferably Galladite. Please check the [BUGS](https://github.com/Galladite27/ONScripter-EN/blob/master/BUGS) file first to see if it is a known issue.
 
+## Variable screen resolutions
+(This section will be updated soon:tm:)
+
+As of commit [7294ad3](https://github.com/Galladite27/ONScripter-EN/commit/7294ad36896cda34d47404fc87841948449ce3c3) on 20 October 2023, ONScripter-EN supported variable screen resolutions, allowing for games to present multiple resolution settings and scale and move assets such as sprites accordingly. However, this was never actually included in a release version until roughly nine months later, in release (name yet undecided). Oops.
+
+Further information will go here to point game developers to the appripriate command reference sections to implement this functionality in their own games and ports, as well as comparing the use of variable screen resolutions to the "scale" option of ons.cfg.
+
 ## Contact Information
 The author of ONScripter itself is Ogapee, who can be reached through his ONScripter project website:
 
