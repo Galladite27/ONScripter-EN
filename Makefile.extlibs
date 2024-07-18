@@ -166,6 +166,7 @@ $(SDLMSRC)/Makefile: $(if $(INTERNAL_SDL),$(EB)/sdl-config) \
 	@cd $(SDLMSRC) && \
 	./configure --prefix="$(LPREFIX)" $(SDL_MIXER_FLAGS) $(OTHERCONFIG) \
 	    $(addprefix --disable-,shared $(addprefix music-,cmd timidity-midi)) \
+	    CFLAGS="$(CFLAGS) -Wno-error=implicit-function-declaration" \
 	    $(REDIR)
 
 $(EL)/libSDL_mixer$(LIBSUFFIX): $(SDLMSRC)/Makefile | $(EL)
