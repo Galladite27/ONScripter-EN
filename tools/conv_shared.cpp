@@ -138,7 +138,7 @@ jpeglib::boolean fill_input_buffer (jpeglib::j_decompress_ptr cinfo)
     src->pub.next_input_byte = src->buf;
     src->pub.bytes_in_buffer = src->left;
 
-    return TRUE;
+    return jpeglib::TRUE;
 }
 
 void skip_input_data (jpeglib::j_decompress_ptr cinfo, long num_bytes)
@@ -168,7 +168,7 @@ jpeglib::boolean empty_output_buffer (jpeglib::j_compress_ptr cinfo)
     dest->pub.next_output_byte = dest->buf;
     dest->pub.free_in_buffer = dest->left;
     
-    return TRUE;
+    return jpeglib::TRUE;
 }
 
 void term_destination (jpeglib::j_compress_ptr cinfo)
@@ -221,7 +221,7 @@ size_t rescaleJPEGWrite( unsigned int width, unsigned int height, int byte_per_p
 
     jpeg_set_defaults(&cinfo2);
     jpeg_set_quality(&cinfo2, quality, TRUE );
-    cinfo2.optimize_coding = true;
+    cinfo2.optimize_coding = jpeglib::TRUE;
     //jpeg_simple_progression (&cinfo2);
     jpeg_start_compress(&cinfo2, TRUE);
 
