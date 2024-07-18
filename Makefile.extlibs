@@ -100,6 +100,7 @@ $(SDLISRC)/Makefile: $(if $(INTERNAL_SDL),$(EB)/sdl-config) \
 	    $(addprefix --disable-,shared lbm pcx pnm tga xcf xv tif \
 	    	                   $(if $(INTERNAL_LIBPNG),png-shared) \
                                    $(if $(INTERNAL_LIBJPEG),jpg-shared)) \
+            CFLAGS="$(CFLAGS) -Wno-error=incompatible-pointer-types" \
 	    $(REDIR)
 	@if grep -q 'PNG image loading disabled' $(SDLISRC)/config.log; then \
 	    echo "PNG error - check $(SDLISRC)/config.log for details"; \
