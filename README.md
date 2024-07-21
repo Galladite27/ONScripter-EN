@@ -2,7 +2,7 @@
 *An enhanced portable open-source NScripter implementation*
 
 ## Last Updated
-16 July 2024
+21 July 2024
 
 ## History
 Naoki Takahashi's [NScripter](https://nscripter.com/) is a popular Japanese game engine used for both commercial and free novel games.  It attained popularity due to its liberal terms of use and relative simplicity.  However, it is closed source software and only available for Windows.
@@ -120,11 +120,19 @@ The default text window is optimised for 640x480 resolution. If you are using a 
 This mode is still experimental; please report bugs to [@Galladite27](https://github.com/Galladite27) or [@lightbinder](https://github.com/lightbinder), but preferably Galladite. Please check the [BUGS](https://github.com/Galladite27/ONScripter-EN/blob/master/BUGS) file first to see if it is a known issue.
 
 ## Variable screen resolutions
-(This section will be updated soon :tm: )
-
 As of commit [7294ad3](https://github.com/Galladite27/ONScripter-EN/commit/7294ad36896cda34d47404fc87841948449ce3c3) on 20 October 2023, ONScripter-EN supported variable screen resolutions, allowing for games to present multiple resolution settings and scale and move assets such as sprites accordingly. However, this was never actually included in a release version until roughly nine months later, in release (name yet undecided). Oops.
 
-Further information will go here to point game developers to the appripriate command reference sections to implement this functionality in their own games and ports, as well as comparing the use of variable screen resolutions to the "scale" option of ons.cfg.
+To enable the use of screen resolutions, the user must enable it using the [;$](http://galladite.net/~galladite/nscripter/mirrors/archives/reference/NScrAPI.html#_semicoldollar) directive as such: `;$S?` This, instead of setting a custom resolution, tells the engine to read the resolution from a file `screen.dat` stored alongside a game's saves; thus, this setting is dependent on the game's id (see [this](#packaging-games) section for more information on how this is managed in ONScripter-EN).
+
+Initally, the screen resolution will be set to 640x480 (the engine's default) however this can be changed using the [setres](https://galladite.net/~galladite/nscripter/mirrors/archives/reference/NScrAPI.html#setres) command, which will trigger an engine reset to redraw the window - ensuring that this doesn't happen at an inopportune time is your responsibility! Additionally, the [getres](https://galladite.net/~galladite/nscripter/mirrors/archives/reference/NScrAPI.html#getres) command can be used to retrieve the current resolution, meaning global variables need not be used to keep track of what the resolution is set to.
+
+While this feature is easy to implement in new games, it is far more difficult in games already created; every instance of a hard-coded positional value, every image, and really every positional element will have to be modified to be positioned or scaled differently (or in the case of images, alternate or upscaled images be used instead). This task is not for the feint of hear, nor certainly to be expected of any player without technical knowledge, and it is for this reason that we also draw your attention to three other methods of enlarging the resolution.
+
+Firstly, and most simply, is using the built-in full-screen mode in ONScripter-EN which can be toggled using the 'f' key while in-game. This uses upscaling, and so the user will notice that the mouse is also enlarged; however everything goes back to normal when fullscreen mode is exited.
+
+Secondly, the game window can be enlarged to a specific resolution while maintaining its aspect ratio through the use of the "window-width" option, which can be passed on the command line (`onscripter-en -h` for help), or, for non-technical users, through the use of an "ons.cfg" file which can contain various user-defined options to easily enhance or modify a pre-existing game in such a way as this. To scale a classic 4:3 aspect ratio game to 1280x960 resolution, for example, the user would create a file named "ons.cfg" in the same folder as the game's executable (likely onscripter-en.exe), and in it simply write the line `window-width=1280`. No height value is provided since scaling prevents a modification of aspect ratio.
+
+Thirdly, and as a more realistic compromise for players seeking to somewhat modernise a game, widescreen resolutions and scaling using "window-width" could be combined by widening the game window while maintaining its height using ;$, then replacing certain textures such as backgrounds with widescreen versions and tweaking any other values required, before finally upscaling the window to a somewhat larger resolution using "window-width" as explained above. This will still cause a loss of image quality which will become more noticeable as the level of upscaling increases, however the difficulty in repositioning elements is far larger when the aspect ratio is changed as opposed to the entire resolution being changed.
 
 ## Contact Information
 The author of ONScripter itself is Ogapee, who can be reached through his ONScripter project website:
