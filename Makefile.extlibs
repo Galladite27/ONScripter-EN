@@ -25,7 +25,7 @@ SDLSRC  = $(ES)/SDL-1.2.15
 SDLISRC = $(ES)/SDL_image-1.2.12
 ZSRC    = $(ES)/zlib-1.2.3
 PNGSRC  = $(ES)/libpng-1.6.39
-JPEGSRC = $(ES)/jpeg-6b
+JPEGSRC = $(ES)/jpeg-9f
 SDLMSRC = $(ES)/SDL_mixer-1.2.12
 OGGSRC  = $(ES)/libogg-1.3.5
 VORBSRC = $(ES)/libvorbis-1.3.7
@@ -135,12 +135,14 @@ $(EL)/libz$(LIBSUFFIX): | $(EL)
 
 $(JPEGSRC)/Makefile:
 	@echo Configuring internal libjpeg...
+	@sed -i -e '/^bin_PROGRAMS/s/bin_/EXTRA_/' -e '/^man_MANS/s/=.*$$/=/' $(JPEGSRC)/Makefile.am
 	@cd $(JPEGSRC) && \
+	autoreconf -fi && \
 	./configure --prefix="$(LPREFIX)" --disable-shared --enable-static $(OTHERCONFIG) $(REDIR)
 
 $(EL)/libjpeg$(LIBSUFFIX): $(JPEGSRC)/Makefile | $(EL)
 	@echo Building internal libjpeg...
-	@$(MAKE) -C $(JPEGSRC) install-lib $(REDSO)
+	@$(MAKE) -C $(JPEGSRC) install $(REDSO)
 
 #-- SDL_mixer -----------------------------------------------------------------
 
