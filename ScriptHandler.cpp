@@ -130,6 +130,9 @@ void ScriptHandler::reset()
     // This should NEVER have got to release... Anything like definereset
     // will wipe global variables when using the old comparison.
     // -Galladite 2024-07-16
+    //
+    // As of 2024-07-21 this issue still persists despite this fix having
+    // been implemented. Needs further investigation. -Galladite
     for (int i=0 ; i<global_variable_border ; i++)
         variable_data[i].reset(true);
 
@@ -601,10 +604,26 @@ const char *ScriptHandler::readToken(bool check_pretext)
                         // back to after the rgosub routine is returned from.
                         //
                         // - Galladite 2024-07-16
-                        if (rgosub_flag){
-                            rgosub_wait_1byte[num_rgosub_waits] = in_1byte_mode;
-                            rgosub_wait_pos[num_rgosub_waits++] = buf+1;
-                        }
+                        //
+                        //
+                        //
+                        // Update: temporarily (tm) disabled since we actually need to
+                        // know whether the text is printed or not to decide whether or
+                        // not to set a save point - but this is too early on to know
+                        // that. In the meantime (at least for eien) when functions are
+                        // used to print from variables without other text, we are in
+                        // the function printing a nothing beforehand, just so that
+                        // creates the rgosub wait position. I suggest you do the same.
+                        //
+                        // - Galladite 2024-07-21
+                        //
+                        //if ( /*isText() &&*/ rgosub_flag){
+                        //    // Check if in 1-byte text mode OR actually printing text
+                        //    // (OR at the beginning of a line, so printing text?)
+                        //    printf("$ found *in text* - applying fix\n\n");
+                        //    rgosub_wait_1byte[num_rgosub_waits] = in_1byte_mode;
+                        //    rgosub_wait_pos[num_rgosub_waits++] = buf+1;
+                        //}
                     }
                     else if (ch == '<'){
                         addStringBuffer(TXTBTN_START);
