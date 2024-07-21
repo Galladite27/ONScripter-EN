@@ -7,6 +7,15 @@
   The definereset bug still persists. Not entirely sure why; this
   needs looking into.
 
+  Updated the command reference to include enginereset, getres,
+  setres
+
+  Updated README.md to include information about variable resolutions
+
+  Decided on release name "Senbei" (thanks Ciox!)
+
+  I think that's about it?
+
 2024-07-16
   I apologise for not updating this file for far too long. Since the
   last update changes have really been limited to bugfixes. I will try
