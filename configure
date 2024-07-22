@@ -400,6 +400,8 @@ cd .configtest
 
 if $USE_CPU_GFX
 then
+    case "x$ARCH" in
+    xx86_64|x*86)
     $echo_n "Checking for compiler cpuid support... ${nobr}"
     cat > test.cc <<-_EOF
 	#include <cpuid.h>
@@ -414,6 +416,8 @@ then
     then
         echo "     Won't compile custom graphics routines"
     fi
+    ;;
+    esac
 fi
 
 if $USE_CPU_GFX
