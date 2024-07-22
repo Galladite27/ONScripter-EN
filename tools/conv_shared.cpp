@@ -37,6 +37,12 @@ namespace jpeglib { //Mion: added namespace to avoid type conflicts
     extern "C" {
 #include <jpeglib.h>
     };
+
+#if JPEG_LIB_VERSION >= 90
+#define ONSEN_JPEGLIB_TRUE (jpeglib::boolean)jpeglib::TRUE
+#else
+#define ONSEN_JPEGLIB_TRUE TRUE
+#endif
 }
 
 //Mion: for png image file support
@@ -134,11 +140,11 @@ void init_source (jpeglib::j_decompress_ptr cinfo)
 jpeglib::boolean fill_input_buffer (jpeglib::j_decompress_ptr cinfo)
 {
     my_source_mgr *src = (my_source_mgr *)cinfo->src;
-    
+
     src->pub.next_input_byte = src->buf;
     src->pub.bytes_in_buffer = src->left;
 
-    return jpeglib::TRUE;
+    return ONSEN_JPEGLIB_TRUE;
 }
 
 void skip_input_data (jpeglib::j_decompress_ptr cinfo, long num_bytes)
@@ -167,8 +173,8 @@ jpeglib::boolean empty_output_buffer (jpeglib::j_compress_ptr cinfo)
 
     dest->pub.next_output_byte = dest->buf;
     dest->pub.free_in_buffer = dest->left;
-    
-    return jpeglib::TRUE;
+
+    return ONSEN_JPEGLIB_TRUE;
 }
 
 void term_destination (jpeglib::j_compress_ptr cinfo)
@@ -183,7 +189,7 @@ size_t rescaleJPEGWrite( unsigned int width, unsigned int height, int byte_per_p
     jpeg_error_mgr jerr;
     struct jpeg_compress_struct cinfo2;
     JSAMPROW row_pointer[1];
-    
+
     cinfo2.err = jpeg_std_error(&jerr);
     jpeg_create_compress(&cinfo2);
 
@@ -221,7 +227,7 @@ size_t rescaleJPEGWrite( unsigned int width, unsigned int height, int byte_per_p
 
     jpeg_set_defaults(&cinfo2);
     jpeg_set_quality(&cinfo2, quality, TRUE );
-    cinfo2.optimize_coding = jpeglib::TRUE;
+    cinfo2.optimize_coding = ONSEN_JPEGLIB_TRUE;
     //jpeg_simple_progression (&cinfo2);
     jpeg_start_compress(&cinfo2, TRUE);
 
