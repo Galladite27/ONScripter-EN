@@ -6,3 +6,6 @@
 /resources.cpp
 /embed
 /onscripter-en
+tools/*conv
+tools/*dec
+tools/*make

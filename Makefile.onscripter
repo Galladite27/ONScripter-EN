@@ -6,13 +6,14 @@
 TARGET ?= onscripter-en
 
 TDIR = tools/
-TOOLS = $(TDIR)sardec$(EXESUFFIX) $(TDIR)nsadec$(EXESUFFIX)	\
-        $(TDIR)ns2dec$(EXESUFFIX) $(TDIR)nscdec$(EXESUFFIX)	\
-        $(TDIR)sarconv$(EXESUFFIX) $(TDIR)nsaconv$(EXESUFFIX)	\
-        $(TDIR)ns2conv$(EXESUFFIX) $(TDIR)batchconv$(EXESUFFIX)	\
-        $(TDIR)sarmake$(EXESUFFIX) $(TDIR)nsamake$(EXESUFFIX)	\
-        $(TDIR)ns2make$(EXESUFFIX) $(TDIR)nscmake$(EXESUFFIX)	\
-        $(TDIR)nbzdec$(EXESUFFIX)
+TOOLBINS = sardec$(EXESUFFIX) nsadec$(EXESUFFIX)	\
+        ns2dec$(EXESUFFIX) nscdec$(EXESUFFIX)	\
+        sarconv$(EXESUFFIX) nsaconv$(EXESUFFIX)	\
+        ns2conv$(EXESUFFIX) batchconv$(EXESUFFIX)	\
+        sarmake$(EXESUFFIX) nsamake$(EXESUFFIX)	\
+        ns2make$(EXESUFFIX) nscmake$(EXESUFFIX)	\
+        nbzdec$(EXESUFFIX)
+TOOLS = $(TOOLBINS:%=$(TDIR)%)
 TOOL_INCS = -I`pwd` -Iextlib/include $(TOOL_EXTRA_INCS)
 TOOL_DEFS = $(DEFS) -DTOOLS_BUILD
 
