@@ -1132,10 +1132,10 @@ distclean: clean pdistclean \$(DISTCLEAN_TARGETS)
 	rm -f Makefile $DISTCLEAN_OTHER
 
 install-bin:
-	./install-sh -c -s \$(TARGET) \$(PREFIX)/bin/\$(TARGET)
+	./install-sh -c -s \$(TARGET) \$(DESTDIR)\$(PREFIX)/bin/\$(TARGET)
 install: install-bin
 uninstall:
-	rm \$(PREFIX)/bin/\$(TARGET)
+	rm \$(DESTDIR)\$(PREFIX)/bin/\$(TARGET)
 _EOF
 
 if [ "$SYS" = "MinGW" ]
