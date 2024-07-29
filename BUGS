@@ -47,6 +47,8 @@ BUGS OR MISFEATURES
   Linux
   \--> Only happens on Void, and not on Gentoo
 
+* enginereset causes audio to fail until game is hard reset?
+
 FEATURES REQUESTED
   
 * Allow the specification of a "fallback" font to use for characters
