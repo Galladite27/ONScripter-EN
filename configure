@@ -1135,11 +1135,16 @@ distclean: clean pdistclean \$(DISTCLEAN_TARGETS)
 	         extlib/share extlib/man
 	rm -f Makefile $DISTCLEAN_OTHER
 
+.PHONY: install* uninstall*
 install-bin:
 	./install-sh -c -s \$(TARGET) \$(DESTDIR)\$(PREFIX)/bin/\$(TARGET)
-install: install-bin
+install: install-bin install-tools
+install-tools: install-tools-yes
+install-tools-yes: \$(TOOLS)
+	mkdir -p \$(DESTDIR)\$(PREFIX)/bin/
+	\$(foreach file, \$(TOOLS), (./install-sh -c -s \$(file) \$(DESTDIR)\$(PREFIX)/bin/ || true);)
 uninstall:
-	rm \$(DESTDIR)\$(PREFIX)/bin/\$(TARGET)
+	\$(RM) \$(addprefix \$(DESTDIR)\$(PREFIX)/bin/, \$(TARGET) \$(TOOLBINS))
 _EOF
 
 if [ "$SYS" = "MinGW" ]
