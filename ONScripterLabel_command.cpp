@@ -495,6 +495,23 @@ int ONScripterLabel::systemcallCommand()
     return RET_CONTINUE;
 }
 
+int ONScripterLabel::strpxlenCommand()
+{
+    // Get int variable
+    int val = script_h.readInt();
+    script_h.pushVariable();
+
+    // Get string
+    const char *str = script_h.readStr();
+
+    // Set strpxlen
+    // I think sentence_font is the correct way to do this?
+    // -Galladite 2024-08-09
+    script_h.setInt( &script_h.pushed_variable, strpxlen(str, &sentence_font) );
+
+    return RET_CONTINUE;
+}
+
 int ONScripterLabel::strspCommand()
 {
     leaveTextDisplayMode();

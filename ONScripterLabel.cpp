@@ -124,6 +124,7 @@ static struct FuncLUT{
     {"systemcall",   &ONScripterLabel::systemcallCommand},
     {"strsph",   &ONScripterLabel::strspCommand},
     {"strsp",   &ONScripterLabel::strspCommand},
+    {"strpxlen", &ONScripterLabel::strpxlenCommand},
     {"stop",   &ONScripterLabel::stopCommand},
     {"sp_rgb_gradation",   &ONScripterLabel::sp_rgb_gradationCommand},
     {"spstr",   &ONScripterLabel::spstrCommand},

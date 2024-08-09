@@ -209,6 +209,7 @@ public:
     int tablegotoCommand();
     int systemcallCommand();
     int strspCommand();
+    int strpxlenCommand();
     int stopCommand();
     int sp_rgb_gradationCommand();
     int spstrCommand();
