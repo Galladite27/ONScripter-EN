@@ -133,6 +133,7 @@ void init_source (jpeglib::j_decompress_ptr cinfo)
 
 jpeglib::boolean fill_input_buffer (jpeglib::j_decompress_ptr cinfo)
 {
+    using namespace jpeglib;
     my_source_mgr *src = (my_source_mgr *)cinfo->src;
     
     src->pub.next_input_byte = src->buf;
@@ -163,6 +164,7 @@ void init_destination (jpeglib::j_compress_ptr cinfo)
 
 jpeglib::boolean empty_output_buffer (jpeglib::j_compress_ptr cinfo)
 {
+    using namespace jpeglib;
     my_destination_mgr * dest = (my_destination_mgr *) cinfo->dest;
 
     dest->pub.next_output_byte = dest->buf;
