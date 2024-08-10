@@ -38,7 +38,25 @@ jobs:
       run: |
         NCPUS=$(getconf _NPROCESSORS_ONLN)
         make -j $NCPUS VERBOSE=true
-        tar -czvf onscripter-en.Linux.x86-64.tar.gz onscripter-en README.md COPYING CHANGES
+        make -j $NCPUS VERBOSE=true tools
+        tar -czvf onscripter-en.Linux.x86-64.tar.gz \
+          onscripter-en \
+          README.md \
+          COPYING \
+          CHANGES \
+          tools/ns2conv \
+          tools/nsaconv \
+          tools/sardec \
+          tools/batchconv \
+          tools/nbzdec \
+          tools/ns2make \
+          tools/nsamake \
+          tools/sarconv \
+          tools/ns2dec \
+          tools/nsadec \
+          tools/nscdec \
+          tools/nscmake \
+          tools/sarmake
 
     - uses: actions/upload-artifact@v3
       with:
@@ -89,7 +107,25 @@ jobs:
       run: |
         NCPUS=$(getconf _NPROCESSORS_ONLN)
         make -f ./msys2/Makefile.Windows.MSYS2.${{matrix.arch}}.insani -j $NCPUS VERBOSE=true
-        zip onscripter-en.Windows.${{matrix.arch}}.zip onscripter-en.exe README.md COPYING CHANGES
+        make -f ./msys2/Makefile.Windows.MSYS2.${{matrix.arch}}.insani -j $NCPUS VERBOSE=true tools
+        zip onscripter-en.Windows.${{matrix.arch}}.zip \
+          onscripter-en.exe \
+          README.md \
+          COPYING \
+          CHANGES \
+          tools/ns2conv.exe \
+          tools/nsaconv.exe \
+          tools/sardec.exe \
+          tools/batchconv.exe \
+          tools/nbzdec.exe \
+          tools/ns2make.exe \
+          tools/nsamake.exe \
+          tools/sarconv.exe \
+          tools/ns2dec.exe \
+          tools/nsadec.exe \
+          tools/nscdec.exe \
+          tools/nscmake.exe \
+          tools/sarmake.exe
 
     - uses: actions/upload-artifact@v3
       with:
