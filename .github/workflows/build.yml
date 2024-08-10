@@ -73,7 +73,7 @@ jobs:
           mingw-w64-${{matrix.env}}-iconv
           mingw-w64-${{matrix.env}}-zlib
           mingw-w64-${{matrix.env}}-toolchain
-          mingw-w64-${{matrix.env}}-make
+          make
 
     - shell: msys2 {0}
       name: Build
