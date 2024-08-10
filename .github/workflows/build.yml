@@ -23,7 +23,7 @@ jobs:
       run: |
         sudo add-apt-repository -y "deb http://archive.ubuntu.com/ubuntu `lsb_release -sc` main universe"
         sudo apt-get update -y -qq
-        sudo apt-get install libasound2-dev libpulse-dev libwebp-dev libxrandr-dev
+        sudo apt-get install libasound2-dev libpulse-dev libwebp-dev libxrandr-dev tar
     - name: configure
       env:
         CC: ${{ matrix.cc }}
@@ -38,7 +38,13 @@ jobs:
       run: |
         NCPUS=$(getconf _NPROCESSORS_ONLN)
         make -j $NCPUS VERBOSE=true
+        tar -czvf onscripter-en.Linux.x86-64.tar.gz onscripter-en README.md COPYING CHANGES
 
+    - uses: actions/upload-artifact@v3
+      with:
+        name: Windows ${{matrix.arch}} Build
+        path: ${{ github.workspace }}/onscripter-en.Linux.x86-64.tar.gz
+        
   windows:
     strategy:
       fail-fast: false
@@ -76,9 +82,16 @@ jobs:
           mingw-w64-${{matrix.env}}-zlib
           mingw-w64-${{matrix.env}}-toolchain
           make
+          zip
 
     - shell: msys2 {0}
       name: Build
       run: |
         NCPUS=$(getconf _NPROCESSORS_ONLN)
         make -f ./msys2/Makefile.Windows.MSYS2.${{matrix.arch}}.insani -j $NCPUS VERBOSE=true
+        zip onscripter-en.Windows.${{matrix.arch}}.zip onscripter-en.exe README.md COPYING CHANGES
+
+    - uses: actions/upload-artifact@v3
+      with:
+        name: Windows ${{matrix.arch}} Build
+        path: ${{ github.workspace }}/onscripter-en.Windows.${{matrix.arch}}.zip
