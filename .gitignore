@@ -9,3 +9,5 @@
 tools/*conv
 tools/*dec
 tools/*make
+*.exe
+onscripter.rc
