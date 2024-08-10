@@ -59,6 +59,7 @@ jobs:
     - uses: msys2/setup-msys2@v2
       with:
         msystem: ${{matrix.sys}}
+        update: true
         install: 
           mingw-w64-${{matrix.env}}-SDL
           mingw-w64-${{matrix.env}}-SDL_ttf
@@ -74,7 +75,8 @@ jobs:
           mingw-w64-${{matrix.env}}-toolchain
           mingw-w64-${{matrix.env}}-make
 
-    - name: build
+    - shell: msys2 {0}
+      name: Build
       run: |
         NCPUS=$(getconf _NPROCESSORS_ONLN)
         make -f ./msys2/Makefile.Windows.MSYS2.x86-64.insani -j $NCPUS VERBOSE=true
