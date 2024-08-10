@@ -23,7 +23,7 @@ export PKG_CONFIG_PATH
 
 SDLSRC  = $(ES)/SDL-1.2.15
 SDLISRC = $(ES)/SDL_image-1.2.12
-ZSRC    = $(ES)/zlib-1.2.3
+ZSRC    = $(ES)/zlib-1.2.13
 PNGSRC  = $(ES)/libpng-1.6.39
 JPEGSRC = $(ES)/jpeg-9f
 SDLMSRC = $(ES)/SDL_mixer-1.2.12
@@ -131,7 +131,9 @@ $(EL)/libpng$(LIBSUFFIX): $(PNGSRC)/Makefile | $(EL)
 
 $(EL)/libz$(LIBSUFFIX): | $(EL)
 	@echo Building internal zlib...
-	@$(MAKE) -C $(ZSRC) install prefix="$(LPREFIX)" $(REDSO)
+	@cd $(ZSRC) && \
+	./configure --prefix="$(LPREFIX)" --static $(OTHERCONFIG) $(REDIR)
+	@$(MAKE) -C $(ZSRC) install $(REDSO)
 
 $(JPEGSRC)/Makefile:
 	@echo Configuring internal libjpeg...
