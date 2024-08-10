@@ -1,3 +1,7 @@
+2024-08-10
+  Playmer added Github CI jobs for Linux and both 32- and 64-bit
+  Windows. It's black magic!
+
 2024-08-09
   Added "strpxlen" command as a proportional font equivalent to "len"
   for use, for example, in centring text
