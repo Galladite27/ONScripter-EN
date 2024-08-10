@@ -38,7 +38,7 @@ libdir = ${exec_prefix}/lib
 bindir = ${exec_prefix}/bin
 mandir = ${prefix}/man
 
-CC = gcc -mthreads -mtune=pentium3
+CC = gcc -mthreads
 CFLAGS = -g -O2 -I ${srcdir}
 LDFLAGS =  -Wl,--enable-auto-image-base -Wl,--out-implib,libgnurx.dll.a
 
