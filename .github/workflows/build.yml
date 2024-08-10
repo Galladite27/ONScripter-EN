@@ -48,10 +48,11 @@ jobs:
             cc: gcc
             sys: mingw64
             env: x86_64
+            arch: x86-64
           - os: windows-latest
             cc: gcc
             sys: mingw32
-            env: i686
+            arch: i686
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v4
@@ -79,4 +80,4 @@ jobs:
       name: Build
       run: |
         NCPUS=$(getconf _NPROCESSORS_ONLN)
-        make -f ./msys2/Makefile.Windows.MSYS2.x86-64.insani -j $NCPUS VERBOSE=true
+        make -f ./msys2/Makefile.Windows.MSYS2.${{matrix.arch}}.insani -j $NCPUS VERBOSE=true
