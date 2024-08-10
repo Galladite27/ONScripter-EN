@@ -33,11 +33,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-namespace jpeglib { //Mion: added namespace to avoid type conflicts
-    extern "C" {
 #include <jpeglib.h>
-    };
-}
 
 //Mion: for png image file support
 namespace libpng {
@@ -60,14 +56,14 @@ static size_t restored_length = 0;
 
 #define INPUT_BUFFER_SIZE       4096
 typedef struct {
-    struct jpeglib::jpeg_source_mgr pub;
+    struct jpeg_source_mgr pub;
 
     unsigned char *buf;
     size_t left;
 } my_source_mgr;
 
 typedef struct {
-    struct jpeglib::jpeg_destination_mgr pub;
+    struct jpeg_destination_mgr pub;
 
     unsigned char *buf;
     size_t left;
@@ -127,21 +123,21 @@ void rescaleImage( unsigned char *original_buffer, int width, int height, int by
 }
 
 
-void init_source (jpeglib::j_decompress_ptr cinfo)
+void init_source (j_decompress_ptr cinfo)
 {
 }
 
-jpeglib::boolean fill_input_buffer (jpeglib::j_decompress_ptr cinfo)
+boolean fill_input_buffer (j_decompress_ptr cinfo)
 {
     my_source_mgr *src = (my_source_mgr *)cinfo->src;
     
     src->pub.next_input_byte = src->buf;
     src->pub.bytes_in_buffer = src->left;
 
-    return jpeglib::TRUE;
+    return TRUE;
 }
 
-void skip_input_data (jpeglib::j_decompress_ptr cinfo, long num_bytes)
+void skip_input_data (j_decompress_ptr cinfo, long num_bytes)
 {
     my_source_mgr *src = (my_source_mgr *)cinfo->src;
     
@@ -149,11 +145,11 @@ void skip_input_data (jpeglib::j_decompress_ptr cinfo, long num_bytes)
     src->pub.bytes_in_buffer -= (size_t) num_bytes;
 }
 
-void term_source (jpeglib::j_decompress_ptr cinfo)
+void term_source (j_decompress_ptr cinfo)
 {
 }
 
-void init_destination (jpeglib::j_compress_ptr cinfo)
+void init_destination (j_compress_ptr cinfo)
 {
     my_destination_mgr * dest = (my_destination_mgr *) cinfo->dest;
 
@@ -161,25 +157,23 @@ void init_destination (jpeglib::j_compress_ptr cinfo)
     dest->pub.free_in_buffer = dest->left;
 }
 
-jpeglib::boolean empty_output_buffer (jpeglib::j_compress_ptr cinfo)
+boolean empty_output_buffer (j_compress_ptr cinfo)
 {
     my_destination_mgr * dest = (my_destination_mgr *) cinfo->dest;
 
     dest->pub.next_output_byte = dest->buf;
     dest->pub.free_in_buffer = dest->left;
     
-    return jpeglib::TRUE;
+    return TRUE;
 }
 
-void term_destination (jpeglib::j_compress_ptr cinfo)
+void term_destination (j_compress_ptr cinfo)
 {
 }
 
 size_t rescaleJPEGWrite( unsigned int width, unsigned int height, int byte_per_pixel, unsigned char **rescaled_buffer,
                          int quality, bool bmp2jpeg_flag, int num_of_cells )
 {
-    using namespace jpeglib;
-
     jpeg_error_mgr jerr;
     struct jpeg_compress_struct cinfo2;
     JSAMPROW row_pointer[1];
@@ -221,7 +215,7 @@ size_t rescaleJPEGWrite( unsigned int width, unsigned int height, int byte_per_p
 
     jpeg_set_defaults(&cinfo2);
     jpeg_set_quality(&cinfo2, quality, TRUE );
-    cinfo2.optimize_coding = jpeglib::TRUE;
+    cinfo2.optimize_coding = TRUE;
     //jpeg_simple_progression (&cinfo2);
     jpeg_start_compress(&cinfo2, TRUE);
 
@@ -253,8 +247,6 @@ size_t rescaleJPEGWrite( unsigned int width, unsigned int height, int byte_per_p
 size_t rescaleJPEG( unsigned char *original_buffer, size_t length,
                     unsigned char **rescaled_buffer, int quality, int num_of_cells=1 )
 {
-    using namespace jpeglib;
-
     struct jpeg_decompress_struct cinfo;
     jpeg_error_mgr jerr;
 
