@@ -42,7 +42,7 @@ jobs:
 
     - uses: actions/upload-artifact@v3
       with:
-        name: Windows ${{matrix.arch}} Build
+        name: Linux x86-64 Build
         path: ${{ github.workspace }}/onscripter-en.Linux.x86-64.tar.gz
         
   windows:
