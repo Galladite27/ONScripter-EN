@@ -1,0 +1,92 @@
+INDEX
+* LICENSING
+* COMMUNICATION
+* ON-LINE
+* GENERAL GUIDELINES
+
+LICENSING
+  Any pull requests you submit and code you provide in open issues or through other methods of
+  communication not already covered by another license you agree may be used in any way with
+  modification and/or redistibution within this project as defined in the COPYING file (GNU GPL v2).
+
+COMMUNICATION
+  Within the ONScripter-EN project contributors and other interested individuals are encouraged to
+  communicate through two particular channels so as to be in contact with the rest of the developer
+  and user base as well as is possible.
+
+  Firstly, the "Issues" tab on ONScripter-EN's Github page is used for communication regarding open
+  bugs, as is the BUGS file used for logging these bugs and other features yet to be implemented.
+
+  Secondly, for more casual and general communication Discord is used. An invite link is provided
+  here: https://discord.gg/DP8GhhqsFy
+
+  Many actions made on Github, including comments made on issues, are sent to a channel within the
+  Discord server through the use of a "webhook."
+
+  As a final resort, the lead maintainer(s) of the project may be contacted through e-mail as
+  defined as the present maintainer(s) may be in the README.md file.
+
+ON-LINE
+  Github is the main on-line location where ONScripter-EN's codebase is hosted, and where
+  contributions are made, issues recorded, releases published, and more.
+
+  The official ONScripter-EN git repository is available through a link provided here:
+  https://github.com/galladite27/onscripter-en
+
+  ONScripter-EN's official site is, as of its revival, a single page available at the link provided
+  here: https://galladite.net/~galladite/ons-en/index.html
+
+  However, unlike under Mion's maintainership, this site only serves as a landing page. Most activity
+  including releases is carried out on Github, as mentioned above.
+
+  A live version of the *NScripter API documentation is available through a link provided here:
+  https://galladite.net/~galladite/nscripter/mirrors/archives/reference/NScrAPI-framed.html
+
+  Other git repositories related to ONScripter-EN may be found through links provided below:
+  API documentation:            https://github.com/insani-org/nscripter-api-doc
+  Lua API documentation:        https://github.com/Galladite27/nscripter-lua-api-doc
+  Devkit:                       https://github.com/Galladite27/ONScripter-EN-devkit
+  Static makefiles (MSYS2):     https://github.com/insani-org/onscripter-en-msys2-configure-makefile
+
+GENERAL GUIDELINES
+  Due to a (greatly appreciated) increase in the number of contributors to the ONScripter-EN project
+  in recent times since the project's revival and a growing disparity between the interests of
+  some new contributors and the specific niche and vision of the ONScripter-EN project as being a
+  simple modernisation of the engine in its usability in the modern era while maintaining its legacy
+  heritage, we have found it necessary to place restrictions on the types of pull requests which
+  will ever be considered to be merged, including restrictions on specific proposed ideas and shifts
+  in the fundamental philosophy of ONScripter-EN's design and implementation which we kindly ask
+  enthusiastic developers to keep to other forks of the ONScripter-EN engine which may have any
+  focus or serve any niche the individual desires. Being an open-source project, we encourage
+  amateur and experienced developers alike to implement these changes in their own forks to suit
+  their own purposes.
+
+  Specific changes which WILL NOT be considered are outlined below:
+  * The use of the CMake build system or any other alternate build systems
+    \--> This includes compiling through IDEs, such as Visual Studio Code
+    \--> The only current exception is for compiling on MacOS
+  * The updating of SDL 1.2 to SDL 2 or 3
+  * The use of QT, GTK, or similar
+  * The implementation of a menu bar in line with NScripter
+    \--> This almost relies implicitly on using a toolkit such as QT
+    \--> Either that, or complex, clunky platform-dependent code, inevitably leading to parity loss
+    \--> The unique features provided by the menu bar MAY be made available as API commands
+  * Any changes which require additional libraries
+  * Any changes which preclude ONScripter-EN from reaching a "final" state, from which (unless
+    unforseen changes occur) the only necessary changes will be bugfixes and long-term support
+
+  Philosophies and directions which the ONScripter-EN project WILL NOT be steered towards are
+  outlined below:
+  * The modernisation of ONScripter-EN in the design philosophy and methods of implementation and
+    compiling, as embodied by the use of CMake
+  * The abandonment of the heritage of ONScripter-EN, even when it may be seen as a detrement or
+    require more work to maintain (particularly in the configure script)
+  * The drift towards integrating the codebase with external technologies. Github CI jobs are
+    useful. Depending on QT is not.
+    \--> The use of external software for uses such as testing is explicity permitted for Sean
+         McGovern's sake, since it only requires a couple of tiny files in the source tree and does
+         not affect the compiled binary
+
+  Changes which the current maintainers are not adverse to but will never contribute towards or
+  support are outlined below:
+  * Support for platforms other than Windows (32- & 64-bit, Win XP+), Linux, and MacOS
