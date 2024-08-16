@@ -113,6 +113,9 @@ do
       --vectorize-verbose=* | -vectorize-verbose=*)
         VECTORIZE_LEVEL=$arg
         ;;
+      --sanitizer=*)
+        SANITIZER=$arg
+        ;;
       --enable-internal-libs | -enable-internal-libs | --with-internal-libs | -with-internal-libs)
         INTERNAL_LIBS=true ;;
       --disable-internal-libs | -disable-internal-libs | --without-internal-libs | -without-internal-libs | --no-internal-libs | -no-internal-libs)
@@ -215,6 +218,7 @@ do
 	  --vectorize              try to use compiler vectorization (requires GCC 4+)
 	  --novectorize            don't use compiler vectorization (default)
 	  --vectorize-verbose[=(1-5)] set vectorization verbosity level (def 0)
+	  --sanitizer=(undefined|address|leak) compile with sanitization enabled
 	
 	Library options (force compilation of included dependencies):
 	  --with-internal-libs        don't check for any system libraries
@@ -367,6 +371,21 @@ fi
 case "$CXX_TMP" in
 g++* | *apple*g++*) CFLAGSEXTRA=-Wall ;;
 esac
+
+# compiler sanitization support
+
+SANFLAGS=
+if [ -n "$SANITIZER" ]
+then
+  case "$SANITIZER" in
+    address|leak|undefined)
+      $echo_n "Using compiler support for '$SANITIZER' sanitizer"
+      SANFLAGS="-fsanitize=$SANITIZER -fno-sanitize-recover=$SANITIZER"
+      ;;
+    *) echo "ERROR: unknown sanitizer '$SANITIZER'" >&2
+       exit 1 ;;
+  esac
+fi
 
 # Auto-vectorization
 
@@ -966,6 +985,7 @@ export RANLIB  := $RANLIB
 
 # ONScripter variables
 OSCFLAGSEXTRA = $CFLAGSEXTRA \$(OSCTMPFLAGS)
+SANFLAGS = $SANFLAGS
 INCS = $X11_CFLAGS -Iextlib/include \$(shell \$(SDL_CONFIG) --cflags)      \\
                         \$(shell $SMPEG_CONFIG --cflags)    \\
                         \$(shell $FREETYPE_CONFIG --cflags) \\
@@ -1072,14 +1092,14 @@ cat >> Makefile <<_EOF
 .SUFFIXES: $OBJ .cpp .h .c
 
 ifdef DEBUG
-OSCFLAGS = -O0 -g -pg -ggdb -pipe -Wpointer-arith $WERROR $STRICT \$(OSCFLAGSEXTRA)
+OSCFLAGS = -O0 -g -pg -ggdb -pipe -Wpointer-arith $WERROR $STRICT \$(OSCFLAGSEXTRA) \$(SANFLAGS)
 export LDFLAGS  := -pg \$(LDFLAGS)
 else
   ifdef PROF
   OSCFLAGS = -O2 -pg -pipe -Wpointer-arith $WERROR $STRICT \$(OSCFLAGSEXTRA)
   export LDFLAGS  := -pg \$(LDFLAGS)
   else
-  OSCFLAGS = -O2 -fomit-frame-pointer -pipe -Wpointer-arith $WERROR $STRICT \$(OSCFLAGSEXTRA)
+  OSCFLAGS = -O2 -fomit-frame-pointer -pipe -Wpointer-arith $WERROR $STRICT \$(OSCFLAGSEXTRA) \$(SANFLAGS)
   endif
 endif
 
