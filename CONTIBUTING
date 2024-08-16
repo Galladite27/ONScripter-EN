@@ -62,15 +62,17 @@ GENERAL GUIDELINES
   their own purposes.
 
   Specific changes which WILL NOT be considered are outlined below:
-  * The use of the CMake build system or any other alternate build systems
-    \--> This includes compiling through IDEs, such as Visual Studio Code
-    \--> The only current exception is for compiling on MacOS
-  * The updating of SDL 1.2 to SDL 2 or 3
+  * The use of the CMake build system or any other alternate build systems as the primary build
+    system
+      \--> This includes compiling through IDEs, such as Visual Studio Code
+      \--> CMake MAY be used as an ALTERNATE build system, as long as MacOS is supported
+  * The updating of SDL 1.2 to SDL 2 or 3 - pending review
   * The use of QT, GTK, or similar
   * The implementation of a menu bar in line with NScripter
-    \--> This almost relies implicitly on using a toolkit such as QT
-    \--> Either that, or complex, clunky platform-dependent code, inevitably leading to parity loss
-    \--> The unique features provided by the menu bar MAY be made available as API commands
+      \--> This almost relies implicitly on using a toolkit such as QT
+      \--> Either that, or complex, clunky platform-dependent code, inevitably leading to parity
+           loss
+      \--> The unique features provided by the menu bar MAY be made available as API commands
   * Any changes which require additional libraries
   * Any changes which preclude ONScripter-EN from reaching a "final" state, from which (unless
     unforseen changes occur) the only necessary changes will be bugfixes and long-term support
@@ -83,9 +85,9 @@ GENERAL GUIDELINES
     require more work to maintain (particularly in the configure script)
   * The drift towards integrating the codebase with external technologies. Github CI jobs are
     useful. Depending on QT is not.
-    \--> The use of external software for uses such as testing is explicity permitted for Sean
-         McGovern's sake, since it only requires a couple of tiny files in the source tree and does
-         not affect the compiled binary
+      \--> The use of external software for uses such as testing is explicity permitted for Sean
+           McGovern's sake, since it only requires a couple of tiny files in the source tree and
+           does not affect the compiled binary
 
   Changes which the current maintainers are not adverse to but will never contribute towards or
   support are outlined below:
