@@ -65,7 +65,7 @@ TOOL_LIBS = -Wl,--start-group \
             -ljpeg -lpng -lz \
             -L$(GNURX_DIR) -lgnurx \
             -lbz2 -Wl,--end-group
-LIBS = -static -Wl,--start-group \
+LIBS = -static -s -Wl,--start-group \
        $(shell $(SDL_CONFIG) --static-libs) \
        -lSDL_ttf \
        $(shell smpeg-config --libs) $(shell pkg-config freetype2 --libs) \
