@@ -122,12 +122,13 @@ internal_jpeg = $(EL)/libjpeg$(LIBSUFFIX)
 $(PNGSRC)/Makefile: $(EL)/libz$(LIBSUFFIX)
 	@echo Configuring internal libpng...
 	@cd $(PNGSRC) && \
-	./configure --prefix="$(LPREFIX)" --disable-shared --disable-dependency-tracking $(OTHERCONFIG) $(REDIR)
+	./configure --prefix="$(LPREFIX)" --disable-shared --disable-dependency-tracking --with-zlib-prefix="$(LPREFIX)" $(OTHERCONFIG) $(REDIR)
 
 $(EL)/libpng$(LIBSUFFIX): $(PNGSRC)/Makefile | $(EL)
 	@echo Building internal libpng...
 	@$(MAKE) -C $(PNGSRC) $(REDSO)
 	@$(MAKE) -C $(PNGSRC) install $(REDSO)
+	@sed -i '/^Requires.*:/s/ zlib//' $(EL)/pkgconfig/libpng*.pc
 
 $(EL)/libz$(LIBSUFFIX): | $(EL)
 	@echo Building internal zlib...
