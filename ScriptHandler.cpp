@@ -1853,7 +1853,8 @@ after_cres:
             game_identifier = new char[i];
             strncpy( game_identifier, buf, i - 1 );
             game_identifier[i - 1] = 0;
-            buf += i;
+            buf += i-1; // -1 because of i++ 4 lines above - so bu
+                        // should be '\n'
         }
         else{
             break;
