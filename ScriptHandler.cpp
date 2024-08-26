@@ -1755,6 +1755,14 @@ int ScriptHandler::readScript( DirPaths &path )
     /* ---------------------------------------- */
     /* screen size and value check */
     char *buf = script_buffer;
+
+    // Skip whitespace - some old games put ;gameid on the second
+    // line, leaving the first blank (no ;mode given).
+    //
+    // -Galladite 2024-08-26
+    while (*buf == '\n' || *buf == '\r' || *buf == '\t' || *buf == ' ')
+        buf++;
+
     while( script_buffer[0] == ';' ){
         if ( !strncmp( buf, ";mode", 5 ) ){
             buf += 5;
@@ -1838,7 +1846,7 @@ after_cres:
             }
         }
         else if ( !strncmp( buf, ";gameid", 7 ) && !game_identifier ){
-            buf += 7;
+            buf += 8; // Also skip the space (simple way)
             int i = 0;
             while ( buf[i++] != '\n' );
             game_identifier = new char[i];
