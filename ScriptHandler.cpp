@@ -1763,7 +1763,8 @@ int ScriptHandler::readScript( DirPaths &path )
     while (*buf == '\n' || *buf == '\r' || *buf == '\t' || *buf == ' ')
         buf++;
 
-    while( script_buffer[0] == ';' ){
+    //while( script_buffer[0] == ';' ){
+    while( *buf == ';' ){
         if ( !strncmp( buf, ";mode", 5 ) ){
             buf += 5;
             if ( !strncmp( buf, "800", 3 ) ) {
