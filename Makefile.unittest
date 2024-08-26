@@ -3,11 +3,11 @@
 # Makefile.unittest - General makefile rules for ONScripter's unit tests
 #
 
-#ifdef COVERAGE
+ifeq ($(COVERAGE),1)
 OSCFLAGS += -fprofile-arcs -ftest-coverage
 LDFLAGS += -fprofile-arcs -ftest-coverage
 CLEANUP += $(ONSCRIPTER_OBJS:.o=.gcda) $(ONSCRIPTER_OBJS:.o=.gcno)
-#endif
+endif
 
 .PHONY: check
 check: $(TARGET)$(EXESUFFIX) test/Makefile
