@@ -507,7 +507,9 @@ int ONScripterLabel::strpxlenCommand()
     // Set strpxlen
     // I think sentence_font is the correct way to do this?
     // -Galladite 2024-08-09
+    printf("Just about to call strpxlen internally.\n");
     script_h.setInt( &script_h.pushed_variable, strpxlen(str, &sentence_font) );
+    printf("Just called strpxlen internally.\n");
 
     return RET_CONTINUE;
 }

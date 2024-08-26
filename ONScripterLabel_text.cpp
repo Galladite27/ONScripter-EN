@@ -2121,25 +2121,31 @@ float ONScripterLabel::strpxlen(const char *buf, Fontinfo *fi)
     //printf("strpxlen :: b: %d i: %d\n", *bold_flag, *italics_flag);
     //printf("strpxlen :: s: %s\n", buf);
 
+    printf("Beginning strpxlen internal routine.\n");
     float w = 0.0;
     char two_chars[7] = {};
     char num_chars = 1;
     float advanced = 0.0;
     while (buf[0] != '\0')
     {
+        printf("\nIterating in strpxlen internal loop:\n");
         int n = script_h.enc.getBytes(buf[0]);
         unsigned short unicode = script_h.enc.getUTF16(buf);
         if(buf[n] != '\0') num_chars = 2;
+        printf("\tGot encoding information OK\n");
 
         for(int x = 0; x < n; x++) two_chars[x] = buf[x];
         int o = script_h.enc.getBytes(buf[n]);
         for(int y = 0; y < o; y++) two_chars[n+y] = buf[n+y];
+        printf("\tGot more encoding information OK\n");
 
         int minx, maxx, miny, maxy, advanced_int;
         //TTF_GlyphMetrics((TTF_Font*)fi->ttf_font[font_index], unicode,
         //                 &minx, &maxx, &miny, &maxy, &advanced_int);
+        printf("\tRunning TTF_GlyphMetrics (probably the last thing you'll see before the crash)\n");
         TTF_GlyphMetrics((TTF_Font*)fi->ttf_font, unicode,
                          &minx, &maxx, &miny, &maxy, &advanced_int);
+        printf("\tRan TTF_GlyphMetrics OK!!!\n");
 
         advanced = (float) advanced_int;
 
@@ -2204,11 +2210,13 @@ float ONScripterLabel::strpxlen(const char *buf, Fontinfo *fi)
 
         w += advanced + (float) fi->pitch_xy[0] - (float) fi->font_size_xy[0];
         buf += n;
+        printf("\tEnd of strpxlen internal loop iteration\n");
     }
     w -= (float) fi->pitch_xy[0] - (float) fi->font_size_xy[0];
 
     //fi->setStyle(old_style, old_bold_flag, old_italics_flag, fi->style_underline);
 
+    printf("\nReturning from strpxlen interrnal function\n");
     return w;
 }
 
