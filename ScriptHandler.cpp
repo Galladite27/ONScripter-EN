@@ -1837,6 +1837,15 @@ after_cres:
                 }
             }
         }
+        else if ( !strncmp( buf, ";gameid", 7 ) && !game_identifier ){
+            buf += 7;
+            int i = 0;
+            while ( buf[i++] != '\n' );
+            game_identifier = new char[i];
+            strncpy( game_identifier, buf, i - 1 );
+            game_identifier[i - 1] = 0;
+            buf += i;
+        }
         else{
             break;
         }
@@ -1847,17 +1856,6 @@ after_cres:
         buf++;
     }
 
-    if ( *buf++ == ';' && !game_identifier ){
-    	while (*buf == ' ' || *buf == '\t') ++buf;
-    	if ( !strncmp( buf, "gameid ", 7 ) ){
-    		buf += 7;
-    		int i = 0;
-    		while ( buf[i++] != '\n' );
-    		game_identifier = new char[i];
-    		strncpy( game_identifier, buf, i - 1 );
-    		game_identifier[i - 1] = 0;
-    	}
-    }
 
     return labelScript();
 }

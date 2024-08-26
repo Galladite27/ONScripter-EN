@@ -1,3 +1,8 @@
+2024-08-26
+  Finally just removed restrictions on the order of directives. No old
+  titles will be broken, and this just removes the unnecessary limits
+  being imposed on creators of new games.
+
 2024-08-10
   Playmer added Github CI jobs for Linux and both 32- and 64-bit
   Windows. It's black magic!
