@@ -11,3 +11,5 @@ tools/*dec
 tools/*make
 *.exe
 onscripter.rc
+test/googletest
+test/test_*

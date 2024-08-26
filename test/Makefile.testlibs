@@ -1,0 +1,22 @@
+gtest-all$(OBJSUFFIX): $(GTEST_DIR)/src/gtest-all.cc
+	$(CXX) $(CXXSTD) -isystem $(GTEST_INCDIR) -I$(GTEST_DIR) $(CXXFLAGS) -c $< -o $@
+gtest_main$(OBJSUFFIX): $(GTEST_DIR)/src/gtest_main.cc
+	$(CXX) $(CXXSTD) -isystem $(GTEST_INCDIR) -I$(GTEST_DIR) $(CXXFLAGS) -c $< -o $@
+
+libgtest$(LIBSUFFIX): gtest-all$(OBJSUFFIX) gtest_main$(OBJSUFFIX)
+	$(AR) -rv $@ $^
+
+gmock-all$(OBJSUFFIX): $(GMOCK_DIR)/src/gmock-all.cc
+	$(CXX) $(CXXSTD) -isystem $(GMOCK_INCDIR) -isystem $(GTEST_INCDIR) -I$(GMOCK_DIR) -I$(GTEST_DIR) $(CXXFLAGS) -c $< -o $@
+gmock_main$(OBJSUFFIX): $(GMOCK_DIR)/src/gmock_main.cc
+	$(CXX) $(CXXSTD) -isystem $(GMOCK_INCDIR) -isystem $(GTEST_INCDIR) -I$(GMOCK_DIR) -I$(GTEST_DIR) $(CXXFLAGS) -c $< -o $@
+
+libgmock$(LIBSUFFIX): gmock-all$(OBJSUFFIX) gmock_main$(OBJSUFFIX)
+	$(AR) -rv $@ $^
+
+$(GTEST_DIR)/src/gtest-all.cc: googletest
+$(GTEST_DIR)/src/gtest_main.cc: googletest
+$(GMOCK_DIR)/src/gmock-all.cc: googletest
+$(GMOCK_DIR)/src/gmock_main.cc: googletest
+
+CLEAN_OBJ += libgtest.a gtest_main.o gtest-all.o libgmock.a gmock_main.o gmock-all.o

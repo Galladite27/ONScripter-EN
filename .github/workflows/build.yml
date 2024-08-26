@@ -17,6 +17,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v4
+      with:
+        submodules: recursive
 
     - name: install dependencies (Linux)
       run: |
@@ -38,6 +40,7 @@ jobs:
         NCPUS=$(getconf _NPROCESSORS_ONLN)
         make -j $NCPUS VERBOSE=true
         make -j $NCPUS VERBOSE=true tools
+        make check
         tar -czvf onscripter-en.Linux.x86-64.tar.gz \
           onscripter-en \
           README.md \
@@ -80,6 +83,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v4
+      with:
+        submodules: recursive
     
     - uses: msys2/setup-msys2@v2
       with:
@@ -98,6 +103,8 @@ jobs:
           mingw-w64-${{matrix.env}}-iconv
           mingw-w64-${{matrix.env}}-zlib
           mingw-w64-${{matrix.env}}-toolchain
+          mingw-w64-${{matrix.env}}-autotools
+          autotools
           make
           zip
 
@@ -107,6 +114,7 @@ jobs:
         NCPUS=$(getconf _NPROCESSORS_ONLN)
         make -f ./msys2/Makefile.Windows.MSYS2.${{matrix.arch}}.insani -j $NCPUS VERBOSE=true
         make -f ./msys2/Makefile.Windows.MSYS2.${{matrix.arch}}.insani -j $NCPUS VERBOSE=true tools
+        make -f ./msys2/Makefile.Windows.MSYS2.${{matrix.arch}}.insani check
         zip onscripter-en.Windows.${{matrix.arch}}.zip \
           onscripter-en.exe \
           README.md \
