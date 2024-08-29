@@ -453,27 +453,38 @@ size_t DirectReader::getFile( const char *file_name, unsigned char *buffer,
     FILE *fp = getFileHandle( file_name, compression_type, &len );
     
     if ( fp ){
-        if ( compression_type & NBZ_COMPRESSION )
-            return decodeNBZ( fp, 0, buffer );
+        if ( compression_type & NBZ_COMPRESSION ) {
+            size_t buf_len = decodeNBZ( fp, 0, buffer );
+            fclose(fp);
+            return buf_len;
+        }
         
-        if ( compression_type & SPB_COMPRESSION )
-            return decodeSPB( fp, 0, buffer );
+        if ( compression_type & SPB_COMPRESSION ) {
+            size_t buf_len = decodeSPB( fp, 0, buffer );
+            fclose(fp);
+            return buf_len;
+        }
 
-        fseek( fp, 0, SEEK_SET );
-        total = len;
-        while( len > 0 ){
-            if ( len > READ_LENGTH ) c = READ_LENGTH;
-            else                     c = len;
-            len -= c;
-            if (fread( buffer, 1, c, fp ) < c) {
-                if (ferror( fp ))
-                    fprintf(stderr, "Error reading %s\n", file_name);
+        if (fseek( fp, 0, SEEK_SET ) == 0) {
+            total = len;
+            while( len > 0 ){
+                if ( len > READ_LENGTH ) c = READ_LENGTH;
+                else                     c = len;
+                len -= c;
+                if (fread( buffer, 1, c, fp ) < c) {
+                    if (ferror( fp ))
+                        fprintf(stderr, "Error reading %s\n", file_name);
+                }
+                buffer += c;
             }
-            buffer += c;
+        } else {
+            if (ferror( fp ))
+                fprintf(stderr, "Error seeking %s\n", file_name);
         }
         fclose( fp );
-        if ( location ) *location = ARCHIVE_TYPE_NONE;
     }
+
+    if ( location ) *location = ARCHIVE_TYPE_NONE;
 
     return total;
 }
