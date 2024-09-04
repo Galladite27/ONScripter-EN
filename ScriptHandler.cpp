@@ -1763,7 +1763,6 @@ int ScriptHandler::readScript( DirPaths &path )
     while (*buf == '\n' || *buf == '\r' || *buf == '\t' || *buf == ' ')
         buf++;
 
-    //while( script_buffer[0] == ';' ){
     while( *buf == ';' ){
         if ( !strncmp( buf, ";mode", 5 ) ){
             buf += 5;
@@ -1846,24 +1845,25 @@ after_cres:
                 }
             }
         }
-        else if ( !strncmp( buf, ";gameid", 7 ) && !game_identifier ){
-            buf += 8; // Also skip the space (simple way)
+        else if ( !strncmp( buf, ";gameid ", 8 ) && !game_identifier ){
+            buf += 8;
             int i = 0;
-            while ( buf[i++] != '\n' );
+            while ( buf[++i] != '\n' );
             game_identifier = new char[i];
-            strncpy( game_identifier, buf, i - 1 );
-            game_identifier[i - 1] = 0;
-            buf += i-1; // -1 because of i++ 4 lines above - so bu
-                        // should be '\n'
+            strncpy( game_identifier, buf, i );
+            game_identifier[i] = 0;
+            buf += i;
         }
         else{
             break;
         }
         if ( *buf != ',' ){
-        	while ( *buf++ != '\n' );
-        	break;
+            while (*buf == '\n' || *buf == '\r') buf++;
+
+            if (*buf != ';') {
+                break;
+            }
         }
-        buf++;
     }
 
 
