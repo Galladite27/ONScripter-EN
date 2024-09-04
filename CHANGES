@@ -1,3 +1,8 @@
+2024-09-05
+  Introduced some unit tests - Sean
+  Cleaned up directives interpretation code - Playmer
+  Did preliminary work on bug in strpxlen command - Galladite
+
 2024-08-26
   Finally just removed restrictions on the order of directives. No old
   titles will be broken, and this just removes the unnecessary limits
