@@ -1574,6 +1574,20 @@ int ScriptHandler::readScriptSub( FILE *fp, char **buf, int encrypt_mode )
     return 0;
 }
 
+template <size_t tTokenSize>
+bool tokenMatch(char**buffer, const char (&token)[tTokenSize])
+{
+    const size_t size_of_token = tTokenSize - 1;
+    int ret = strncmp(*buffer, token, size_of_token);
+    if (!ret)
+    {
+        *buffer += size_of_token;
+        return true;
+    }
+
+    return false;
+}
+
 int ScriptHandler::readScript( DirPaths &path )
 {
     archive_path = &path;
@@ -1764,40 +1778,33 @@ int ScriptHandler::readScript( DirPaths &path )
         buf++;
 
     while( *buf == ';' ){
-        if ( !strncmp( buf, ";mode", 5 ) ){
-            buf += 5;
-            if ( !strncmp( buf, "800", 3 ) ) {
+        if ( tokenMatch( &buf, ";mode" ) ){
+            if ( tokenMatch( &buf, "800" ) ) {
                 screen_width = 800;
                 screen_height = 600;
-                buf += 3;
-            } else if ( !strncmp( buf, "400", 3 ) ) {
+            } else if ( tokenMatch( &buf, "400" ) ) {
                 screen_width = 400;
                 screen_height = 300;
-                buf += 3;
-            } else if ( !strncmp( buf, "320", 3 ) ) {
+            } else if ( tokenMatch( &buf, "320" ) ) {
                 screen_width = 320;
                 screen_height = 240;
-                buf += 3;
-            } else if (!strncmp( buf, "w720", 4 )) {
+            } else if (tokenMatch( &buf, "w720" )) {
                 screen_width  = 1280;
                 screen_height = 720;
-                buf += 4;
             }
             else {
                 screen_width = 640;
                 screen_height = 480;
             }
         }
-        else if ( !strncmp( buf, ";value", 6 ) ){
-            buf += 6;
+        else if ( tokenMatch( &buf, ";value" ) ){
             SKIP_SPACE(buf);
             global_variable_border = 0;
             while ( *buf >= '0' && *buf <= '9' )
                 global_variable_border = global_variable_border * 10 + *buf++ - '0';
             //printf("set global_variable_border: %d\n", global_variable_border);
         }
-        else if (!(strncmp( buf, ";$", 2 ))) {
-            buf += 2;
+        else if ( tokenMatch( &buf, ";$" ) ){
             while ( *buf != '\n' ) {
                 if (*buf == 'g' || *buf == 'G') {
                     buf++;
@@ -1815,20 +1822,17 @@ int ScriptHandler::readScript( DirPaths &path )
                         screen_width = -1;
                         screen_height = -1;
                         buf++;
-
-                        goto after_cres;
                     }
-
-                    if (!(*buf >= '0' && *buf <= '9')) break;
-                    screen_width = 0;
-                    while (*buf >= '0' && *buf <= '9')
-                        screen_width = screen_width*10 + *buf++ - '0';
-                    while (*buf == ',' || *buf == ' ' || *buf == '\t') buf++;
-                    screen_height = 0;
-                    while (*buf >= '0' && *buf <= '9')
-                        screen_height = screen_height*10 + *buf++ - '0';
-after_cres:
-                    ;
+                    else {
+                        if (!(*buf >= '0' && *buf <= '9')) break;
+                        screen_width = 0;
+                        while (*buf >= '0' && *buf <= '9')
+                            screen_width = screen_width*10 + *buf++ - '0';
+                        while (*buf == ',' || *buf == ' ' || *buf == '\t') buf++;
+                        screen_height = 0;
+                        while (*buf >= '0' && *buf <= '9')
+                            screen_height = screen_height*10 + *buf++ - '0';
+                    }
                 }
                 else if (*buf == 'l' || *buf == 'L') { // This command was unimplemented in ONScripter
                     buf++;
@@ -1845,8 +1849,7 @@ after_cres:
                 }
             }
         }
-        else if ( !strncmp( buf, ";gameid ", 8 ) && !game_identifier ){
-            buf += 8;
+        else if ( tokenMatch( &buf, ";gameid " ) && !game_identifier ){
             int i = 0;
             while ( buf[++i] != '\n' );
             game_identifier = new char[i];
