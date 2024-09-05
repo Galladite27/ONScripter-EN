@@ -17,7 +17,8 @@ TOOLS = $(TOOLBINS:%=$(TDIR)%)
 TOOL_INCS = -I`pwd` -Iextlib/include $(TOOL_EXTRA_INCS)
 TOOL_DEFS = $(DEFS) -DTOOLS_BUILD
 
-GUI_OBJS = ONScripterLabel$(OBJSUFFIX)					\
+GUI_OBJS = ONScripterReporter$(OBJSUFFIX)           \
+	ONScripterLabel$(OBJSUFFIX)					    \
 	ONScripterLabel_command$(OBJSUFFIX)				\
 	ONScripterLabel_text$(OBJSUFFIX)				\
 	ONScripterLabel_effect$(OBJSUFFIX)				\
@@ -26,7 +27,7 @@ GUI_OBJS = ONScripterLabel$(OBJSUFFIX)					\
 	ONScripterLabel_effect_trig$(OBJSUFFIX)			\
 	ONScripterLabel_event$(OBJSUFFIX)				\
 	ONScripterLabel_rmenu$(OBJSUFFIX)				\
-	ONScripterLabel_animation$(OBJSUFFIX)				\
+	ONScripterLabel_animation$(OBJSUFFIX)			\
 	ONScripterLabel_sound$(OBJSUFFIX)				\
 	ONScripterLabel_file$(OBJSUFFIX)				\
 	ONScripterLabel_file2$(OBJSUFFIX)				\
@@ -217,6 +218,7 @@ $(TDIR)DirPaths$(OBJSUFFIX): DirPaths.h
 $(TDIR)resize_image$(OBJSUFFIX): resize_image.h
 
 onscripter$(OBJSUFFIX): $(ONSCRIPTER_HEADER) version.h
+ONScripterReporter$(OBJSUFFIX): $(ONSCRIPTER_HEADER) ONScripterReporter.h Reporter.h
 ONScripterLabel$(OBJSUFFIX): $(ONSCRIPTER_HEADER) graphics_common.h graphics_cpu.h graphics_resize.h
 ONScripterLabel_command$(OBJSUFFIX): $(ONSCRIPTER_HEADER) graphics_common.h graphics_resize.h version.h
 ONScripterLabel_text$(OBJSUFFIX): $(ONSCRIPTER_HEADER) Encoding.h

@@ -48,6 +48,7 @@
 #include "BaseReader.h"
 #include "DirPaths.h"
 #include "Encoding.h"
+#include "Reporter.h"
 
 #define VARIABLE_RANGE 4096
 
@@ -132,7 +133,7 @@ public:
     void setKeyTable( const unsigned char *key_table );
 
     void setSavedir( const char *dir );
-    inline void setOns( ONScripterLabel *newons){ ons = newons; }
+    inline void setReporter( Reporter *newreporter){ reporter = newreporter; }
 
     // basic parser function
     const char *readToken(bool check_pretext);
@@ -436,7 +437,7 @@ private:
     
     ArrayVariable *root_array_variable, *current_array_variable;
 
-    ONScripterLabel *ons; //Mion: so script_h can call doErrorBox
+    Reporter *reporter; //SeanMcG: error reporting interface
     void errorAndExit( const char *str, const char *title=NULL, const char *detail=NULL, bool is_warning=false );
     void errorAndCont( const char *str, const char *title=NULL, const char *detail=NULL );
     void simpleErrorAndExit( const char *str, const char *title=NULL, const char *detail=NULL, bool is_warning=false );

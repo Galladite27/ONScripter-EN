@@ -41,7 +41,7 @@
 
 #include "ScriptHandler.h"
 #include "Encoding.h"
-#include "ONScripterLabel.h" //so this can call doErrorBox
+#include "Reporter.h" // error reporting
 #include <sys/stat.h>
 #include <sys/types.h>
 #ifdef WIN32
@@ -78,7 +78,7 @@ ScriptHandler::ScriptHandler()
     screen_height = 480;
     global_variable_border = 200;
     
-    ons = NULL;
+    reporter = NULL;
     
     archive_path = NULL;
     save_path = NULL;
@@ -122,6 +122,8 @@ ScriptHandler::~ScriptHandler()
     if (savedir) delete[] savedir;
 
     if (game_identifier) delete[] game_identifier;
+
+    if (reporter) delete reporter;
 }
 
 void ScriptHandler::reset()
@@ -2048,9 +2050,9 @@ void ScriptHandler::processError( const char *str, const char *title, const char
 
         if (is_warning && !strict_warnings) return;
 
-        if (!ons) exit(-1); //nothing left to do without doErrorBox
+        if (!reporter) exit(-1); //nothing left to do without a way to report errors
 
-        if (! ons->doErrorBox(title, str, true, is_warning))
+        if (! reporter->reportError(title, str, true, is_warning))
             return;
 
         if (is_warning)
@@ -2089,7 +2091,7 @@ void ScriptHandler::processError( const char *str, const char *title, const char
 
         if (is_warning && !strict_warnings) return;
 
-        if (!ons) exit(-1); //nothing left to do without doErrorBox
+        if (!reporter) exit(-1); //nothing left to do without a way to report errors
 
         if (is_warning) {
             if (linenum < 0) {
@@ -2102,7 +2104,7 @@ void ScriptHandler::processError( const char *str, const char *title, const char
                          detail ? detail : "");
             }
 
-            if(!ons->doErrorBox(title, errhist, false, true))
+            if(!reporter->reportError(title, errhist, false, true))
                 return;
 
             fprintf(stderr, " ***[Fatal] User terminated at warning ***\n");
@@ -2139,7 +2141,7 @@ void ScriptHandler::processError( const char *str, const char *title, const char
             if (tmp[i]) *(tmp[i]) = 0x0a;
         }
 
-        if (! ons->doErrorBox(title, errhist, false, false))
+        if (! reporter->reportError(title, errhist, false, false))
             return;
 
     }
