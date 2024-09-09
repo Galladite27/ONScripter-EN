@@ -46,7 +46,11 @@ test_BaseReader$(EXESUFFIX): test_BaseReader.cpp $(TOPSRC)/BaseReader.h libgtest
 	$(Q)$(CXX) $(CXXSTD) -isystem $(GTEST_INCDIR) -I$(TOPSRC) $(CXXFLAGS) $^ -o $@
 	./$@
 
-TESTEXE := test_Encoding$(EXESUFFIX) test_BaseReader$(EXESUFFIX)
+test_DirPaths$(EXESUFFIX): test_DirPaths.cpp $(TOPSRC)/DirPaths.cpp libgtest$(LIBSUFFIX)
+	$(Q)$(CXX) $(CXXSTD) -isystem $(GTEST_INCDIR) -I$(TOPSRC) $(CXXFLAGS) $^ -o $@
+	./$@
+
+TESTEXE := test_Encoding$(EXESUFFIX) test_BaseReader$(EXESUFFIX) test_DirPaths$(EXESUFFIX)
 
 test: $(TESTEXE)
 
