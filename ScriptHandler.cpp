@@ -225,6 +225,9 @@ FILE *ScriptHandler::fopen( const char *path, const char *mode, const bool save,
 
         fp = ::fopen( file_name, mode );
     } else {
+	if (archive_path == NULL) {
+		return NULL;
+	}
         // search within archive_path(s)
         file_name = new char[archive_path->max_path_len()+strlen(path)+1];
         for (int n=0; n<archive_path->get_num_paths(); n++) {
