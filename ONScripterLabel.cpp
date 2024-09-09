@@ -39,6 +39,7 @@
 // Ogapee's 20091115 release source code.
 
 #include "ONScripterLabel.h"
+#include "ONScripterReporter.h"
 #include "graphics_cpu.h"
 #include "graphics_resize.h"
 #include <cstdio>
@@ -743,7 +744,7 @@ ONScripterLabel::ONScripterLabel()
     internal_timer = SDL_GetTicks();
 
     //setting this to let script_h call error message popup routines
-    script_h.setOns(this);
+    script_h.setReporter(new ONScripterReporter(this));
     
 #if defined (USE_X86_GFX) && !defined(MACOSX)
     // determine what functions the cpu supports (Mion)
