@@ -1,0 +1,52 @@
+From b03610113287fcbc0cade7550be9f2db02793ed6 Mon Sep 17 00:00:00 2001
+From: Sean McGovern <gseanmcg@gmail.com>
+Date: Wed, 11 Sep 2024 22:15:23 -0400
+Subject: [PATCH] extlib/SDL: set the libtool tag as appropriate
+
+---
+ Makefile.in              | 4 ++--
+ build-scripts/makedep.sh | 4 ++--
+ 2 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/Makefile.in b/Makefile.in
+index ab51035e..743ce30c 100644
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -72,10 +72,10 @@ depend:
+ include $(depend)
+ 
+ $(objects)/$(TARGET): $(OBJECTS)
+-	$(LIBTOOL) --mode=link $(CC) -o $@ $^ $(LDFLAGS) $(EXTRA_LDFLAGS) $(LT_LDFLAGS)
++	$(LIBTOOL) --tag=CC --mode=link $(CC) -o $@ $^ $(LDFLAGS) $(EXTRA_LDFLAGS) $(LT_LDFLAGS)
+ 
+ $(objects)/$(SDLMAIN_TARGET): $(SDLMAIN_OBJECTS)
+-	$(LIBTOOL) --mode=link $(CC) -o $@ $^ $(LDFLAGS) $(EXTRA_LDFLAGS) $(LT_LDFLAGS) $(SDLMAIN_LDFLAGS)
++	$(LIBTOOL) --tag=CC --mode=link $(CC) -o $@ $^ $(LDFLAGS) $(EXTRA_LDFLAGS) $(LT_LDFLAGS) $(SDLMAIN_LDFLAGS)
+ 
+ 
+ install: all install-bin install-hdrs install-lib install-data install-man
+diff --git a/build-scripts/makedep.sh b/build-scripts/makedep.sh
+index 3b3863b4..e9d8aec7 100755
+--- a/build-scripts/makedep.sh
++++ b/build-scripts/makedep.sh
+@@ -51,7 +51,7 @@ do  echo "Generating dependencies for $src"
+     case $ext in
+         c) cat >>${output}.new <<__EOF__
+ 
+-	\$(LIBTOOL) --mode=compile \$(CC) \$(CFLAGS) \$(EXTRA_CFLAGS) -c $src  -o \$@
++	\$(LIBTOOL) --tag=CC --mode=compile \$(CC) \$(CFLAGS) \$(EXTRA_CFLAGS) -c $src  -o \$@
+ 
+ __EOF__
+         ;;
+@@ -69,7 +69,7 @@ __EOF__
+         ;;
+         asm) cat >>${output}.new <<__EOF__
+ 
+-	\$(LIBTOOL) --tag=CC --mode=compile \$(auxdir)/strip_fPIC.sh \$(NASM) -I\$(srcdir)/src/hermes/ $src -o \$@
++	\$(LIBTOOL) --mode=compile \$(auxdir)/strip_fPIC.sh \$(NASM) -I\$(srcdir)/src/hermes/ $src -o \$@
+ 
+ __EOF__
+         ;;
+-- 
+2.39.2
+

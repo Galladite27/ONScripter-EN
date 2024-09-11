@@ -1,0 +1,4 @@
+0001-Fix-compilation-with-libX11-1.5.99.902.patch
+0001-extlib-SDL-disable-installation-of-manpages.patch
+0001-extlib-SDL-set-the-libtool-tag-as-appropriate.patch
+0001-extlib-SDL-update-config.-guess-sub.patch

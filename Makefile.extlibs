@@ -7,6 +7,8 @@ REDIR = >/dev/null 2>&1
 REDSO = >/dev/null
 endif
 
+PATCH = patch
+
 EL = extlib/lib
 EI = extlib/include
 EB = extlib/bin
@@ -54,11 +56,12 @@ dclean_sdl: clean_sdl
 $(SDLSRC)/Makefile: $(if $(INTERNAL_LIBPNG),$(EL)/libpng$(LIBSUFFIX))
 	@echo Configuring internal SDL...
 	@cd $(SDLSRC) && \
+	git clean -fdx && git restore . && \
+	for p in $$(cat $(TOPSRC)/$(ES)/patches/SDL/series); do $(PATCH) -p1 < $(TOPSRC)/$(ES)/patches/SDL/$$p; done && \
+	./autogen.sh && \
 	./configure --prefix="$(LPREFIX)" $(SDLOTHERCONFIG) \
 	    $(addprefix --disable-,shared joystick nas $(addprefix video-,fbcon directfb svga vgl wscons opengl)) \
 	    $(REDIR)
-	@cp $(ES)/required/libtool $(SDLSRC)/libtool # This line fixes a libtool issue by just using the copy of libtool from the old build of ONSCripter-EN. It's not pretty, but it works. -Galladite, 2022-2-9
-	@sed -i '/^$$(objects)\/SDL_dummy_main/s/\.lo/\.o/' $(SDLSRC)/build-deps # This line fixes an issue baked into SDL's configure.in whereby the wrong extension was given, changing the name of a critically important target. These extensions are given out in a generic manner, however, so I'd rather do this than try and understand whatever autoconf is doing. -Galladite, 2022-2-9
 
 $(EB)/sdl-config: $(SDLSRC)/Makefile | $(EB)
 	@echo Building internal SDL...

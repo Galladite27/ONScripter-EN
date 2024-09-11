@@ -1,0 +1,62 @@
+From 9292c2f9aa66a33136450cb0178cb1bf80e96d46 Mon Sep 17 00:00:00 2001
+From: Sean McGovern <gseanmcg@gmail.com>
+Date: Wed, 11 Sep 2024 22:27:27 -0400
+Subject: [PATCH] extlib/SDL: disable installation of manpages
+
+---
+ Makefile.in | 17 +++--------------
+ 1 file changed, 3 insertions(+), 14 deletions(-)
+
+diff --git a/Makefile.in b/Makefile.in
+index ab51035e..72cf02c0 100644
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -64,7 +64,7 @@ Makefile: $(srcdir)/Makefile.in
+ $(objects):
+ 	$(SHELL) $(auxdir)/mkinstalldirs $@
+ 
+-.PHONY: all depend install install-bin install-hdrs install-lib install-data install-man uninstall uninstall-bin uninstall-hdrs uninstall-lib uninstall-data uninstall-man clean distclean dist
++.PHONY: all depend install install-bin install-hdrs install-lib install-data uninstall uninstall-bin uninstall-hdrs uninstall-lib uninstall-data clean distclean dist
+ depend:
+ 	@SOURCES="$(SOURCES) $(SDLMAIN_SOURCES)" INCLUDE="$(INCLUDE)" output="$(depend)" \
+ 	$(SHELL) $(auxdir)/makedep.sh
+@@ -78,7 +78,7 @@ $(objects)/$(SDLMAIN_TARGET): $(SDLMAIN_OBJECTS)
+ 	$(LIBTOOL) --mode=link $(CC) -o $@ $^ $(LDFLAGS) $(EXTRA_LDFLAGS) $(LT_LDFLAGS) $(SDLMAIN_LDFLAGS)
+ 
+ 
+-install: all install-bin install-hdrs install-lib install-data install-man
++install: all install-bin install-hdrs install-lib install-data
+ install-bin:
+ 	$(SHELL) $(auxdir)/mkinstalldirs $(DESTDIR)$(bindir)
+ 	$(INSTALL) -m 755 sdl-config $(DESTDIR)$(bindir)/sdl-config
+@@ -97,14 +97,8 @@ install-data:
+ 	$(INSTALL) -m 644 $(srcdir)/sdl.m4 $(DESTDIR)$(datadir)/aclocal/sdl.m4
+ 	$(SHELL) $(auxdir)/mkinstalldirs $(DESTDIR)$(libdir)/pkgconfig
+ 	$(INSTALL) -m 644 sdl.pc $(DESTDIR)$(libdir)/pkgconfig
+-install-man:
+-	$(SHELL) $(auxdir)/mkinstalldirs $(DESTDIR)$(mandir)/man3
+-	for src in $(srcdir)/docs/man3/*.3; do \
+-	    file=`echo $$src | sed -e 's|^.*/||'`; \
+-	    $(INSTALL) -m 644 $$src $(DESTDIR)$(mandir)/man3/$$file; \
+-	done
+ 
+-uninstall: uninstall-bin uninstall-hdrs uninstall-lib uninstall-data uninstall-man
++uninstall: uninstall-bin uninstall-hdrs uninstall-lib uninstall-data
+ uninstall-bin:
+ 	rm -f $(DESTDIR)$(bindir)/sdl-config
+ uninstall-hdrs:
+@@ -119,11 +113,6 @@ uninstall-lib:
+ uninstall-data:
+ 	rm -f $(DESTDIR)$(datadir)/aclocal/sdl.m4
+ 	rm -f $(DESTDIR)$(libdir)/pkgconfig/sdl.pc
+-uninstall-man:
+-	for src in $(srcdir)/docs/man3/*.3; do \
+-	    file=`echo $$src | sed -e 's|^.*/||'`; \
+-	    rm -f $(DESTDIR)$(mandir)/man3/$$file; \
+-	done
+ 
+ clean:
+ 	rm -rf $(objects)
+-- 
+2.39.2
+
