@@ -344,7 +344,6 @@ int main( int argc, char **argv )
 #ifdef NSA
     cSR.writeHeader( sAI->file_handle, archive_type );
 #endif
-    fclose(sAI->file_handle);
 
     if ( buffer ) delete[] buffer;
     
