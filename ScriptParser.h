@@ -187,6 +187,7 @@ public:
     int lookbackspCommand();
     int lookbackcolorCommand();
     //int lookbackbuttonCommand();
+    int logCommand();
     int loadgosubCommand();
     int linepageCommand();
     int lenCommand();

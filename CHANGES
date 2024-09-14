@@ -1,3 +1,8 @@
+2024-09-14
+  Implemented a simple log command - why wasn't this done sooner?
+  Still need to make it accept string and number literals.
+  -Galladite
+
 2024-09-05
   Introduced some unit tests - Sean
   Cleaned up directives interpretation code - Playmer

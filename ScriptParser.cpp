@@ -135,6 +135,7 @@ static struct FuncLUT{
     {"lookbacksp",      &ScriptParser::lookbackspCommand},
     {"lookbackcolor",      &ScriptParser::lookbackcolorCommand},
     //{"lookbackbutton",      &ScriptParser::lookbackbuttonCommand},
+    {"log",      &ScriptParser::logCommand},
     {"loadgosub",      &ScriptParser::loadgosubCommand},
     {"linepage2",    &ScriptParser::linepageCommand},
     {"linepage",    &ScriptParser::linepageCommand},

@@ -860,6 +860,21 @@ int ScriptParser::lookbackcolorCommand()
     return RET_CONTINUE;
 }
 
+int ScriptParser::logCommand()
+{
+    script_h.readVariable();
+
+    if ( script_h.current_variable.type & ScriptHandler::VAR_INT ||
+         script_h.current_variable.type & ScriptHandler::VAR_ARRAY ){
+        printf("%d\n", script_h.getVariableData(script_h.current_variable.var_no).num);
+    }
+    else if ( script_h.current_variable.type & ScriptHandler::VAR_STR ){
+        printf("%s\n", script_h.getVariableData(script_h.current_variable.var_no).str);
+    }
+
+    return RET_CONTINUE;
+}
+
 int ScriptParser::loadgosubCommand()
 {
     if ( current_mode != DEFINE_MODE )
