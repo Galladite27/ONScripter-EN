@@ -7,6 +7,8 @@ REDIR = >/dev/null 2>&1
 REDSO = >/dev/null
 endif
 
+PATCH = patch
+
 EL = extlib/lib
 EI = extlib/include
 EB = extlib/bin
@@ -187,6 +189,9 @@ internal_ogglibs = $(OGGLIBS)
 $(OGGSRC)/Makefile:
 	@echo Configuring internal libogg...
 	@cd $(OGGSRC) && \
+	git clean -fdx && git restore . && \
+	for p in $$(cat $(TOPSRC)/$(ES)/patches/Ogg/series); do $(PATCH) -p1 < $(TOPSRC)/$(ES)/patches/Ogg/$$p; done
+	@cd $(OGGSRC) && ./autogen.sh && \
 	./configure --prefix="$(LPREFIX)" --disable-shared --disable-dependency-tracking $(OTHERCONFIG) $(REDIR)
 
 $(EL)/libogg$(LIBSUFFIX): $(OGGSRC)/Makefile | $(EL)
