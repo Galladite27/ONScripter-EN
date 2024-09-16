@@ -737,6 +737,58 @@ int ONScripterLabel::splitCommand()
     return RET_CONTINUE;
 }
 
+int ONScripterLabel::splitonceCommand()
+{
+    script_h.readStr();
+    const char *save_buf = script_h.saveStringBuffer();
+
+    char delimiter = script_h.readStr()[0];
+
+    // Get thing to hold strings, and scan until we hit the delimeter
+    char *token = new char[strlen(save_buf)+1];
+    unsigned int c=0;
+    while(save_buf[c] != delimiter && save_buf[c] != '\0'){
+        if (IS_TWO_BYTE(save_buf[c]))
+            c += 2;
+        else
+            c++;
+    }
+    // Copy that much of save_buf into token
+    memcpy( token, save_buf, c );
+    // Cut the string there
+    token[c] = '\0';
+
+    // Read variable, and save the first part of the string there
+    script_h.readVariable();
+    if ( script_h.current_variable.type & ScriptHandler::VAR_INT ||
+         script_h.current_variable.type & ScriptHandler::VAR_ARRAY ){
+        script_h.setInt( &script_h.current_variable, atoi(token) );
+    }
+    else if ( script_h.current_variable.type & ScriptHandler::VAR_STR ){
+        setStr( &script_h.getVariableData(script_h.current_variable.var_no).str, token );
+    }
+
+    // Advance buffer
+    save_buf += c;
+    // If we have more of the string, save it into another variable
+    if (save_buf[0] != '\0') {
+        save_buf++;
+
+        script_h.readVariable();
+        if ( script_h.current_variable.type & ScriptHandler::VAR_INT ||
+             script_h.current_variable.type & ScriptHandler::VAR_ARRAY ){
+            errorAndCont("splitonce: no variable provided to save remainder of string to");
+        }
+        else if ( script_h.current_variable.type & ScriptHandler::VAR_STR ){
+            setStr( &script_h.getVariableData(script_h.current_variable.var_no).str, save_buf );
+        }
+    }
+
+    delete[] token;
+
+    return RET_CONTINUE;
+}
+
 int ONScripterLabel::spclclkCommand()
 {
     if ( !force_button_shortcut_flag )

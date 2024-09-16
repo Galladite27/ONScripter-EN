@@ -80,6 +80,7 @@ DOCUMENTATION UPDATING LIST
 
 TODO LIST
 
+* Quickly check if splitCommand and splitonceCommand need to use script_h.enc.getBytes()
 * Quickly check if enginereset breaks when used in define block
 * --key doesn't do anything? Also see OnscripterYuri
 * OGG video support for 1080p

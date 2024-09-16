@@ -1,3 +1,10 @@
+2024-09-16
+  Implemented splitonce command. TODO still need to add this to the
+  API ref, and remove the redundant third of four arguments. When this
+  is done, remember to notify Ciox due to this being used in a fix to
+  get around an engine bug, being employed in Tenshi no Oshigoto.
+  -Galladite
+
 2024-09-14
   Implemented a simple log command - why wasn't this done sooner?
   Still need to make it accept string and number literals.

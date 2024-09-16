@@ -131,6 +131,7 @@ static struct FuncLUT{
     {"spstr",   &ONScripterLabel::spstrCommand},
     {"spreload",   &ONScripterLabel::spreloadCommand},
     {"splitstring",   &ONScripterLabel::splitCommand},
+    {"splitonce",   &ONScripterLabel::splitonceCommand},
     {"split",   &ONScripterLabel::splitCommand},
     {"spclclk",   &ONScripterLabel::spclclkCommand},
     {"spbtn",   &ONScripterLabel::spbtnCommand},

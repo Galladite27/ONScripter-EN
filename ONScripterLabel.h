@@ -214,6 +214,7 @@ public:
     int sp_rgb_gradationCommand();
     int spstrCommand();
     int spreloadCommand();
+    int splitonceCommand();
     int splitCommand();
     int spclclkCommand();
     int spbtnCommand();
