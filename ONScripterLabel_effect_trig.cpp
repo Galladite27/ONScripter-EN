@@ -62,8 +62,8 @@ void ONScripterLabel::effectTrvswave( char *params, int duration )
         TRVSWAVE_WVLEN_START = 256
     };
 
-    SDL_Rect src_rect={0, 0, screen_width, 1};
-    SDL_Rect dst_rect={0, 0, screen_width, 1};
+    SDL_Rect src_rect={0, 0, (Uint16)screen_width, 1};
+    SDL_Rect dst_rect={0, 0, (Uint16)screen_width, 1};
     int ampl, wvlen;
     int y_offset = -screen_height / 2;
     int width = 256 * effect_counter / duration;

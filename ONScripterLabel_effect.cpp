@@ -159,9 +159,9 @@ bool ONScripterLabel::doEffect( EffectLink *effect, bool clear_dirty_region )
     int i, amp;
     int width, width2;
     int height, height2;
-    SDL_Rect src_rect={0, 0, screen_width, screen_height};
-    SDL_Rect dst_rect={0, 0, screen_width, screen_height};
-    SDL_Rect quake_rect={0, 0, screen_width, screen_height};
+    SDL_Rect src_rect={0, 0, (Uint16)screen_width, (Uint16)screen_height};
+    SDL_Rect dst_rect={0, 0, (Uint16)screen_width, (Uint16)screen_height};
+    SDL_Rect quake_rect={0, 0, (Uint16)screen_width, (Uint16)screen_height};
 
     /* ---------------------------------------- */
     /* Execute effect */

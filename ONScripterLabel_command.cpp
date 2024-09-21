@@ -2054,7 +2054,7 @@ int ONScripterLabel::menu_windowCommand()
 #ifndef PSP
         if (async_movie) SMPEG_pause( async_movie );
         screen_surface = SDL_SetVideoMode( screen_width, screen_height, screen_bpp, DEFAULT_VIDEO_SURFACE_FLAG );
-        SDL_Rect rect = {0, 0, screen_width, screen_height};
+        SDL_Rect rect = {0, 0, (Uint16)screen_width, (Uint16)screen_height};
         flushDirect( rect, refreshMode() );
         if (async_movie){
             SMPEG_setdisplay( async_movie, screen_surface, NULL, NULL );
@@ -2096,7 +2096,7 @@ int ONScripterLabel::menu_fullCommand()
             screen_surface = SDL_SetVideoMode( screen_width, screen_height, screen_bpp, DEFAULT_VIDEO_SURFACE_FLAG );
             fullscreen_mode = false;
         }
-        SDL_Rect rect = {0, 0, screen_width, screen_height};
+        SDL_Rect rect = {0, 0, (Uint16)screen_width, (Uint16)screen_height};
         flushDirect( rect, refreshMode() );
         if (async_movie){
             SMPEG_setdisplay( async_movie, screen_surface, NULL, NULL );
@@ -3639,7 +3639,7 @@ int ONScripterLabel::dvCommand()
 
 int ONScripterLabel::drawtextCommand()
 {
-    SDL_Rect clip = {0, 0, accumulation_surface->w, accumulation_surface->h};
+    SDL_Rect clip = {0, 0, (Uint16)accumulation_surface->w, (Uint16)accumulation_surface->h};
     text_info.blendOnSurface( accumulation_surface, 0, 0, clip );
 
     return RET_CONTINUE;
@@ -3671,7 +3671,7 @@ int ONScripterLabel::drawsp3Command()
         si.inv_mat[1][1] =  si.mat[0][0] * 1000 / denom;
     }
 
-    SDL_Rect clip = {0, 0, screen_surface->w, screen_surface->h};
+    SDL_Rect clip = {0, 0, (Uint16)screen_surface->w, (Uint16)screen_surface->h};
     si.blendOnSurface2( accumulation_surface, x, y, clip, alpha );
     si.setCell(old_cell_no);
 
@@ -3694,7 +3694,7 @@ int ONScripterLabel::drawsp2Command()
     si.calcAffineMatrix();
     si.setCell(cell_no);
 
-    SDL_Rect clip = {0, 0, screen_surface->w, screen_surface->h};
+    SDL_Rect clip = {0, 0, (Uint16)screen_surface->w, (Uint16)screen_surface->h};
     si.blendOnSurface2( accumulation_surface, si.pos.x, si.pos.y, clip, alpha );
 
     return RET_CONTINUE;
@@ -3711,7 +3711,7 @@ int ONScripterLabel::drawspCommand()
     AnimationInfo &si = sprite_info[sprite_no];
     int old_cell_no = si.current_cell;
     si.setCell(cell_no);
-    SDL_Rect clip = {0, 0, accumulation_surface->w, accumulation_surface->h};
+    SDL_Rect clip = {0, 0, (Uint16)accumulation_surface->w, (Uint16)accumulation_surface->h};
     si.blendOnSurface( accumulation_surface, x, y, clip, alpha );
     si.setCell(old_cell_no);
 
@@ -3738,7 +3738,7 @@ int ONScripterLabel::drawclearCommand()
 
 int ONScripterLabel::drawbgCommand()
 {
-    SDL_Rect clip = {0, 0, accumulation_surface->w, accumulation_surface->h};
+    SDL_Rect clip = {0, 0, (Uint16)accumulation_surface->w, (Uint16)accumulation_surface->h};
     bg_info.blendOnSurface( accumulation_surface, bg_info.pos.x, bg_info.pos.y, clip );
 
     return RET_CONTINUE;
@@ -3755,7 +3755,7 @@ int ONScripterLabel::drawbg2Command()
     bi.rot = script_h.readInt();
     bi.calcAffineMatrix();
 
-    SDL_Rect clip = {0, 0, screen_surface->w, screen_surface->h};
+    SDL_Rect clip = {0, 0, (Uint16)screen_surface->w, (Uint16)screen_surface->h};
     bi.blendOnSurface2( accumulation_surface, bi.pos.x, bi.pos.y,
                         clip, 256 );
 
@@ -3764,7 +3764,7 @@ int ONScripterLabel::drawbg2Command()
 
 int ONScripterLabel::drawCommand()
 {
-    SDL_Rect rect = {0, 0, screen_width, screen_height};
+    SDL_Rect rect = {0, 0, (Uint16)screen_width, (Uint16)screen_height};
     flushDirect( rect, REFRESH_NONE_MODE );
     dirty_rect.clear();
 
@@ -4239,7 +4239,7 @@ int ONScripterLabel::btnwaitCommand()
         if (txtbtn_show) txtbtn_visible = true;
 
         if (is_exbtn_enabled && exbtn_d_button_link.exbtn_ctl){
-            SDL_Rect check_src_rect = {0, 0, screen_width, screen_height};
+            SDL_Rect check_src_rect = {0, 0, (Uint16)screen_width, (Uint16)screen_height};
             decodeExbtnControl( exbtn_d_button_link.exbtn_ctl, &check_src_rect );
         }
 
@@ -4485,8 +4485,8 @@ int ONScripterLabel::bltCommand()
 
     if ( sw == dw && sw > 0 && sh == dh && sh > 0 ){
 
-        SDL_Rect src_rect = {sx,sy,sw,sh};
-        SDL_Rect dst_rect = {dx,dy,dw,dh};
+        SDL_Rect src_rect = {(Sint16)sx,(Sint16)sy,(Uint16)sw,(Uint16)sh};
+        SDL_Rect dst_rect = {(Sint16)dx,(Sint16)dy,(Uint16)dw,(Uint16)dh};
 
         SDL_BlitSurface( btndef_info.image_surface, &src_rect, screen_surface, &dst_rect );
         SDL_UpdateRect( screen_surface, dst_rect.x, dst_rect.y, dst_rect.w, dst_rect.h );
@@ -4538,7 +4538,7 @@ int ONScripterLabel::bltCommand()
         SDL_UnlockSurface(btndef_info.image_surface);
         SDL_UnlockSurface(accumulation_surface);
 
-        SDL_Rect dst_rect = {start_x, start_y, end_x-start_x, end_y-start_y};
+        SDL_Rect dst_rect = {(Sint16)start_x, (Sint16)start_y, (Uint16)(end_x-start_x), (Uint16)(end_y-start_y)};
         flushDirect( (SDL_Rect&)dst_rect, REFRESH_NONE_MODE );
     }
 

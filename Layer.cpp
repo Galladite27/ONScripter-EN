@@ -232,7 +232,7 @@ void OldMovieLayer::om_init()
 
     // Generate scanlines of solid greyscale, used for the glow effect.
     GlowSurface = AnimationInfo::allocSurface(width, MAX_GLOW);
-    for (SDL_Rect r = { 0, 0, width, 1 }; r.y < MAX_GLOW; r.y++) {
+    for (SDL_Rect r = { 0, 0, (Uint16)width, 1 }; r.y < MAX_GLOW; r.y++) {
         const int ry = (r.y * 30 / MAX_GLOW) + 4;
         SDL_FillRect(GlowSurface, &r, SDL_MapRGB(GlowSurface->format, ry, ry, ry));
     }
