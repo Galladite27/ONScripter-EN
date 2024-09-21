@@ -330,7 +330,7 @@ SDL_Rect AnimationInfo::findOpaquePoint(SDL_Rect *clip)
 //find the first opaque-enough pixel position for transbtn
 {
     int cell_width = image_surface->w/num_of_cells;
-    SDL_Rect cliprect = {0, 0, cell_width, image_surface->h};
+    SDL_Rect cliprect = {0, 0, (Uint16)cell_width, (Uint16)image_surface->h};
     if (clip) cliprect = *clip;
 
 #ifdef BPP16
@@ -409,7 +409,7 @@ void AnimationInfo::blendOnSurface( SDL_Surface *dst_surface, int dst_x, int dst
     if ( image_surface == NULL ) return;
     if ( alpha == 0 ) return;
     
-    SDL_Rect dst_rect = {dst_x, dst_y, pos.w, pos.h}, src_rect;
+    SDL_Rect dst_rect = {(Sint16)dst_x, (Sint16)dst_y, pos.w, pos.h}, src_rect;
     if ( doClipping( &dst_rect, &clip, &src_rect ) ) return;
 
     /* ---------------------------------------- */
@@ -669,7 +669,7 @@ void AnimationInfo::blendText( SDL_Surface *surface, int dst_x, int dst_y,
 {
     if (image_surface == NULL || surface == NULL) return;
     
-    SDL_Rect dst_rect = {dst_x, dst_y, surface->w, surface->h};
+    SDL_Rect dst_rect = {(Sint16)dst_x, (Sint16)dst_y, (Uint16)surface->w, (Uint16)surface->h};
     if (rotate_flag){
         dst_rect.w = surface->h;
         dst_rect.h = surface->w;
@@ -688,7 +688,7 @@ void AnimationInfo::blendText( SDL_Surface *surface, int dst_x, int dst_y,
     
     /* ---------------------------------------- */
     /* 2nd clipping */
-    SDL_Rect clip_rect = {0, 0, image_surface->w, image_surface->h};
+    SDL_Rect clip_rect = {0, 0, (Uint16)image_surface->w, (Uint16)image_surface->h};
     if ( doClipping( &dst_rect, &clip_rect, &clipped_rect ) ) return;
     
     src_rect.x += clipped_rect.x;
@@ -830,10 +830,10 @@ void AnimationInfo::copySurface( SDL_Surface *surface, SDL_Rect *src_rect, SDL_R
 {
     if (!image_surface || !surface) return;
 
-    SDL_Rect _dst_rect = {0, 0, image_surface->w, image_surface->h};
+    SDL_Rect _dst_rect = {0, 0, (Uint16)image_surface->w, (Uint16)image_surface->h};
     if (dst_rect) _dst_rect = *dst_rect;
 
-    SDL_Rect _src_rect = {0, 0, surface->w, surface->h};
+    SDL_Rect _src_rect = {0, 0, (Uint16)surface->w, (Uint16)surface->h};
     if (src_rect) _src_rect = *src_rect;
 
     if (_src_rect.x >= surface->w) return;

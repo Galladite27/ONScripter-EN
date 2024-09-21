@@ -255,8 +255,8 @@ void ONScripterLabel::effectBreakup( char *params, int duration )
     bool *msk_buf = breakup_cellforms;
 
     for (int n=0; n<n_cells; ++n) {
-        SDL_Rect rect = { breakup_cells[n].cell_x * BREAKUP_CELLWIDTH,
-                          breakup_cells[n].cell_y * BREAKUP_CELLWIDTH, 
+        SDL_Rect rect = { (Sint16)(breakup_cells[n].cell_x * BREAKUP_CELLWIDTH),
+                          (Sint16)(breakup_cells[n].cell_y * BREAKUP_CELLWIDTH), 
                           BREAKUP_CELLWIDTH, BREAKUP_CELLWIDTH };
         breakup_cells[n].state += frame_diff;
         if (breakup_cells[n].state >= (BREAKUP_MOVE_FRAMES + BREAKUP_STILL_STATE)) {

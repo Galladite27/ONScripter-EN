@@ -1302,7 +1302,6 @@ int ONScripterLabel::init()
 
     // ----------------------------------------
     // Sound related variables
-    this->cdaudio_flag = cdaudio_flag;
     if ( cdaudio_flag ){
         if ( cdrom_drive_number >= 0 && cdrom_drive_number < SDL_CDNumDrives() )
             cdrom_info = SDL_CDOpen( cdrom_drive_number );
@@ -2294,7 +2293,7 @@ void ONScripterLabel::displayTextWindow( SDL_Surface *surface, SDL_Rect &clip )
 {
     if ( current_font->is_transparent ){
 
-        SDL_Rect rect = {0, 0, screen_width, screen_height};
+        SDL_Rect rect = {0, 0, (Uint16)screen_width, (Uint16)screen_height};
         if ( current_font == &sentence_font )
             rect = sentence_font_info.pos;
 
