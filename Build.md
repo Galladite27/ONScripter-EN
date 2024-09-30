@@ -22,10 +22,13 @@ Install [MSYS2](https://www.msys2.org/), and choose if you'd like to build for x
 
 ### mingw64 (x86-64)
 
+> NOTE: Ensure you open an MSYS2 MINGW64 prompt to run these commands
+
 Install the toolchain and all of the required packages:
 ```bash
 pacman -S mingw-w64-x86-64-SDL mingw-w64-x86-64-SDL_ttf mingw-w64-x86-64-SDL_mixer mingw-w64-x86-64-SDL_image mingw-w64-x86-64-bzip2 mingw-w64-x86-64-libogg mingw-w64-x86-64-libvorbis mingw-w64-x86-64-freetype mingw-w64-x86-64-smpeg mingw-w64-x86-64-iconv mingw-w64-x86-64-zlib mingw-w64-x86-64-toolchain mingw-w64-x86-64-autotools autotools make
 ```
+> NOTE: Installing these is only needed the first time you set up this environment.
 
 And then while inside of the ONScripter-EN directory you cloned earlier:
 
@@ -36,10 +39,14 @@ make -f ./msys2/Makefile.Windows.MSYS2.x86-64.insani VERBOSE=true all
 The ONScripter-EN executable will be within the top level repo directory, the tools will be within the tools subdirectory.
 
 ### mingw32 (x86)
+
+> NOTE: Ensure you open an MSYS2 MINGW32 prompt to run these commands
+
 Install the toolchain and all of the required packages:
 ```bash
 pacman -S mingw-w64-i686-SDL mingw-w64-i686-SDL_ttf mingw-w64-i686-SDL_mixer mingw-w64-i686-SDL_image mingw-w64-i686-bzip2 mingw-w64-i686-libogg mingw-w64-i686-libvorbis mingw-w64-i686-freetype mingw-w64-i686-smpeg mingw-w64-i686-iconv mingw-w64-i686-zlib mingw-w64-i686-toolchain mingw-w64-i686-autotools autotools make
 ```
+> NOTE: Installing these is only needed the first time you set up this environment.
 
 And then while inside of the ONScripter-EN directory you cloned earlier:
 ```bash
@@ -53,9 +60,11 @@ The ONScripter-EN executable will be within the top level repo directory, the to
 
 You must have the following packages available when building ONScripter-EN:
 
+
 ```bash
 sudo apt-get install libasound2-dev libpulse-dev libwebp-dev libxrandr-dev
 ```
+> NOTE: Installing these is only needed the first time you set up this environment.
 
 Next you must configure libogg:
 
