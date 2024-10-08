@@ -253,9 +253,11 @@ if test -n "$prev"; then
 fi
 
 fetch_EPS() {
-    if ./fetch-eps-content.sh; then
+    echo "Downloading EPS content..."
+    if ./fetch-eps-content.sh >/dev/null 2>&1; then
         :
     else
+        echo "EPS content download failed"
         exit 1
     fi
 }
