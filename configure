@@ -254,7 +254,7 @@ fi
 
 fetch_EPS() {
     if ./fetch-eps-content.sh; then
-        ;
+        :
     else
         exit 1
     fi
