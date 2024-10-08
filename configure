@@ -59,6 +59,8 @@ VERSION=`awk '/define VER_NUMBER/ {print $3}' version.h | sed s/-en$//`
 
 DISTCLEAN_OTHER=
 
+CMAKE=false
+
 # Parse options
 prev=
 for opt
@@ -70,6 +72,13 @@ do
   fi
   arg=`expr "x$opt" : 'x[^=]*=\(.*\)'`
   case $opt in
+      --cmake | -cmake)
+        CMAKE=true ;;
+      --cmake=* | -cmake=*)
+        CMAKE=$arg ;;
+      --cmake-config | -cmake-config)
+        CMAKE=config
+        ;;
       --prefix=* | -prefix=*)
         PREFIX=$arg ;;
       --prefix | -prefix)
@@ -242,6 +251,27 @@ if test -n "$prev"; then
   echo "Error: missing argument to $opt" >&2
   exit 2
 fi
+
+fetch_EPS() {
+    if ./fetch-eps-content.sh; then
+        ;
+    else
+        exit 1
+    fi
+}
+
+# 3 ways to signal we want to use cmake
+# The first way simply allows cmake to do its thing assuming the same target as the host. NOTE Should be static.
+# The second way runs a script within the EPS repo which presents the current target options and allows the user to choose.
+# The third way allows the user to pass a specific value (the same as presented in the second way) if he knows what he wants (or is a robot. beep boop.)
+$echo_n "Checking for requested cmake usage... ${nobr}"
+case "$CMAKE" in
+    false)  echo "False"               ;;
+#   true)   echo "True - auto-detect"  ; fetch_EPS ; eps/config.sh auto ;;
+#   config) echo "True - begin config" ; fetch_EPS ; eps/config.sh config ;;
+    *)      echo "True - custom value" ; fetch_EPS ; eps/config.sh "$CMAKE" ; exit 0 ;; # We'll just handle "true" and "config" from within config.sh
+esac
+
 
 internalise_SDL() {
     INTERNAL_SDL=true	
