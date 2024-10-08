@@ -269,7 +269,7 @@ case "$CMAKE" in
     false)  echo "False"               ;;
 #   true)   echo "True - auto-detect"  ; fetch_EPS ; eps/config.sh auto ;;
 #   config) echo "True - begin config" ; fetch_EPS ; eps/config.sh config ;;
-    *)      echo "True - custom value" ; fetch_EPS ; eps/config.sh "$CMAKE" ; exit 0 ;; # We'll just handle "true" and "config" from within config.sh
+    *)      echo "True" ; fetch_EPS ; eps/config.sh "$CMAKE" ; exit 0 ;; # We'll just handle "true" and "config" from within config.sh
 esac
 
 
