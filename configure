@@ -260,6 +260,10 @@ fetch_EPS() {
         echo "EPS content download failed"
         exit 1
     fi
+
+    # If we got here, we are going to give control to the EPS config script. So, if it returns an error, please exit.
+    # NOT TESTED
+    set -e
 }
 
 # 3 ways to signal we want to use cmake
