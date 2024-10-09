@@ -147,10 +147,10 @@ void ONScripterLabel::searchSaveFile( SaveFileInfo &save_file_info, int no )
         return;
     }
 
-    save_file_info.month  = buf.st_mtime.month;
-    save_file_info.day    = buf.st_mtime.day;
-    save_file_info.hour   = buf.st_mtime.hour;
-    save_file_info.minute = buf.st_mtime.minute;
+    save_file_info.month  = buf.sce_st_mtime.month;
+    save_file_info.day    = buf.sce_st_mtime.day;
+    save_file_info.hour   = buf.sce_st_mtime.hour;
+    save_file_info.minute = buf.sce_st_mtime.minute;
 #else
     sprintf( file_name, "save%d.dat", no );
     FILE *fp;
