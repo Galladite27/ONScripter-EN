@@ -35,7 +35,7 @@ jobs:
         cd extlib/src/libogg-1.3.5
         autoreconf -fi
         autoupdate
-    - name: build
+    - name: Build and Test
       run: |
         NCPUS=$(getconf _NPROCESSORS_ONLN)
         make -j $NCPUS VERBOSE=true
@@ -60,7 +60,7 @@ jobs:
           tools/nscmake \
           tools/sarmake
 
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       with:
         name: Linux x86-64 Build
         path: ${{ github.workspace }}/onscripter-en.Linux.x86-64.tar.gz
@@ -71,15 +71,16 @@ jobs:
       matrix:
         include:
           - os: windows-latest
-            cc: gcc
             sys: mingw64
             env: x86_64
             arch: x86-64
-          - os: windows-latest
             cc: gcc
+          - os: windows-latest
             sys: mingw32
             env: i686
             arch: i686
+            cc: gcc
+    name: windows-${{matrix.env}}
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v4
@@ -109,13 +110,13 @@ jobs:
           zip
 
     - shell: msys2 {0}
-      name: Build
+      name: Build and Test
       run: |
         NCPUS=$(getconf _NPROCESSORS_ONLN)
         make -f ./msys2/Makefile.Windows.MSYS2.${{matrix.arch}}.insani -j $NCPUS VERBOSE=true
         make -f ./msys2/Makefile.Windows.MSYS2.${{matrix.arch}}.insani -j $NCPUS VERBOSE=true tools
         make -f ./msys2/Makefile.Windows.MSYS2.${{matrix.arch}}.insani check
-        zip onscripter-en.Windows.${{matrix.arch}}.zip \
+        zip onscripter-en.Windows.${{matrix.sys}}.${{matrix.arch}}.zip \
           onscripter-en.exe \
           README.md \
           COPYING \
@@ -134,7 +135,123 @@ jobs:
           tools/nscmake.exe \
           tools/sarmake.exe
 
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       with:
         name: Windows ${{matrix.arch}} Build
-        path: ${{ github.workspace }}/onscripter-en.Windows.${{matrix.arch}}.zip
+        path: ${{ github.workspace }}/onscripter-en.Windows.${{matrix.sys}}.${{matrix.arch}}.zip
+        
+  windows-cmake:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            sys: mingw64
+            env: x86_64
+            arch: x86-64
+            cc: gcc
+          - os: windows-latest
+            sys: mingw32
+            env: i686
+            arch: i686
+            cc: gcc
+    name: windows-cmake-${{matrix.env}}
+    runs-on: ${{ matrix.os }}
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+    
+    - uses: msys2/setup-msys2@v2
+      with:
+        msystem: ${{matrix.sys}}
+        update: true
+        install: 
+          mingw-w64-${{matrix.env}}-SDL
+          mingw-w64-${{matrix.env}}-SDL_ttf
+          mingw-w64-${{matrix.env}}-SDL_mixer
+          mingw-w64-${{matrix.env}}-SDL_image
+          mingw-w64-${{matrix.env}}-bzip2
+          mingw-w64-${{matrix.env}}-libogg
+          mingw-w64-${{matrix.env}}-libvorbis
+          mingw-w64-${{matrix.env}}-freetype
+          mingw-w64-${{matrix.env}}-smpeg
+          mingw-w64-${{matrix.env}}-iconv
+          mingw-w64-${{matrix.env}}-zlib
+          mingw-w64-${{matrix.env}}-toolchain
+          mingw-w64-${{matrix.env}}-cmake
+          ninja
+          make
+          zip
+
+    - shell: msys2 {0}
+      name: Build and Test
+      run: |
+        cmake -B build .
+        (cd build/ && ninja)
+        (cd build/test && ctest)
+        zip onscripter-en.Windows.cmake.${{matrix.sys}}.${{matrix.arch}}.zip \
+          build/onscripter-en.exe \
+          README.md \
+          COPYING \
+          CHANGES \
+          build/tools/ns2conv.exe \
+          build/tools/nsaconv.exe \
+          build/tools/sardec.exe \
+          build/tools/batchconv.exe \
+          build/tools/nbzdec.exe \
+          build/tools/ns2make.exe \
+          build/tools/nsamake.exe \
+          build/tools/sarconv.exe \
+          build/tools/ns2dec.exe \
+          build/tools/nsadec.exe \
+          build/tools/nscdec.exe \
+          build/tools/nscmake.exe \
+          build/tools/sarmake.exe
+
+    - uses: actions/upload-artifact@v4
+      with:
+        name: Windows ${{matrix.arch}} CMake ${{matrix.sys}} Build
+        path: ${{ github.workspace }}/onscripter-en.Windows.cmake.${{matrix.sys}}.${{matrix.arch}}.zip
+
+  PSP:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            cc: gcc
+    runs-on: ${{ matrix.os }}
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: install dependencies (PSP)
+      run: |
+        sudo add-apt-repository -y "deb http://archive.ubuntu.com/ubuntu `lsb_release -sc` main universe"
+        sudo apt-get update -y -qq
+        sudo apt-get install build-essential cmake pkgconf libreadline8 libusb-0.1 libgpgme11 libarchive-tools fakeroot curl zip
+    - name: Download and install PSPDEV SDK
+      env:
+        CC: ${{ matrix.cc }}
+      run: |
+        curl -OL https://github.com/pspdev/pspdev/releases/latest/download/pspdev-ubuntu-latest-x86_64.tar.gz
+        tar -xvf pspdev-ubuntu-latest-x86_64.tar.gz
+    - name: Build
+      run: |
+        export PSPDEV="$PWD/pspdev"
+        export PATH="$PATH:$PSPDEV/bin"
+        psp-cmake -DBUILD_PRX=1 -DENC_PRX=1 -B build .
+        (cd build/ && make)
+        zip onscripter-en.PSP.zip \
+          build/onscripter_en \
+          build/EBOOT.PBP \
+          build/onscripter_en.prx \
+          build/PARAM.SFO \
+          README.md \
+          COPYING \
+          CHANGES
+
+    - uses: actions/upload-artifact@v4
+      with:
+        name: PSP Build
+        path: ${{ github.workspace }}/onscripter-en.PSP.zip
