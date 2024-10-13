@@ -101,6 +101,8 @@
 
 #define KEYPRESS_NULL ((SDLKey)(SDLK_LAST+1)) // "null" for keypress variables
 
+void clearTimer(SDL_TimerID &timer_id);
+
 class ONScripterLabel : public ScriptParser
 {
 public:

@@ -824,8 +824,8 @@ int ScriptParser::luasubCommand()
 
 int ScriptParser::luacallCommand()
 {
-    const char *label = NULL;
-    label = script_h.readLabel();
+    const char *label = script_h.readLabel();
+    (void)label;
 
 #ifdef USE_LUA
     lua_handler.addCallback(label);

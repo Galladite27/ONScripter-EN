@@ -67,11 +67,6 @@ static void setupWaveHeader( unsigned char *buffer, int channels, int bits,
                              unsigned long rate, unsigned long data_length,
                              unsigned int extra_bytes=0, unsigned char *extra_ptr=NULL );
 
-static inline void clearTimer(SDL_TimerID &timer_id)
-{
-    clearTimer( timer_id );
-}
-
 extern bool ext_music_play_once_flag;
 
 extern "C"{
@@ -884,6 +879,8 @@ int ONScripterLabel::playMPEG( const char *filename, bool async_flag, bool use_p
 
 int ONScripterLabel::playAVI( const char *filename, bool click_flag )
 {
+    (void)filename, (void)click_flag;
+
 #ifdef USE_AVIFILE
     char *absolute_filename = new char[ strlen(archive_path) + strlen(filename) + 1 ];
     sprintf( absolute_filename, "%s%s", archive_path, filename );
@@ -1136,7 +1133,7 @@ static int oc_seek_func(void *datasource, ogg_int64_t offset, int whence)
     return 0;
 }
 
-static int oc_close_func(void *datasource)
+static int oc_close_func(void* /*datasource*/)
 {
     return 0;
 }

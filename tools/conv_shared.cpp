@@ -123,7 +123,7 @@ void rescaleImage( unsigned char *original_buffer, int width, int height, int by
 }
 
 
-void init_source (j_decompress_ptr cinfo)
+void init_source (j_decompress_ptr /*cinfo*/)
 {
 }
 
@@ -145,7 +145,7 @@ void skip_input_data (j_decompress_ptr cinfo, long num_bytes)
     src->pub.bytes_in_buffer -= (size_t) num_bytes;
 }
 
-void term_source (j_decompress_ptr cinfo)
+void term_source (j_decompress_ptr /*cinfo*/)
 {
 }
 
@@ -167,7 +167,7 @@ boolean empty_output_buffer (j_compress_ptr cinfo)
     return TRUE;
 }
 
-void term_destination (j_compress_ptr cinfo)
+void term_destination (j_compress_ptr /*cinfo*/)
 {
 }
 
@@ -340,7 +340,7 @@ void my_write_data(libpng::png_structp png_ptr, libpng::png_bytep data,
         *(dst_mgr->buf++) = *data++;
 }
 
-void my_flush_data(libpng::png_structp png_ptr)
+void my_flush_data(libpng::png_structp /*png_ptr*/)
 {
 }
 
