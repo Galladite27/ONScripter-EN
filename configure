@@ -447,6 +447,25 @@ then
 fi
 CFLAGSEXTRA="$CFLAGSEXTRA $VECFLAGS"
 
+# determine availability of localtime_r()
+
+rm -rf .configtest
+mkdir .configtest
+cd .configtest
+
+cat > test.cc <<-_EOF
+	#include <time.h>
+	int main(int argc, char**argv){struct tm tm; time_t t = time(NULL); localtime_r( &t, &tm );}
+	_EOF
+$CXX test.cc -o ctest >/dev/null 2>&1
+case $? in
+    0) CFLAGSEXTRA="$CFLAGSEXTRA -DHAVE_LOCALTIME_R"
+      ;;
+esac
+
+cd ..
+rm -rf .configtest
+
 # Custom graphics using intrinsics (most likely requires GCC 4.3+)
 
 rm -rf .configtest
