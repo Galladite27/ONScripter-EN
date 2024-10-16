@@ -72,18 +72,28 @@ void ONScripterLabel::searchSaveFile( SaveFileInfo &save_file_info, int no )
     else
         sprintf( file_name, "%ssave%d.dat", script_h.save_path, no );
     struct stat buf;
-    struct tm *tm;
+    struct tm tm;
     if ( stat( file_name, &buf ) != 0 ){
         save_file_info.valid = false;
         return;
     }
     time_t mtime = buf.st_mtime;
-    tm = localtime( &mtime );
+#ifdef HAVE_LOCALTIME_R
+    if (!localtime_r( &mtime, &tm )) {
+#else
+    struct tm *tm_ptr = localtime( &mtime );
+    if (tm_ptr) {
+        memcpy(&tm, tm_ptr, sizeof(tm));
+    } else {
+#endif
+        save_file_info.valid = false;
+        return;
+    }
 
-    save_file_info.month  = tm->tm_mon + 1;
-    save_file_info.day    = tm->tm_mday;
-    save_file_info.hour   = tm->tm_hour;
-    save_file_info.minute = tm->tm_min;
+    save_file_info.month  = tm.tm_mon + 1;
+    save_file_info.day    = tm.tm_mday;
+    save_file_info.hour   = tm.tm_hour;
+    save_file_info.minute = tm.tm_min;
 #elif defined(WIN32)
     if (script_h.savedir)
         sprintf( file_name, "%ssave%d.dat", script_h.savedir, no );
