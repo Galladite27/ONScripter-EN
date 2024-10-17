@@ -3,6 +3,7 @@
 *.lo
 *.a
 *.la
+*.gcno
 /resources.cpp
 /embed
 /onscripter-en
@@ -13,3 +14,10 @@ tools/*make
 onscripter.rc
 test/googletest
 test/test_*
+build*/
+.vscode/
+.vs/
+
+# CLion project files
+.idea
+cmake-build-*
