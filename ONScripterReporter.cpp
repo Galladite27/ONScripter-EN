@@ -10,4 +10,4 @@ bool ONScripterReporter::reportError( const char *title, const char *errstr, boo
     }
 
     return result;
-};
+}

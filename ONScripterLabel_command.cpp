@@ -499,6 +499,10 @@ int ONScripterLabel::strpxlenCommand()
 {
     // Get int variable
     int val = script_h.readInt();
+
+    // FIXME: Use this?
+    (void)val;
+
     script_h.pushVariable();
 
     // Get string
@@ -866,16 +870,15 @@ int ONScripterLabel::shellCommand()
 {
 #ifdef WIN32
     const char *url = script_h.readStr();
-    HMODULE shdll = LoadLibrary("shell32");
+    void* shdll = SDL_LoadObject("shell32");
     if (shdll) {
-        typedef HINSTANCE (WINAPI *SHELLEXECUTE)(HWND, LPCSTR, LPCSTR, LPCSTR,
+        typedef HINSTANCE (WINAPI *ShellExecuteA_t)(HWND, LPCSTR, LPCSTR, LPCSTR,
 						 LPCSTR, int);
-        SHELLEXECUTE shexec =
-	    SHELLEXECUTE(GetProcAddress(shdll, "ShellExecuteA"));
-        if (shexec) {
-            shexec(NULL, "open", url, NULL, NULL, SW_SHOW);
+        ShellExecuteA_t ShellExecuteAFn = (ShellExecuteA_t)SDL_LoadFunction(shdll, "ShellExecuteA");
+        if (ShellExecuteAFn) {
+            ShellExecuteAFn(NULL, "open", url, NULL, NULL, SW_SHOW);
         }
-        FreeLibrary(shdll);
+        SDL_UnloadObject(shdll);
     }
     
 #elif defined MACOSX
@@ -2855,11 +2858,9 @@ int ONScripterLabel::gettagCommand()
         errorAndExit( "gettag: not in a subroutine, i.e. pretextgosub" );
 
     char *buf = current_page->tag;
-
-    int n;
     unsigned short unicode1, unicode2;
-
     int end_status;
+
     do{
         script_h.readVariable();
         end_status = script_h.getEndStatus();
@@ -2891,7 +2892,7 @@ int ONScripterLabel::gettagCommand()
 
                 else {
                     unicode1 = script_h.enc.getUTF16(buf);
-                    unicode2 = script_h.enc.getUTF16("ï¿½ï¿½", Encoding::CODE_CP932);
+                    unicode2 = script_h.enc.getUTF16("?¿½?¿½", Encoding::CODE_CP932);
                     while(*buf != '/' && *buf != 0 && unicode1 != unicode2) {
                         buf += script_h.enc.getBytes(buf[0]);
                     }
@@ -4258,9 +4259,12 @@ int ONScripterLabel::btnwaitCommand()
                     sprite_info[ cur_button_link->sprite_no ].setCell(0);
                 }
                 else if ( cur_button_link->button_type == ButtonLink::TEXT_BUTTON ){
-                    if (txtbtn_visible)
+                    if (txtbtn_visible) {
                         cur_button_link->show_flag = 1;
-                        sprite_info[ cur_button_link->sprite_no ].setCell(0);
+                    }
+
+                    // FIXME: Should this be part of the above if? The previous indentation inplied it.
+                    sprite_info[ cur_button_link->sprite_no ].setCell(0);
                 }
                 else if ( cur_button_link->anim[1] != NULL ){
                     cur_button_link->show_flag = 2;

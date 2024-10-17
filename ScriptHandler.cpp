@@ -1299,7 +1299,6 @@ int ScriptHandler::checkClickstr(const char *buf, bool recursive_flag)
     if (clickstr_list == NULL) return 0;
     bool only_double_byte_check = true;
     char *click_buf = clickstr_list;
-    int n;
 
     while(click_buf[0]){
 
@@ -1599,7 +1598,7 @@ int ScriptHandler::readScript( DirPaths &path )
 
     FILE *fp = NULL;
     char filename[12];
-    char *file_extension = "";
+    const char *file_extension = "";
     int i, n=0, encrypt_mode = 0;
     while ((fp == NULL) && (n<archive_path->get_num_paths())) {
         const char *curpath = archive_path->get_path(n);

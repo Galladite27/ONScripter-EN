@@ -180,7 +180,7 @@ public:
     void setEndStatus(int val){ end_status |= val; };
     inline int getEndStatus(){ return end_status; };
     inline void toggle1ByteEndStatus() {
-        if (end_status && END_1BYTE_CHAR)
+        if (end_status & END_1BYTE_CHAR)
             end_status &= ~END_1BYTE_CHAR;
         else
             end_status |= END_1BYTE_CHAR;

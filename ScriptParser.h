@@ -487,8 +487,10 @@ protected:
         Page(): next(NULL), previous(NULL),
                 text(NULL), max_text(0), text_count(0), tag(NULL){}
         ~Page(){
-            if (text) delete[] text; text = NULL;
-            if (tag)  delete[] tag;  tag = NULL;
+            if (text) delete[] text;
+            text = NULL;
+            if (tag)  delete[] tag;
+            tag = NULL;
             next = previous = NULL;
         }
         int add(unsigned char ch){

@@ -60,6 +60,8 @@ int processFile(reader::ArchiveInfo *ai, reader::FileInfo *fi,
                 char *fullname, char *name, unsigned long &offset,
                 bool enhanced_flag )
 {
+    (void)enhanced_flag;
+
     FILE *fp = NULL;
     char magic[5];
     char fullpath[512];

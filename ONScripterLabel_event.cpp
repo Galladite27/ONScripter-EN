@@ -78,7 +78,7 @@ SDL_TimerID timer_seqmusic_id = NULL;
 #endif
 bool ext_music_play_once_flag = false;
 
-static inline void clearTimer(SDL_TimerID &timer_id)
+void clearTimer(SDL_TimerID &timer_id)
 {
     if (timer_id != NULL ) {
         SDL_RemoveTimer( timer_id );
@@ -109,7 +109,7 @@ extern "C" void oggcallback( void *userdata, Uint8 *stream, int len )
     }
 }
 
-extern "C" Uint32 SDLCALL animCallback( Uint32 interval, void *param )
+extern "C" Uint32 SDLCALL animCallback( Uint32 /*interval*/, void* /*param*/ )
 {
     clearTimer( anim_timer_id );
 
@@ -120,7 +120,7 @@ extern "C" Uint32 SDLCALL animCallback( Uint32 interval, void *param )
     return 0;
 }
 
-extern "C" Uint32 SDLCALL breakCallback(Uint32 interval, void *param)
+extern "C" Uint32 SDLCALL breakCallback( Uint32 /*interval*/, void* /*param*/ )
 {
     clearTimer(break_id);
 
@@ -131,7 +131,7 @@ extern "C" Uint32 SDLCALL breakCallback(Uint32 interval, void *param)
     return 0;
 }
 
-extern "C" Uint32 SDLCALL timerCallback( Uint32 interval, void *param )
+extern "C" Uint32 SDLCALL timerCallback( Uint32 /*interval*/, void* /*param*/ )
 {
     clearTimer( timer_id );
 
@@ -142,7 +142,7 @@ extern "C" Uint32 SDLCALL timerCallback( Uint32 interval, void *param )
     return 0;
 }
 
-extern "C" Uint32 cdaudioCallback( Uint32 interval, void *param )
+extern "C" Uint32 cdaudioCallback( Uint32 /*interval*/, void* /*param*/ )
 {
     clearTimer( timer_cdaudio_id );
 
@@ -180,7 +180,7 @@ extern "C" Uint32 SDLCALL silentmovieCallback( Uint32 interval, void *param )
 // crashing in Mac OS X after a midi is looped for the first time.  Recommend for
 // integration.  This is the work of Ben Carter.  [Seung Park, 20060621]
 #if defined(MACOSX)
-extern "C" Uint32 seqmusicSDLCallback( Uint32 interval, void *param )
+extern "C" Uint32 seqmusicSDLCallback( Uint32 interval, void* /*param*/ )
 {
 	SDL_Event event;
 	event.type = ONS_SEQMUSIC_EVENT;
@@ -189,7 +189,7 @@ extern "C" Uint32 seqmusicSDLCallback( Uint32 interval, void *param )
 }
 #endif
 
-void seqmusicCallback( int sig )
+void seqmusicCallback( int /*sig*/ )
 {
 #ifdef LINUX
     int status;
@@ -202,7 +202,7 @@ void seqmusicCallback( int sig )
     }
 }
 
-void musicCallback( int sig )
+void musicCallback( int /*sig*/ )
 {
 #ifdef LINUX
     int status;
@@ -280,6 +280,7 @@ SDL_keysym ONScripterLabel::transKey(SDL_keysym key, bool isdown)
 
 SDLKey transJoystickButton(Uint8 button)
 {
+    (void)button;
 #ifdef PSP
     SDLKey button_map[] = { SDLK_ESCAPE, /* TRIANGLE */
                             SDLK_RETURN, /* CIRCLE   */
@@ -980,6 +981,7 @@ bool ONScripterLabel::keyDownEvent( SDL_KeyboardEvent *event )
     switch ( event->keysym.sym ) {
       case SDLK_RCTRL:
         ctrl_pressed_status  |= 0x01;
+        // fall through
       case SDLK_LCTRL:
         if (event->keysym.sym == SDLK_LCTRL)
             ctrl_pressed_status  |= 0x02;
@@ -1490,6 +1492,8 @@ void ONScripterLabel::runEventLoop()
 
           case SDL_MOUSEBUTTONDOWN:
             if ( !btndown_flag ) break;
+
+            // fall through
           case SDL_MOUSEBUTTONUP:
             ret = mousePressEvent( (SDL_MouseButtonEvent*)&event );
             if (ret) return;
@@ -1503,7 +1507,8 @@ void ONScripterLabel::runEventLoop()
             event.key.keysym.sym = transJoystickButton(event.jbutton.button);
             if(event.key.keysym.sym == SDLK_UNKNOWN)
                 break;
-
+            
+            // fall through
           case SDL_KEYDOWN:
             event.key.keysym = transKey(event.key.keysym, true);
             ret = keyDownEvent( (SDL_KeyboardEvent*)&event );
@@ -1520,7 +1525,8 @@ void ONScripterLabel::runEventLoop()
             event.key.keysym.sym = transJoystickButton(event.jbutton.button);
             if(event.key.keysym.sym == SDLK_UNKNOWN)
                 break;
-
+            
+            // fall through
           case SDL_KEYUP:
             event.key.keysym = transKey(event.key.keysym, false);
             keyUpEvent( (SDL_KeyboardEvent*)&event );
@@ -1570,6 +1576,8 @@ void ONScripterLabel::runEventLoop()
             if (event_mode & WAIT_VOICE_MODE)
                 voice_just_ended = true;
             event_mode &= ~WAIT_VOICE_MODE;
+            
+            // fall through
           case ONS_BREAK_EVENT:
             if ((event_mode & WAIT_VOICE_MODE) && wave_sample[0]){
                 break;
@@ -1608,6 +1616,8 @@ void ONScripterLabel::runEventLoop()
 
           case SDL_ACTIVEEVENT:
             if ( !event.active.gain ) break;
+            
+            // fall through
           case SDL_VIDEOEXPOSE:
               SDL_UpdateRect( screen_surface, 0, 0, screen_width, screen_height );
               break;

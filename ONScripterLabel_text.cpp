@@ -844,11 +844,6 @@ void ONScripterLabel::startRuby(char *buf, Fontinfo &info)
     ruby_struct.body_count = 0;
     ruby_struct.ruby_count = 0;
 
-    if (script_h.enc.getEncoding() == Encoding::CODE_UTF8) {
-        char check_text[5] = {'\0', '\0', '\0', '\0', '\0'};
-        int n;
-    }
-
     int n = 0;
     char check_text[5] = {'\0', '\0', '\0', '\0', '\0'};
 
@@ -1385,7 +1380,7 @@ bool ONScripterLabel::processText()
     return false;
 }
 
-char ONScripterLabel::doLineBreak(bool isHardBreak)
+char ONScripterLabel::doLineBreak(bool /*isHardBreak*/)
 // Mion: for text processing
 {
     sentence_font.newLine();
@@ -1545,7 +1540,7 @@ bool ONScripterLabel::processBreaks(bool cont_line, LineBreakType style)
     if (debug_level > 1) debug_msg = 1;
     char *string_buffer = script_h.getStringBuffer();
     if (debug_msg) printf("\n\nBeginning processbreaks for string buffer:\n>>%s<<\n", string_buffer);
-    unsigned int i=0, j=0, o=0;
+    unsigned int i=0, j=0;
     unsigned int len;
     len = (int)strlen(string_buffer);
     int cmd=0;
@@ -2124,6 +2119,11 @@ float ONScripterLabel::strpxlen(const char *buf, Fontinfo *fi)
     float w = 0.0;
     char two_chars[7] = {};
     char num_chars = 1;
+
+    // FIXME: Use these
+    (void)two_chars;
+    (void)num_chars;
+
     float advanced = 0.0;
     while (buf[0] != '\0')
     {

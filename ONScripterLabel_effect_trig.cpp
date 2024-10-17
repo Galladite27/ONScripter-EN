@@ -53,7 +53,7 @@ void ONScripterLabel::buildCosTable()
 //
 // Emulation of Takashi Toyama's "trvswave.dll" NScripter plugin effect
 //
-void ONScripterLabel::effectTrvswave( char *params, int duration )
+void ONScripterLabel::effectTrvswave( char* /*params*/, int duration )
 {
     enum {
         //some constants for trvswave
