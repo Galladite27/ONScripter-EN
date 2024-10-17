@@ -133,16 +133,24 @@ int ScriptParser::transmodeCommand()
 int ScriptParser::timeCommand()
 {
     time_t t = time(NULL);
-    struct tm *tm = localtime( &t );
+    struct tm tm;
+#ifdef HAVE_LOCALTIME_R
+    localtime_r( &t, &tm );
+#else
+    struct tm *tm_ptr = localtime( &t );
+    if (tm_ptr) {
+	memcpy(&tm, tm_ptr, sizeof(tm));
+    }
+#endif
 
     script_h.readVariable();
-    script_h.setInt( &script_h.current_variable, tm->tm_hour );
-    
+    script_h.setInt( &script_h.current_variable, tm.tm_hour );
+
     script_h.readVariable();
-    script_h.setInt( &script_h.current_variable, tm->tm_min );
-    
+    script_h.setInt( &script_h.current_variable, tm.tm_min );
+
     script_h.readVariable();
-    script_h.setInt( &script_h.current_variable, tm->tm_sec );
+    script_h.setInt( &script_h.current_variable, tm.tm_sec );
 
     return RET_CONTINUE;
 }
@@ -1436,16 +1444,24 @@ int ScriptParser::decCommand()
 int ScriptParser::dateCommand()
 {
     time_t t = time(NULL);
-    struct tm *tm = localtime( &t );
+    struct tm tm;
+#ifdef HAVE_LOCALTIME_R
+    localtime_r( &t, &tm );
+#else
+    struct tm *tm_ptr = localtime( &t );
+    if (tm_ptr) {
+        memcpy(&tm, tm_ptr, sizeof(tm));
+    }
+#endif
 
     script_h.readInt();
-    script_h.setInt( &script_h.current_variable, tm->tm_year % 100 );
+    script_h.setInt( &script_h.current_variable, tm.tm_year % 100 );
 
     script_h.readInt();
-    script_h.setInt( &script_h.current_variable, tm->tm_mon + 1 );
+    script_h.setInt( &script_h.current_variable, tm.tm_mon + 1 );
 
     script_h.readInt();
-    script_h.setInt( &script_h.current_variable, tm->tm_mday );
+    script_h.setInt( &script_h.current_variable, tm.tm_mday );
 
     return RET_CONTINUE;
 }
