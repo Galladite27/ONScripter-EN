@@ -51,14 +51,15 @@ SARMAKE_OBJS  = $(TDIR)sarmake$(OBJSUFFIX) $(TDIR)DirectReader$(OBJSUFFIX)	\
 SARCONV_OBJS  = $(TDIR)sarconv$(OBJSUFFIX) $(TDIR)DirectReader$(OBJSUFFIX)	\
                 $(TDIR)SarReader$(OBJSUFFIX) $(TDIR)DirPaths$(OBJSUFFIX)	\
                 $(TDIR)resize_image$(OBJSUFFIX) $(TDIR)conv_shared$(OBJSUFFIX)  \
-                $(TDIR)sjis2utf16$(OBJSUFFIX)
+                $(TDIR)conv_shared_jpeg$(OBJSUFFIX) $(TDIR)sjis2utf16$(OBJSUFFIX)
 NSADEC_OBJS   = $(TDIR)nsadec$(OBJSUFFIX) $(TDIR)DirectReader$(OBJSUFFIX)	\
                 $(TDIR)SarReader$(OBJSUFFIX) $(TDIR)NsaReader$(OBJSUFFIX)	\
                 $(TDIR)DirPaths$(OBJSUFFIX) $(TDIR)sjis2utf16$(OBJSUFFIX)
 NSACONV_OBJS  = $(TDIR)nsaconv$(OBJSUFFIX) $(TDIR)DirectReader$(OBJSUFFIX)	\
                 $(TDIR)SarReader$(OBJSUFFIX) $(TDIR)NsaReader$(OBJSUFFIX)	\
                 $(TDIR)DirPaths$(OBJSUFFIX) $(TDIR)resize_image$(OBJSUFFIX)	\
-                $(TDIR)conv_shared$(OBJSUFFIX) $(TDIR)sjis2utf16$(OBJSUFFIX)
+                $(TDIR)conv_shared$(OBJSUFFIX) $(TDIR)sjis2utf16$(OBJSUFFIX) \
+                $(TDIR)conv_shared_jpeg$(OBJSUFFIX) 
 NSAMAKE_OBJS  = $(TDIR)nsamake$(OBJSUFFIX) $(TDIR)DirectReader$(OBJSUFFIX)	\
                 $(TDIR)SarReader$(OBJSUFFIX) $(TDIR)NsaReader$(OBJSUFFIX)	\
                 $(TDIR)DirPaths$(OBJSUFFIX) $(TDIR)sjis2utf16$(OBJSUFFIX)
@@ -68,12 +69,13 @@ NS2DEC_OBJS   = $(TDIR)ns2dec$(OBJSUFFIX) $(TDIR)DirectReader$(OBJSUFFIX)	\
 NS2CONV_OBJS  = $(TDIR)ns2conv$(OBJSUFFIX) $(TDIR)DirectReader$(OBJSUFFIX)	\
                 $(TDIR)SarReader$(OBJSUFFIX) $(TDIR)NsaReader$(OBJSUFFIX)	\
                 $(TDIR)DirPaths$(OBJSUFFIX) $(TDIR)resize_image$(OBJSUFFIX)	\
-                $(TDIR)conv_shared$(OBJSUFFIX) $(TDIR)sjis2utf16$(OBJSUFFIX)
+                $(TDIR)conv_shared$(OBJSUFFIX) $(TDIR)sjis2utf16$(OBJSUFFIX) \
+                $(TDIR)conv_shared_jpeg$(OBJSUFFIX) 
 NS2MAKE_OBJS  = $(TDIR)ns2make$(OBJSUFFIX) $(TDIR)DirectReader$(OBJSUFFIX)	\
                 $(TDIR)SarReader$(OBJSUFFIX) $(TDIR)NsaReader$(OBJSUFFIX)	\
                 $(TDIR)DirPaths$(OBJSUFFIX) $(TDIR)sjis2utf16$(OBJSUFFIX)
 BATCONV_OBJS  = $(TDIR)batchconv$(OBJSUFFIX) $(TDIR)resize_image$(OBJSUFFIX)	\
-                $(TDIR)conv_shared$(OBJSUFFIX)
+                $(TDIR)conv_shared$(OBJSUFFIX) $(TDIR)conv_shared_jpeg$(OBJSUFFIX)
 NBZDEC_OBJS   = $(TDIR)nbzdec$(OBJSUFFIX) $(TDIR)DirectReader$(OBJSUFFIX)	\
                 $(TDIR)SarReader$(OBJSUFFIX) $(TDIR)DirPaths$(OBJSUFFIX)	\
                 $(TDIR)sjis2utf16$(OBJSUFFIX)
@@ -210,7 +212,8 @@ $(TDIR)ns2dec$(OBJSUFFIX): $(READER_HEADER) SarReader.h NsaReader.h
 $(TDIR)ns2conv$(OBJSUFFIX): $(READER_HEADER) SarReader.h NsaReader.h
 $(TDIR)ns2make$(OBJSUFFIX): $(READER_HEADER) SarReader.h NsaReader.h
 $(TDIR)nbzdec$(OBJSUFFIX): $(READER_HEADER) SarReader.h
-$(TDIR)conv_shared$(OBJSUFFIX): resize_image.h
+$(TDIR)conv_shared$(OBJSUFFIX): $(TDIR)conv_shared.h resize_image.h
+$(TDIR)conv_shared_jpeg$(OBJSUFFIX): $(TDIR)conv_shared.h resize_image.h
 $(TDIR)SarReader$(OBJSUFFIX):    $(READER_HEADER) SarReader.h 
 $(TDIR)NsaReader$(OBJSUFFIX):    $(READER_HEADER) SarReader.h NsaReader.h 
 $(TDIR)DirectReader$(OBJSUFFIX): $(READER_HEADER) DirectReader.h
