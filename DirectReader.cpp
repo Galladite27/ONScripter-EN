@@ -117,9 +117,11 @@ DirectReader::~DirectReader()
     }
 }
 
-bool hasTwoByteChar(const char *str)
+bool hasTwoByteChar(const unsigned char *str)
 {
-    const char *ptr = str;
+    if (str == NULL) return false;
+
+    const unsigned char *ptr = str;
     while (*ptr != 0) {
         if (IS_TWO_BYTE(*ptr) )
             return true;
@@ -151,7 +153,7 @@ FILE *DirectReader::fopen(const char *path, const char *mode)
         if (fp) return fp;
 #ifdef WIN32
         // Windows uses UTF-16, so convert for Japanese characters
-        else if (hasTwoByteChar(file_full_path)) {
+        else if (hasTwoByteChar(reinterpret_cast<const unsigned char *>(file_full_path))) {
             wchar_t *u16_tmp, *umode;
             //convert the file path to from Shift-JIS to Wide chars (Unicode)
             int wc_size = MultiByteToWideChar(932, 0, file_full_path, -1, NULL, 0);
@@ -377,6 +379,10 @@ FILE *DirectReader::getFileHandle( const char *file_name, int &compression_type,
     FILE *fp = NULL;
     unsigned int i;
 
+    if (file_name == NULL) {
+        return fp;
+    }
+
     compression_type = NO_COMPRESSION;
     size_t len = strlen( file_name );
     if ( len > MAX_FILE_NAME_LENGTH ) len = MAX_FILE_NAME_LENGTH;
@@ -436,6 +442,8 @@ FILE *DirectReader::getFileHandle( const char *file_name, int &compression_type,
 
 size_t DirectReader::getFileLength( const char *file_name )
 {
+    if (file_name == NULL || strlen(file_name) == 0) return 0;
+
     int compression_type;
     size_t len;
     FILE *fp = getFileHandle( file_name, compression_type, &len );
@@ -448,17 +456,22 @@ size_t DirectReader::getFileLength( const char *file_name )
 size_t DirectReader::getFile( const char *file_name, unsigned char *buffer,
                               int *location )
 {
+    if (file_name == NULL || strlen(file_name) == 0) {
+        if ( location ) *location = ARCHIVE_TYPE_NONE;
+        return 0;
+    }
+
     int compression_type;
     size_t len, c, total = 0;
     FILE *fp = getFileHandle( file_name, compression_type, &len );
-    
+
     if ( fp ){
         if ( compression_type & NBZ_COMPRESSION ) {
             size_t buf_len = decodeNBZ( fp, 0, buffer );
             fclose(fp);
             return buf_len;
         }
-        
+
         if ( compression_type & SPB_COMPRESSION ) {
             size_t buf_len = decodeSPB( fp, 0, buffer );
             fclose(fp);
@@ -529,7 +542,7 @@ void DirectReader::convertFromSJISToUTF8( char *dst_buf, const char *src_buf )
     int i, c;
     unsigned short unicode;
     unsigned char utf8_buf[4];
-    
+
     while(*src_buf){
         if (IS_TWO_BYTE(*src_buf)){
             unsigned short index = *(unsigned char*)src_buf++;
@@ -552,6 +565,9 @@ void DirectReader::convertFromSJISToUTF8( char *dst_buf, const char *src_buf )
     int mb_size = WideCharToMultiByte(CP_UTF8, 0, u16_tmp, wc_size, dst_buf, 0, NULL, NULL);
     WideCharToMultiByte(CP_UTF8, 0, u16_tmp, wc_size, dst_buf, mb_size, NULL, NULL);
     delete[] u16_tmp;
+#else
+    (void)dst_buf;
+    (void)src_buf;
 #endif //RECODING_FILENAMES || UTF8_FILESYSTEM, WIN32
 }
 
