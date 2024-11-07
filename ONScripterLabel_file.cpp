@@ -203,6 +203,9 @@ int ONScripterLabel::loadSaveFile( int no, bool input_flag )
     int  i, j, k, address;
     int  file_version;
 
+    // FIXME: Use this?
+    (void)address;
+
     /* ---------------------------------------- */
     /* Load magic number */
     for ( i=0 ; i<(int)strlen( SAVEFILE_MAGIC_NUMBER ) ; i++ )
@@ -260,9 +263,12 @@ int ONScripterLabel::loadSaveFile( int no, bool input_flag )
         current_page->max_text = (num_xy[0]*2+1)*num_xy[1];
         if (sentence_font.getTateyokoMode() == Fontinfo::TATE_MODE)
             current_page->max_text = (num_xy[1]*2+1)*num_xy[0];
+
         int xy[2];
         xy[0] = readInt();
         xy[1] = readInt();
+        (void)xy;
+        
         if ( current_page->text ) delete[] current_page->text;
         current_page->text = new char[ current_page->max_text ];
         current_page->text_count = 0;

@@ -213,7 +213,7 @@ void ONScripterLabel::initBreakup( char *params )
     }
 }
 
-void ONScripterLabel::effectBreakup( char *params, int duration )
+void ONScripterLabel::effectBreakup( char* /*params*/, int duration )
 {
     int x_dir = -1;
     int y_dir = -1;

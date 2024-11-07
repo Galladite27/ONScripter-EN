@@ -48,7 +48,7 @@ int Encoding::getBytes(unsigned char ch, int code)
         if ((ch & 0xe0) == 0xe0 || (ch & 0xe0) == 0x80) return 2;
     }
     else{
-        if (0    <= ch && ch < 0x80) return 1;
+        if (ch < 0x80) return 1;
         if (0xc0 <= ch && ch < 0xe0) return 2;
         if (0xe0 <= ch && ch < 0xf0) return 3;
         if (0xf0 <= ch && ch < 0xf8) return 4;

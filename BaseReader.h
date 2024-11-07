@@ -29,6 +29,7 @@
 #ifndef __BASE_READER_H__
 #define __BASE_READER_H__
 
+#include <cstring>
 #include <stdio.h>
 
 #ifndef SEEK_END
@@ -68,7 +69,9 @@ struct BaseReader
         FileInfo()
         : compression_type(NO_COMPRESSION),
           offset(0), length(0), original_length(0)
-        {}
+        {
+            memset(&name, 0, sizeof(name));
+        }
     };
 
     struct ArchiveInfo{

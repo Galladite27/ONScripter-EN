@@ -159,7 +159,7 @@ int NsaReader::processArchives( const DirPaths &path )
 
 #else //def TOOLS_BUILD
 
-NsaReader::ArchiveInfo* NsaReader::openForCreate( const char *nsa_name, int archive_type, int nsaoffset )
+NsaReader::ArchiveInfo* NsaReader::openForCreate( const char *nsa_name, int /*archive_type*/, int nsaoffset )
 {
     sar_flag = false;
     nsa_offset = nsaoffset;
