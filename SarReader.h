@@ -37,7 +37,7 @@
 class SarReader : public DirectReader
 {
 public:
-    SarReader( DirPaths &path, const unsigned char *key_table=NULL );
+    SarReader( PathProvider &provider, const unsigned char *key_table=NULL );
     ~SarReader();
 
     int open( const char *name=NULL );

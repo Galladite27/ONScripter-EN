@@ -40,12 +40,12 @@
 class NsaReader : public SarReader
 {
 public:
-    NsaReader( DirPaths &path, int nsaoffset = 0, const unsigned char *key_table=NULL );
+    NsaReader( PathProvider &provider, int nsaoffset = 0, const unsigned char *key_table=NULL );
     ~NsaReader();
 
 #ifndef TOOLS_BUILD
     int open( const char *nsa_path=NULL );
-    int processArchives( const DirPaths &path );
+    int processArchives( const PathProvider &provider );
 #endif
     const char *getArchiveName() const;
     int getNumFiles();

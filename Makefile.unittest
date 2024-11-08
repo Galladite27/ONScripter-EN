@@ -9,6 +9,14 @@ LDFLAGS += -fprofile-arcs -ftest-coverage
 CLEANUP += $(ONSCRIPTER_OBJS:.o=.gcda) $(ONSCRIPTER_OBJS:.o=.gcno)
 endif
 
+ifeq ($(WIN32),true)
+CHECK_DEFS += -DWIN32
+endif
+
+ifeq ($(MACOSX),true)
+CHECK_DEFS += -DMACOSX
+endif
+
 .PHONY: check
 check: $(TARGET)$(EXESUFFIX) test/Makefile
-	$(MAKE) -C test CXX="$(CXX)" OBJSUFFIX="$(OBJSUFFIX)" EXESUFFIX="$(EXESUFFIX)" LIBSUFFIX="$(LIBSUFFIX)" COVERAGE=$(COVERAGE)
+	$(MAKE) -C test CXX="$(CXX)" DEFS="$(CHECK_DEFS)" OBJSUFFIX="$(OBJSUFFIX)" EXESUFFIX="$(EXESUFFIX)" LIBSUFFIX="$(LIBSUFFIX)" COVERAGE=$(COVERAGE)
