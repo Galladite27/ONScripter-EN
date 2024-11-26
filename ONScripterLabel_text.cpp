@@ -295,7 +295,7 @@ void ONScripterLabel::drawChar( char* text, Fontinfo *info, bool flush_flag,
     }
 
     if ( info->isEndOfLine() ){
-        info->newLine();
+        //info->newLine();
         for (int i=0 ; i<indent_offset ; i++)
             if (script_h.enc.getEncoding() == Encoding::CODE_CP932) {
                 sentence_font.advanceCharInHankaku(2);
