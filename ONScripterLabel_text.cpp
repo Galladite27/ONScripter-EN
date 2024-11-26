@@ -295,7 +295,13 @@ void ONScripterLabel::drawChar( char* text, Fontinfo *info, bool flush_flag,
     }
 
     if ( info->isEndOfLine() ){
-        //info->newLine();
+        // Kunrakun: simple fix for overlapping csel dialogue (issue #83)
+        if (script_h.enc.getEncoding() == Encoding::CODE_CP932)
+            info->newLine();
+        else
+            //info->newLine();
+            ;
+        
         for (int i=0 ; i<indent_offset ; i++)
             if (script_h.enc.getEncoding() == Encoding::CODE_CP932) {
                 sentence_font.advanceCharInHankaku(2);
