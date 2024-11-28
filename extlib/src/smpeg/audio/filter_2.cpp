@@ -25,7 +25,7 @@ void MPEGaudio::computebuffer_2(REAL *fraction,REAL buffer[2][CALCBUFFERSIZE])
 
   // compute new values via a fast cosine transform:
   /*  {
-    register REAL *x=fraction;
+    REAL *x=fraction;
 
     p0=x[ 0]+x[31];p1=x[ 1]+x[30];p2=x[ 2]+x[29];p3=x[ 3]+x[28];
     p4=x[ 4]+x[27];p5=x[ 5]+x[26];p6=x[ 6]+x[25];p7=x[ 7]+x[24];
@@ -41,7 +41,7 @@ void MPEGaudio::computebuffer_2(REAL *fraction,REAL buffer[2][CALCBUFFERSIZE])
   qe=hcos_32[6]*(p6-p9);qf=hcos_32[7]*(p7-p8); */
 
   {
-    register REAL *x=fraction;
+    REAL *x=fraction;
 
     q0=x[ 0]+x[15];q1=x[ 1]+x[14];q2=x[ 2]+x[13];q3=x[ 3]+x[12];
     q4=x[ 4]+x[11];q5=x[ 5]+x[10];q6=x[ 6]+x[ 9];q7=x[ 7]+x[ 8];
@@ -70,7 +70,7 @@ void MPEGaudio::computebuffer_2(REAL *fraction,REAL buffer[2][CALCBUFFERSIZE])
   pc=qc+qd;pd=hcos_4*(qc-qd);pe=qe+qf;pf=hcos_4*(qe-qf);
 
   {
-    register REAL tmp;
+    REAL tmp;
 
     tmp=p6+p7;
     OUT2(36)=-(p5+tmp);
@@ -95,7 +95,7 @@ void MPEGaudio::computebuffer_2(REAL *fraction,REAL buffer[2][CALCBUFFERSIZE])
   }
 
   {
-    register REAL *x=fraction;
+    REAL *x=fraction;
 
     /*    p0=hcos_64[ 0]*(x[ 0]-x[31]);p1=hcos_64[ 1]*(x[ 1]-x[30]);
     p2=hcos_64[ 2]*(x[ 2]-x[29]);p3=hcos_64[ 3]*(x[ 3]-x[28]);
@@ -186,8 +186,8 @@ void MPEGaudio::computebuffer_2(REAL *fraction,REAL buffer[2][CALCBUFFERSIZE])
 void MPEGaudio::generatesingle_2(void)
 {
   int i;
-  register REAL r, *vp;
-  register const REAL *dp;
+  REAL r, *vp;
+  const REAL *dp;
   int raw;
 
   i=32/2;
@@ -273,8 +273,8 @@ void MPEGaudio::generate_2(void)
 {
   int i;
   REAL r1,r2;
-  register REAL *vp1,*vp2;
-  register const REAL *dp;
+  REAL *vp1,*vp2;
+  const REAL *dp;
   int raw;
 
   dp=filter;

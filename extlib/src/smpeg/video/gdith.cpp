@@ -300,8 +300,8 @@ void MPEGvideo::DisplayFrame( VidStream * vid_stream )
   /* Compute additionnal info for the filter */
   if((_filter->flags & SMPEG_FILTER_INFO_PIXEL_ERROR) && vid_stream->current->mb_qscale)
   {
-    register int x, y;
-    register Uint16 * ptr;
+    int x, y;
+    Uint16 * ptr;
 
     /* Compute quantization error for each pixel */
     info.yuv_pixel_square_error = (Uint16 *) malloc(_w*_h*12/8*sizeof(Uint16));

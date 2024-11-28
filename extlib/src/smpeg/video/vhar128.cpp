@@ -148,7 +148,7 @@ void vhar128_destroyimage(unsigned int handle, struct vhar128_image * image)
 int vhar128_init(unsigned int handle, unsigned long width, unsigned long height, struct vhar128_image *ring[], int ring_size)
 {
     VHA_INIT vhaInit;
-    register int i;
+    int i;
 
     memset(&vhaInit, 0, sizeof(VHA_INIT));
 

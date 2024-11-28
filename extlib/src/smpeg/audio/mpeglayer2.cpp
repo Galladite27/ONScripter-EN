@@ -433,8 +433,8 @@ void MPEGaudio::extractlayer2(void)
 
 // Bitalloc
   {
-    register int i;
-    register const int *t=bitalloclengthtable[tableindex];
+    int i;
+    const int *t=bitalloclengthtable[tableindex];
 
     for(i=0;i<s;i++,t++)
     {
@@ -448,18 +448,18 @@ void MPEGaudio::extractlayer2(void)
 
   // Scale selector
   if(inputstereo)
-    for(register int i=0;i<n;i++)
+    for(int i=0;i<n;i++)
     {
       if(bitalloc[LS][i])scaleselector[LS][i]=getbits(2);
       if(bitalloc[RS][i])scaleselector[RS][i]=getbits(2);
     }
   else
-    for(register int i=0;i<n;i++)
+    for(int i=0;i<n;i++)
       if(bitalloc[LS][i])scaleselector[LS][i]=getbits(2);
 
   // Scale index
   {
-    register int i,j;
+    int i,j;
 
     for(i=0;i<n;i++)
     {
@@ -604,7 +604,7 @@ void MPEGaudio::extractlayer2(void)
 
 // Read Sample
   {
-    register int i;
+    int i;
 
     for(int l=0;l<SCALEBLOCK;l++)
     {
@@ -615,7 +615,7 @@ void MPEGaudio::extractlayer2(void)
 	{
 	  if(group[LS][i])
 	  {
-	    register const REAL *s;
+	    const REAL *s;
 	    int code=getbits(codelength[LS][i]);
 
 	    code+=code<<1;
@@ -678,7 +678,7 @@ void MPEGaudio::extractlayer2(void)
 	{
 	  if(group[LS][i])
 	  {
-	    register const REAL *s;
+	    const REAL *s;
 	    int code=getbits(codelength[LS][i]);
 
 	    code+=code<<1;
@@ -717,7 +717,7 @@ void MPEGaudio::extractlayer2(void)
 	      fraction[LS][2][i]=(fraction[LS][2][i]+d[LS][i])*c[LS][i];
 	    }
 
-	    register REAL t=scalefactor[LS][l>>2][i];
+	    REAL t=scalefactor[LS][l>>2][i];
 	    fraction[LS][0][i]*=t;
 	    fraction[LS][1][i]*=t;
 	    fraction[LS][2][i]*=t;
@@ -732,7 +732,7 @@ void MPEGaudio::extractlayer2(void)
 	      fraction[RS][2][i]=(fraction[RS][2][i]+d[RS][i])*c[RS][i];
 	    }
 
-	    register REAL t=scalefactor[RS][l>>2][i];
+	    REAL t=scalefactor[RS][l>>2][i];
 	    fraction[RS][0][i]*=t;
 	    fraction[RS][1][i]*=t;
 	    fraction[RS][2][i]*=t;
@@ -749,7 +749,7 @@ void MPEGaudio::extractlayer2(void)
 	      fraction[LS][2][i]=(fraction[LS][2][i]+d[LS][i])*c[LS][i];
 	    }
 
-	    register REAL t=scalefactor[LS][l>>2][i];
+	    REAL t=scalefactor[LS][l>>2][i];
 	    fraction[LS][0][i]*=t;
 	    fraction[LS][1][i]*=t;
 	    fraction[LS][2][i]*=t;

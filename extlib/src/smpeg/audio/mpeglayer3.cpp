@@ -31,7 +31,7 @@ inline void Mpegbitwindow::wrap(void)
 
   if(p>=point)
   {
-    for(register int i=4;i<point;i++)
+    for(int i=4;i<point;i++)
       buffer[WINDOWSIZE+i]=buffer[i];
   }
   *((int *)(buffer+WINDOWSIZE))=*((int *)buffer);
@@ -92,7 +92,7 @@ static RATIOS rat_1[16],rat_2[2][64];
 void MPEGaudio::layer3initialize(void)
 {
   static bool initializedlayer3=false;
-  register int i;
+  int i;
   int j,k,l;
 #if 0
 	double td = 0.0;
@@ -353,7 +353,7 @@ void MPEGaudio::layer3getscalefactors(int ch,int gr)
 			  {0, 1, 2, 3, 0, 1, 2, 3, 1, 2, 3, 1, 2, 3, 2, 3}};
 
   layer3grinfo *gi=&(sideinfo.ch[ch].gr[gr]);
-  register layer3scalefactor *sf=(&scalefactors[ch]);
+  layer3scalefactor *sf=(&scalefactors[ch]);
   int l0,l1;
 
   {
@@ -486,7 +486,7 @@ void MPEGaudio::layer3getscalefactors_2(int ch)
 
   int sb[54];
   layer3grinfo *gi=&(sideinfo.ch[ch].gr[0]);
-  register layer3scalefactor *sf=(&scalefactors[ch]);
+  layer3scalefactor *sf=(&scalefactors[ch]);
 
   {
     int blocktypenumber,sc;
@@ -648,7 +648,7 @@ void MPEGaudio::huffmandecoder_1(const HUFFMANCODETABLE *h,int *x,int *y)
     level>>=1;
     if(!(level || ((unsigned)point<ht->treelen)))
     {
-      register int xx,yy;
+      int xx,yy;
 
       xx=(h->xlen<<1);// set x and y to a medium value as a simple concealment
       yy=(h->ylen<<1);
@@ -677,7 +677,7 @@ void MPEGaudio::huffmandecoder_2(const HUFFMANCODETABLE *h,
   {
     if(h->val[point][0]==0)
     {   /*end of tree*/
-      register int t=h->val[point][1];
+      int t=h->val[point][1];
 
       if(t&8)*v=1-(wgetbit()<<1); else *v=0;
       if(t&4)*w=1-(wgetbit()<<1); else *w=0;
@@ -749,7 +749,7 @@ void MPEGaudio::layer3huffmandecode(int ch,int gr,int out[SBLIMIT][SSLIMIT])
   for(i=0;i<e;)
   {
     const HUFFMANCODETABLE *h;
-    register int end;
+    int end;
       
     if     (i<region1Start)
     {
@@ -855,10 +855,10 @@ void MPEGaudio::layer3dequantizesample(int ch,int gr,
     {
       cb_width=(sfBandIndex->s[cb+1]-sfBandIndex->s[cb])>>1;
 
-      for(register int k=0;k<3;k++)
+      for(int k=0;k<3;k++)
       {
-	register REAL factor;
-	register int count=cb_width;
+	REAL factor;
+	int count=cb_width;
 
 	factor=globalgain*
 	       layer3twopow2_1(gi->subblock_gain[k],gi->scalefac_scale,
@@ -1216,7 +1216,7 @@ void MPEGaudio::layer3fixtostereo(int gr,REAL in[2][SBLIMIT][SSLIMIT])
       do{
 	if(is_pos[i]==7)
 	{
-	  register REAL t=in[LS][0][i];
+	  REAL t=in[LS][0][i];
 	  in[LS][0][i]=(t+in[RS][0][i])*0.7071068f;
 	  in[RS][0][i]=(t-in[RS][0][i])*0.7071068f;
 	}
@@ -1245,7 +1245,7 @@ void MPEGaudio::layer3fixtostereo(int gr,REAL in[2][SBLIMIT][SSLIMIT])
     {
       int i=ARRAYSIZE-1;
       do{
-	register REAL t=in[LS][0][i];
+	REAL t=in[LS][0][i];
 
 	in[LS][0][i]=(t+in[RS][0][i])*0.7071068f;
 	in[RS][0][i]=(t-in[RS][0][i])*0.7071068f;
@@ -1373,7 +1373,7 @@ void MPEGaudio::layer3reorderandantialias(int ch,int gr,
 					  REAL  in[SBLIMIT][SSLIMIT],
 					  REAL out[SBLIMIT][SSLIMIT])
 {
-  register layer3grinfo *gi=&(sideinfo.ch[ch].gr[gr]);
+  layer3grinfo *gi=&(sideinfo.ch[ch].gr[gr]);
 
   if(gi->generalflag)
   {
@@ -1411,7 +1411,7 @@ static void dct36(REAL *inbuf,REAL *prevblk1,REAL *prevblk2,REAL *wi,REAL *out)
     MACRO0(v); }
 
   {
-    register REAL *in = inbuf;
+    REAL *in = inbuf;
    
     in[17]+=in[16];in[16]+=in[15];in[15]+=in[14];in[14]+=in[13]; 
     in[13]+=in[12];in[12]+=in[11];in[11]+=in[10];in[10]+=in[ 9];
@@ -1423,10 +1423,10 @@ static void dct36(REAL *inbuf,REAL *prevblk1,REAL *prevblk2,REAL *wi,REAL *out)
     in[ 9]+=in[ 7];in[7] +=in[ 5];in[ 5]+=in[ 3];in[ 3]+=in[ 1];
 
     {
-      register REAL *c = cos_18;
-      register REAL *out2 = prevblk2;
-      register REAL *out1 = prevblk1;
-      register REAL *ts = out;
+      REAL *c = cos_18;
+      REAL *out2 = prevblk2;
+      REAL *out1 = prevblk1;
+      REAL *ts = out;
       
       REAL ta33,ta66,tb33,tb66;
 
@@ -1486,7 +1486,7 @@ static void dct36(REAL *inbuf,REAL *prevblk1,REAL *prevblk2,REAL *wi,REAL *out)
 }
 
 
-static void dct12(REAL *in,REAL *prevblk1,REAL *prevblk2,register REAL *wi,register REAL *out)
+static void dct12(REAL *in,REAL *prevblk1,REAL *prevblk2,REAL *wi,REAL *out)
 {
 #define DCT12_PART1   \
         in5=in[5*3];  \
@@ -1520,7 +1520,7 @@ static void dct12(REAL *in,REAL *prevblk1,REAL *prevblk2,register REAL *wi,regis
 
   {
     REAL in0,in1,in2,in3,in4,in5;
-    register REAL *pb1=prevblk1;
+    REAL *pb1=prevblk1;
     out[SBLIMIT*0]=pb1[0];out[SBLIMIT*1]=pb1[1];out[SBLIMIT*2]=pb1[2];
     out[SBLIMIT*3]=pb1[3];out[SBLIMIT*4]=pb1[4];out[SBLIMIT*5]=pb1[5];
  
@@ -1529,7 +1529,7 @@ static void dct12(REAL *in,REAL *prevblk1,REAL *prevblk2,register REAL *wi,regis
     {
       REAL tmp0,tmp1=(in0-in4);
       {
-	register REAL tmp2=(in1-in5)*hsec_12[1];
+	REAL tmp2=(in1-in5)*hsec_12[1];
 	tmp0=tmp1+tmp2;
 	tmp1-=tmp2;
       }
@@ -1554,7 +1554,7 @@ static void dct12(REAL *in,REAL *prevblk1,REAL *prevblk2,register REAL *wi,regis
   in++;
   {
     REAL in0,in1,in2,in3,in4,in5;
-    register REAL *pb2 = prevblk2;
+    REAL *pb2 = prevblk2;
  
     DCT12_PART1;
 
@@ -1587,7 +1587,7 @@ static void dct12(REAL *in,REAL *prevblk1,REAL *prevblk2,register REAL *wi,regis
   in++; 
   {
     REAL in0,in1,in2,in3,in4,in5;
-    register REAL *pb2 = prevblk2;
+    REAL *pb2 = prevblk2;
     pb2[12]=pb2[13]=pb2[14]=pb2[15]=pb2[16]=pb2[17]=0.0;
 
     DCT12_PART1;
@@ -1692,12 +1692,12 @@ void MPEGaudio::extractlayer3(void)
 	 
     if(issync())
     {
-      for(register int i=layer3slots;i>0;i--)  // read main data.
+      for(int i=layer3slots;i>0;i--)  // read main data.
 	bitwindow.putbyte(getbyte());
     }
     else
     {
-      for(register int i=layer3slots;i>0;i--)  // read main data.
+      for(int i=layer3slots;i>0;i--)  // read main data.
 	bitwindow.putbyte(getbits8());
     }
 
@@ -1765,7 +1765,7 @@ void MPEGaudio::extractlayer3(void)
       layer3reorderandantialias(RS,gr,b2.lr[RS],b1.hin[RS]);
       layer3hybrid (RS,gr,b1.hin[RS],b2.hout[RS]);
 
-      register int i=2*SSLIMIT*SBLIMIT-1;
+      int i=2*SSLIMIT*SBLIMIT-1;
       do{
 	NEG(b2.hout[0][0][i   ]);NEG(b2.hout[0][0][i- 2]);
 	NEG(b2.hout[0][0][i- 4]);NEG(b2.hout[0][0][i- 6]);
@@ -1779,7 +1779,7 @@ void MPEGaudio::extractlayer3(void)
     }
     else
     {
-      register int i=SSLIMIT*SBLIMIT-1;
+      int i=SSLIMIT*SBLIMIT-1;
       do{
 	NEG(b2.hout[0][0][i   ]);NEG(b2.hout[0][0][i- 2]);
 	NEG(b2.hout[0][0][i- 4]);NEG(b2.hout[0][0][i- 6]);
@@ -1807,12 +1807,12 @@ void MPEGaudio::extractlayer3_2(void)
 	 
     if(issync())
     {
-      for(register int i=layer3slots;i>0;i--)  // read main data.
+      for(int i=layer3slots;i>0;i--)  // read main data.
 	bitwindow.putbyte(getbyte());
     }
     else
     {
-      for(register int i=layer3slots;i>0;i--)  // read main data.
+      for(int i=layer3slots;i>0;i--)  // read main data.
 	bitwindow.putbyte(getbits8());
     }
     bitwindow.wrap();
@@ -1875,7 +1875,7 @@ void MPEGaudio::extractlayer3_2(void)
       layer3reorderandantialias(RS,0,b2.lr[RS],b1.hin[RS]);
       layer3hybrid (RS,0,b1.hin[RS],b2.hout[RS]);
 
-      register int i=2*SSLIMIT*SBLIMIT-1;
+      int i=2*SSLIMIT*SBLIMIT-1;
       do{
 	NEG(b2.hout[0][0][i-16]);NEG(b2.hout[0][0][i-18]);
 	NEG(b2.hout[0][0][i-20]);NEG(b2.hout[0][0][i-22]);
@@ -1885,7 +1885,7 @@ void MPEGaudio::extractlayer3_2(void)
     }
     else
     {
-      register int i=SSLIMIT*SBLIMIT-1;
+      int i=SSLIMIT*SBLIMIT-1;
       do{
 	NEG(b2.hout[0][0][i-16]);NEG(b2.hout[0][0][i-18]);
 	NEG(b2.hout[0][0][i-20]);NEG(b2.hout[0][0][i-22]);

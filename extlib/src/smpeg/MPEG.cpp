@@ -468,7 +468,7 @@ void MPEG::GetSystemInfo(MPEG_SystemInfo * sinfo)
 void MPEG::parse_stream_list()
 {
   MPEGstream ** stream_list;
-  register int i;
+  int i;
 
   /* A new thread is created for each video and audio */
   /* stream                                           */ 
