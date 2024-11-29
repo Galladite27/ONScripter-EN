@@ -40,8 +40,8 @@ static void filter_destroy(SMPEG_Filter *filter)
 
 static void filter_null_callback(SDL_Overlay * dst, SDL_Overlay * src, SDL_Rect * region, SMPEG_FilterInfo * info, void * data)
 {
-  register Uint32 y;
-  register Uint8 * s, * d;
+  Uint32 y;
+  Uint8 * s, * d;
 
   /* Y component */
   s = src->pixels[0];
@@ -105,8 +105,8 @@ SMPEG_Filter *SMPEGfilter_null(void)
 
 static void filter_bilinear_callback(SDL_Overlay * dst, SDL_Overlay * src, SDL_Rect * region, SMPEG_FilterInfo * info, void * data)
 {
-  register int x, y;
-  register Uint8 * s, * d;
+  int x, y;
+  Uint8 * s, * d;
 
   s = src->pixels[0];
   d = dst->pixels[0];
@@ -200,7 +200,7 @@ static void filter_deblocking_callback(SDL_Overlay * dst, SDL_Overlay * src, SDL
   Uint32 aL, aU, aR, aD;
   Uint32 Q;
   Uint16 * coeffs;
-  register Uint8 * s, * d;
+  Uint8 * s, * d;
 
   /* retrieve the coeffs from private data */
   coeffs = (Uint16 *) data;

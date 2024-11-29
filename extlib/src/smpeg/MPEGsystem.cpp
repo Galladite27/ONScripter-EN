@@ -709,8 +709,8 @@ header_size, packet_size, stream_id, stream_timestamp);
       else
       {
 	/* Check for next slice, picture, gop or sequence header */
-	register Uint8 * p;
-	register Uint8 c;
+	Uint8 * p;
+	Uint8 c;
 	
 	p = pointer + packet_size;
       state0:
@@ -890,8 +890,8 @@ void MPEGsystem::Skip(double time)
  
 Uint32 MPEGsystem::Tell()
 {
-  register Uint32 t;
-  register int i;
+  Uint32 t;
+  int i;
 
   /* Sum all stream positions */
   for(i = 0, t = 0; stream_list[i]; i++)
@@ -1354,7 +1354,7 @@ int MPEGsystem::SystemThread(void * udata)
 
 void MPEGsystem::add_stream(MPEGstream * stream)
 {
-  register int i;
+  int i;
 
   /* Go to the end of the list */
   for(i = 0; stream_list[i]; i++);
@@ -1372,7 +1372,7 @@ void MPEGsystem::add_stream(MPEGstream * stream)
 
 MPEGstream * MPEGsystem::get_stream(Uint8 stream_id)
 {
-  register int i;
+  int i;
 
   for(i = 0; stream_list[i]; i++)
     if(stream_list[i]->streamid == stream_id)
@@ -1383,7 +1383,7 @@ MPEGstream * MPEGsystem::get_stream(Uint8 stream_id)
 
 Uint8 MPEGsystem::exist_stream(Uint8 stream_id, Uint8 mask)
 {
-  register int i;
+  int i;
 
   for(i = 0; stream_list[i]; i++)
     if(((stream_list[i]->streamid) & mask) == (stream_id & mask))
@@ -1394,7 +1394,7 @@ Uint8 MPEGsystem::exist_stream(Uint8 stream_id, Uint8 mask)
 
 void MPEGsystem::reset_all_streams()
 {
-  register int i;
+  int i;
 
   /* Reset the streams */
   for(i = 0; stream_list[i]; i++)
@@ -1403,7 +1403,7 @@ void MPEGsystem::reset_all_streams()
 
 void MPEGsystem::end_all_streams()
 {
-  register int i;
+  int i;
 
   /* End the streams */
   /* We use a null buffer as the end of stream marker */

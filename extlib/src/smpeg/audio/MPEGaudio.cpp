@@ -324,7 +324,7 @@ MPEGaudio::getbyte(void)
 int 
 MPEGaudio::getbit(void) 
 {
-  register int r=(_buffer[bitindex>>3]>>(7-(bitindex&7)))&1;
+  int r=(_buffer[bitindex>>3]>>(7-(bitindex&7)))&1;
 
   bitindex++;
   return r;
@@ -333,7 +333,7 @@ MPEGaudio::getbit(void)
 int 
 MPEGaudio::getbits8(void) 
 {
-  register unsigned short a;
+  unsigned short a;
   { int offset=bitindex>>3;
 
   a=(((unsigned char)_buffer[offset])<<8) | ((unsigned char)_buffer[offset+1]);
@@ -346,7 +346,7 @@ MPEGaudio::getbits8(void)
 int 
 MPEGaudio::getbits9(int bits) 
 {
-  register unsigned short a;
+  unsigned short a;
   { int offset=bitindex>>3;
 
   a=(((unsigned char)_buffer[offset])<<8) | ((unsigned char)_buffer[offset+1]);

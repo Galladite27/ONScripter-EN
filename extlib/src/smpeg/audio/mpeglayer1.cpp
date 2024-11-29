@@ -49,7 +49,7 @@ void MPEGaudio::extractlayer1(void)
   int bitalloc[MAXCHANNEL][MAXSUBBAND],
       sample[MAXCHANNEL][MAXSUBBAND];
 
-  register int i,j;
+  int i,j;
   int s=stereobound,l;
 
 

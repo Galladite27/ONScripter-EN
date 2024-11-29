@@ -209,12 +209,12 @@ void init_pre_idct()
 void j_rev_dct_sparse( DCTBLOCK data, int pos )
 {
   short int val;
-  register int *dp;
-  register int v;
+  int *dp;
+  int v;
   int quant;
 
 #ifdef SPARSE_AC
-  register DCTELEM *dataptr;
+  DCTELEM *dataptr;
   DCTELEM *ndataptr;
   int coeff, rr;
   DCTBLOCK tmpdata, tmp2data;
@@ -390,7 +390,7 @@ void j_rev_dct( DCTBLOCK data )
   INT32 tmp10, tmp11, tmp12, tmp13;
   INT32 z1, z2, z3, z4, z5;
   INT32 d0, d1, d2, d3, d4, d5, d6, d7;
-  register DCTELEM *dataptr;
+  DCTELEM *dataptr;
   int rowctr;
   SHIFT_TEMPS
    
@@ -410,7 +410,7 @@ void j_rev_dct( DCTBLOCK data )
      * row DCT calculations can be simplified this way.
      */
 
-    register int *idataptr = (int*)dataptr;
+    int *idataptr = (int*)dataptr;
     d0 = dataptr[0];
     d1 = dataptr[1];
     if ((d1 == 0) && (idataptr[1] | idataptr[2] | idataptr[3]) == 0) {
@@ -418,7 +418,7 @@ void j_rev_dct( DCTBLOCK data )
       if (d0) {
 	  /* Compute a 32 bit value to assign. */
 	  DCTELEM dcval = (DCTELEM) (d0 << PASS1_BITS);
-	  register int v = (dcval & 0xffff) | (dcval << 16);
+	  int v = (dcval & 0xffff) | (dcval << 16);
 	  
 	  idataptr[0] = v;
 	  idataptr[1] = v;
@@ -1403,7 +1403,7 @@ void j_rev_dct( DCTBLOCK data )
   INT32 tmp0, tmp1, tmp2, tmp3;
   INT32 tmp10, tmp11, tmp12, tmp13;
   INT32 z1, z2, z3, z4, z5;
-  register DCTELEM *dataptr;
+  DCTELEM *dataptr;
   int rowctr;
   SHIFT_TEMPS
 

@@ -130,13 +130,13 @@ public:
   void rewind(int bits)  {bitindex-=bits;};
   void forward(int bits) {bitindex+=bits;};
   int getbit(void) {
-      register int r=(buffer[bitindex>>3]>>(7-(bitindex&7)))&1;
+      int r=(buffer[bitindex>>3]>>(7-(bitindex&7)))&1;
       bitindex++;
       return r;
   }
   int getbits9(int bits)
   {
-      register unsigned short a;
+      unsigned short a;
       { int offset=bitindex>>3;
 
         a=(((unsigned char)buffer[offset])<<8) | ((unsigned char)buffer[offset+1]);
