@@ -52,7 +52,7 @@ test_Encoding$(EXESUFFIX): test_Encoding.cpp $(TOPSRC)/Encoding.cpp $(TOPSRC)/sj
 	$(Q)$(CXX) $(CXXSTD) -isystem $(GTEST_INCDIR) -I$(TOPSRC) $(CXXFLAGS) $^ -o $@
 	./$@
 
-test_BaseReader$(EXESUFFIX): test_BaseReader.cpp $(TOPSRC)/BaseReader.h libgtest$(LIBSUFFIX)
+test_BaseReader$(EXESUFFIX): test_BaseReader.cpp libgtest$(LIBSUFFIX)
 	$(Q)$(CXX) $(CXXSTD) -isystem $(GTEST_INCDIR) -I$(TOPSRC) $(CXXFLAGS) $^ -o $@
 	./$@
 
