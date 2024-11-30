@@ -77,7 +77,7 @@ LIBS = -static -s -Wl,--start-group \
 
 # Remove -DUSE_MESSAGEBOX if you don't want Windows dialog boxes
 DEFS = -DWIN32 -DUSE_MESSAGEBOX -DUSE_OGG_VORBIS
-EXT_OBJS = SDL_win32_main.o win32rc.o graphics_mmx.o graphics_sse2.o
+EXT_OBJS = win32rc.o graphics_mmx.o graphics_sse2.o
 
 
 .SUFFIXES:
@@ -141,9 +141,6 @@ win32rc.o: $(RCFILE) $(WICONFILE)
 	d=`expr substr $$ver 7 2`; dn=`expr $$d + 0`; \
 	i=\"$(WICONFILE)\"; \
 	sed -e "s/@Y@/$$y/g;s/@0M@/$$m/g;s/@M@/$$mn/g;s/@0D@/$$d/g;s/@D@/$$dn/g;s%@I@%$$i%g" $< > $@
-
-SDL_win32_main.o: SDL_win32_main.c
-	$(CC) $(CSTD) $(OSCFLAGS) $(INCS) $(DEFS) -c $< -o $@
 
 $(GNURX_DIR)/libgnurx.a:
 	$(MAKE) -C $(GNURX_DIR) libgnurx.a

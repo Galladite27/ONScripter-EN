@@ -420,14 +420,13 @@ static bool parseOptionFile(const char *filename, ONScripterLabel &ons, bool &ha
     return false;
 }
 
-#ifdef QWS
-int SDL_main( int argc, char **argv )
-#elif defined(PSP)
-extern "C" int main( int argc, char **argv )
-#else
+void redirect_output();
+
 int main( int argc, char **argv )
-#endif
 {
+    // Handle redirection of stdout/stderr on a per-platform basis.
+    redirect_output();
+
     ONScripterLabel ons;
 
 #ifdef PSP
@@ -483,3 +482,92 @@ int main( int argc, char **argv )
     
     exit(0);
 }
+
+#ifdef WIN32
+#include <Windows.h>
+
+static char outputPath[MAX_PATH];
+static char stdoutPath[MAX_PATH];
+static char stderrPath[MAX_PATH];
+
+#define CSIDL_APPDATA 0x001a // for [Profiles]/[User]/Application Data
+# define DIR_SEPARATOR TEXT("/")
+typedef HRESULT (WINAPI *SHGetFolderPathA_t )(HWND, int, HANDLE, DWORD, LPTSTR);
+
+/* The standard output files */
+#define STDOUT_FILE	TEXT("stdout.txt")
+#define STDERR_FILE	TEXT("stderr.txt")
+
+// This will run pre-main and disable SDL's redirect, allowing us to redirect output ourselves to a preferred directory.
+int ret = SDL_putenv("SDL_STDIO_REDIRECT=0");
+
+void redirect_output()
+{
+    DWORD pathlen = 0;
+    FILE *newfp = NULL;
+    outputPath[0] = 0;
+    HMODULE shdll = LoadLibrary("shfolder");
+    if (shdll) {
+        SHGetFolderPathA_t SHGetFolderPathA = (SHGetFolderPathA_t)GetProcAddress(shdll, "SHGetFolderPathA");
+        if (SHGetFolderPathA) {
+            char hpath[MAX_PATH];
+            HRESULT res = SHGetFolderPathA(0, CSIDL_APPDATA, 0, 0, hpath); //now user-based
+
+            if (res != S_FALSE && res != E_FAIL && res != E_INVALIDARG) {
+                sprintf(outputPath, "%s\\ONScripter-EN\\", hpath);
+                CreateDirectory(outputPath, 0);
+                pathlen = strlen(outputPath);
+            }
+        }
+        FreeLibrary(shdll);
+    }
+    if (outputPath[0] == 0) pathlen = GetModuleFileName(NULL, outputPath, SDL_arraysize(outputPath));
+    
+    while ( pathlen > 0 && outputPath[pathlen] != '\\' ) {
+        --pathlen;
+    }
+    outputPath[pathlen] = '\0';
+
+    SDL_strlcpy( stdoutPath, outputPath, SDL_arraysize(stdoutPath) );
+    SDL_strlcat( stdoutPath, DIR_SEPARATOR STDOUT_FILE, SDL_arraysize(stdoutPath) );
+
+    SDL_strlcpy( stderrPath, outputPath, SDL_arraysize(stderrPath) );
+    SDL_strlcat( stderrPath, DIR_SEPARATOR STDERR_FILE, SDL_arraysize(stderrPath) );
+    
+    /* Redirect standard output */
+    newfp = freopen(stdoutPath, TEXT("w"), stdout);
+
+    if ( newfp == NULL ) {    /* This happens on NT */
+#if !defined(stdout)
+        stdout = fopen(stdoutPath, TEXT("w"));
+#else
+        newfp = fopen(stdoutPath, TEXT("w"));
+        if ( newfp ) {
+            *stdout = *newfp;
+        }
+#endif
+    }
+
+    /* Redirect standard error */
+    newfp = freopen(stderrPath, TEXT("w"), stderr);
+    if ( newfp == NULL ) {    /* This happens on NT */
+#if !defined(stderr)
+        stderr = fopen(stderrPath, TEXT("w"));
+#else
+        newfp = fopen(stderrPath, TEXT("w"));
+        if ( newfp ) {
+            *stderr = *newfp;
+        }
+#endif
+    }
+
+    setvbuf(stdout, NULL, _IOLBF, BUFSIZ); /* stdout should be buffered */
+    setbuf(stderr, NULL);                  /* whereas stderr isn't buffered */
+}
+
+#else // For platforms we haven't yet redirected.
+void redirect_output()
+{
+
+}
+#endif
