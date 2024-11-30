@@ -1032,12 +1032,7 @@ _EOF
 case "$SYS" in 
 MinGW)
 
-if $INTERNAL_SDL
-then
-  MY_SDL_LIBS="\$(filter-out -lSDLmain,\$(shell \$(SDL_CONFIG) --static-libs))"
-else
-  MY_SDL_LIBS="\$(shell \$(SDL_CONFIG) --static-libs)"
-fi
+MY_SDL_LIBS="\$(shell \$(SDL_CONFIG) --static-libs)"
 
 #cp -p tools/libgnurx/libgnurx*.dll tools
 
@@ -1063,7 +1058,7 @@ LIBS = -Lextlib/lib \\
 
 # Remove -DUSE_MESSAGEBOX if you don't want Windows dialog boxes
 DEFS = -DWIN32 -DUSE_MESSAGEBOX -DUSE_OGG_VORBIS
-EXT_OBJS = SDL_win32_main.o win32rc.o $GFX_EXT_OBJS
+EXT_OBJS = win32rc.o $GFX_EXT_OBJS
 
 _EOF
 
@@ -1221,9 +1216,6 @@ win32rc.o: \$(RCFILE) \$(WICONFILE)
 	d=\`expr substr $\$ver 7 2\`; dn=\`expr $\$d + 0\`; \\
 	i=\"\$(WICONFILE)\"; \\
 	sed -e "s/@Y@/$\$y/g;s/@0M@/$\$m/g;s/@M@/$\$mn/g;s/@0D@/$\$d/g;s/@D@/$\$dn/g;s%@I@%$\$i%g" \$< > \$@
-
-SDL_win32_main.o: SDL_win32_main.c
-	\$(CC) \$(CSTD) \$(OSCFLAGS) \$(INCS) \$(DEFS) -c \$< -o \$@
 
 \$(GNURX_DIR)/libgnurx.a:
 	\$(MAKE) -C \$(GNURX_DIR) libgnurx.a
