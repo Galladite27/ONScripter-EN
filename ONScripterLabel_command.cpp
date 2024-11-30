@@ -1669,7 +1669,7 @@ int ONScripterLabel::prnumCommand()
 
     char num_buf[7];
     // Use fullwidth digits
-    script_h.getStringFromInteger( num_buf, prnum_info[no]->param, 3, false, true );
+    script_h.convertNumToFullWidthStr(prnum_info[no]->param, num_buf);
     setStr( &prnum_info[no]->file_name, num_buf );
 
     setupAnimationInfo( prnum_info[no] );

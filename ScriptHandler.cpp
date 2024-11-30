@@ -1433,6 +1433,39 @@ void ScriptHandler::setNumVariable( int no, int val )
     vd.num = val;
 }
 
+void ScriptHandler::convertNumToFullWidthStr(int num, char* str) {
+    char halfstr[20];
+    int length = sprintf(halfstr, "%d", num);
+    if (num < 0) {
+        strcat(str, "-");
+        num = -num;
+    }
+
+    for (int i = 0; i < length; i++) {
+        char digit = halfstr[i];
+        if (digit == '0')
+            strcat(str, "\xEF\xBC\x90");
+        if (digit == '1')
+            strcat(str, "\xEF\xBC\x91");
+        if (digit == '2')
+            strcat(str, "\xEF\xBC\x92");
+        if (digit == '3')
+            strcat(str, "\xEF\xBC\x93");
+        if (digit == '4')
+            strcat(str, "\xEF\xBC\x94");
+        if (digit == '5')
+            strcat(str, "\xEF\xBC\x95");
+        if (digit == '6')
+            strcat(str, "\xEF\xBC\x96");
+        if (digit == '7')
+            strcat(str, "\xEF\xBC\x97");
+        if (digit == '8')
+            strcat(str, "\xEF\xBC\x98");
+        if (digit == '9')
+            strcat(str, "\xEF\xBC\x99");
+    }
+}
+
 int ScriptHandler::getStringFromInteger( char *buffer, int no, int num_column,
                                          bool is_zero_inserted,
                                          bool use_zenkaku )
