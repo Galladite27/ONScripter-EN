@@ -1434,33 +1434,35 @@ void ScriptHandler::setNumVariable( int no, int val )
 }
 
 void ScriptHandler::convertNumToFullWidthStr(int num, char* str) {
+    char halfstr[20];
+    int length = sprintf(halfstr, "%d", num);
     if (num < 0) {
         strcat(str, "-");
         num = -num;
     }
-    while (num > 0) {
-        int digit = num % 10;
-        if (digit == 0)
+
+    for (int i = 0; i < length; i++) {
+        char digit = halfstr[i];
+        if (digit == '0')
             strcat(str, "\xEF\xBC\x90");
-        if (digit == 1)
+        if (digit == '1')
             strcat(str, "\xEF\xBC\x91");
-        if (digit == 2)
+        if (digit == '2')
             strcat(str, "\xEF\xBC\x92");
-        if (digit == 3)
+        if (digit == '3')
             strcat(str, "\xEF\xBC\x93");
-        if (digit == 4)
+        if (digit == '4')
             strcat(str, "\xEF\xBC\x94");
-        if (digit == 5)
+        if (digit == '5')
             strcat(str, "\xEF\xBC\x95");
-        if (digit == 6)
+        if (digit == '6')
             strcat(str, "\xEF\xBC\x96");
-        if (digit == 7)
+        if (digit == '7')
             strcat(str, "\xEF\xBC\x97");
-        if (digit == 8)
+        if (digit == '8')
             strcat(str, "\xEF\xBC\x98");
-        if (digit == 9)
+        if (digit == '9')
             strcat(str, "\xEF\xBC\x99");
-        num /= 10;
     }
 }
 
