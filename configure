@@ -526,7 +526,7 @@ then
     case "x$ARCH" in
     xx86_64) VECFLAGS="-msse2 -mfpmath=sse";;
     x*86)    VECFLAGS="-msse -mfpmath=sse";;
-    xppc)    VECFLAGS=-maltivec ;;
+    xppc)    VECFLAGS="-maltivec -mabi=altivec" ;;
     esac
 
     case "x$CC_TYPE$CC_VER" in
@@ -632,13 +632,13 @@ then
         $echo_n "Checking for compiler PPC Altivec intrinsics support... ${nobr}"
         cat > test.cc <<-_EOF
 	#include <altivec.h>
-	int main(int argc, char**argv){vector unsigned char altichk = vec_splat_u8(0);}
+	int main(int argc, char**argv){__vector unsigned char altichk = vec_splat_u8(0);}
 	_EOF
-        $CXX -maltivec test.cc -o gtest >/dev/null 2>&1
+        $CXX -maltivec -mabi=altivec test.cc -o gtest >/dev/null 2>&1
         case $? in
         0)  echo "yes"
-            GFX_MALTIVEC_FLAGS="-maltivec -DUSE_PPC_GFX"
-            GFX_EXT_OBJS="graphics_maltivec.o"
+            GFX_MALTIVEC_FLAGS="-maltivec -mabi=altivec -DUSE_PPC_GFX"
+            GFX_EXT_OBJS="graphics_altivec.o"
             CFLAGSEXTRA="$CFLAGSEXTRA -DUSE_PPC_GFX"
             echo "     Compiling with PPC custom graphics routines"
             ;;
@@ -1356,7 +1356,7 @@ elif $USE_PPC_GFX
 then
 cat >> Makefile <<_EOF
 
-graphics_maltivec.o: graphics_maltivec.cpp graphics_maltivec.h graphics_common.h graphics_sum.h
+graphics_altivec.o: graphics_altivec.cpp graphics_altivec.h graphics_common.h graphics_sum.h
 	\$(CXX) \$(CXXSTD) \$(OSCFLAGS) \$(INCS) \$(DEPFLAGS) \$(DEFS) $GFX_MALTIVEC_FLAGS -c \$< -o \$@
 _EOF
 fi
