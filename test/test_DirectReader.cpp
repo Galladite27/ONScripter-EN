@@ -86,9 +86,11 @@ TEST (DirectReaderTest, getFileLengthWithTempFile_POSIX) {
     ::strncat(tmpl, "/", 1);
   } else {
     ::strcpy(tmpl, "/var/tmp/");
-    tmp = new char[strlen(tmpl) + 1];
+    int tmpLen = strlen(tmpl);
+    tmp = new char[tmpLen + 1];
     tmp[0] = '\0'; // ensure 'tmp' is an empty string
-    ::strncpy(tmp, tmpl, strlen(tmpl));
+    ::strncpy(tmp, tmpl, tmpLen);
+    tmp[tmpLen] = '\0';
   }
   const int FNAME_MAX = 256;
   char *fName = new char[FNAME_MAX];
