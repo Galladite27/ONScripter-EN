@@ -47,13 +47,13 @@ void imageFilterMean_Altivec(unsigned char *src1, unsigned char *src2, unsigned 
     }
 
     // Do bulk of processing using Altivec (find the mean of 16 8-bit unsigned integers, with saturation)
-    vector unsigned char rshft = vec_splat_u8(0x1);
+    __vector unsigned char rshft = vec_splat_u8(0x1);
     while(n >= 16) {
-        vector unsigned char s1 = vec_ld(0,src1);
+        __vector unsigned char s1 = vec_ld(0,src1);
         s1 = vec_sr(s1, rshft); // shift right 1
-        vector unsigned char s2 = vec_ld(0,src2);
+        __vector unsigned char s2 = vec_ld(0,src2);
         s2 = vec_sr(s2, rshft); // shift right 1
-        vector unsigned char r = vec_adds(s1, s2);
+        __vector unsigned char r = vec_adds(s1, s2);
         vec_st(r,0,dst);
 
         n -= 16; src1 += 16; src2 += 16; dst += 16;
@@ -77,9 +77,9 @@ void imageFilterAddTo_Altivec(unsigned char *dst, unsigned char *src, int length
 
     // Do bulk of processing using Altivec (add 16 8-bit unsigned integers, with saturation)
     while(n >= 16) {
-        vector unsigned char s = vec_ld(0,src);
-        vector unsigned char d = vec_ld(0,dst);
-        vector unsigned char r = vec_adds(d, s);
+        __vector unsigned char s = vec_ld(0,src);
+        __vector unsigned char d = vec_ld(0,dst);
+        __vector unsigned char r = vec_adds(d, s);
         vec_st(r,0,dst);
 
         n -= 16; src += 16; dst += 16;
@@ -103,9 +103,9 @@ void imageFilterSubFrom_Altivec(unsigned char *dst, unsigned char *src, int leng
 
     // Do bulk of processing using Altivec (sub 16 8-bit unsigned integers, with saturation)
     while(n >= 16) {
-        vector unsigned char s = vec_ld(0,src);
-        vector unsigned char d = vec_ld(0,dst);
-        vector unsigned char r = vec_subs(d, s);
+        __vector unsigned char s = vec_ld(0,src);
+        __vector unsigned char d = vec_ld(0,dst);
+        __vector unsigned char r = vec_subs(d, s);
         vec_st(r,0,dst);
 
         n -= 16; src += 16; dst += 16;
