@@ -66,6 +66,7 @@ GENERAL GUIDELINES
     system
       \--> This includes compiling through IDEs, such as Visual Studio Code
       \--> CMake MAY be used as an ALTERNATE build system, as long as MacOS is supported
+           \--> See the EPS repo
   * The updating of SDL 1.2 to SDL 2 or 3 - pending review
   * The use of QT, GTK, or similar
   * The implementation of a menu bar in line with NScripter
@@ -92,3 +93,4 @@ GENERAL GUIDELINES
   Changes which the current maintainers are not adverse to but will never contribute towards or
   support are outlined below:
   * Support for platforms other than Windows (32- & 64-bit, Win XP+), Linux, and MacOS
+    \--> See EPS repo

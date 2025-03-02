@@ -77,10 +77,13 @@ DOCUMENTATION UPDATING LIST
 * Enginereset didn't appear to be on the documentation page, was it
   ever added or does my website just need updating? (Galladite)
 
+* Add splitonce command
+
 
 TODO LIST
 
 * Quickly check if splitCommand and splitonceCommand need to use script_h.enc.getBytes()
+  \--> Update: they do. This needs fixing.
 * Quickly check if enginereset breaks when used in define block
 * --key doesn't do anything? Also see OnscripterYuri
 * OGG video support for 1080p

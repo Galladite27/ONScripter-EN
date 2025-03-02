@@ -1,3 +1,9 @@
+2025-3-2
+  Fixed the splitonce command (lol). This helped to fix a couple of
+  bugs in Tenshi no Oshigoto.
+  Still needs adding to the command ref.
+  -Galladite
+
 2024-09-16
   Implemented splitonce command. TODO still need to add this to the
   API ref, and remove the redundant third of four arguments. When this
