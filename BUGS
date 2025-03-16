@@ -49,6 +49,9 @@ BUGS OR MISFEATURES
 
 * enginereset causes audio to fail until game is hard reset?
 
+* Engine doesn't give warning when you try to assign to the same alias
+  multiple times - currently silently maintains initial value
+
 FEATURES REQUESTED
   
 * Allow the specification of a "fallback" font to use for characters
