@@ -349,7 +349,7 @@ if (ONS_X8664)
             COMPILE_OPTIONS -mmmx
         )
 
-        target_compile_definitions(onscripter-en USE_X86_GFX)
+        target_compile_definitions(onscripter-en PRIVATE USE_X86_GFX)
     endif()
 elseif(ONS_X86)
     if(ONS_COMPILER_FLAG_STYLE STREQUAL "GNU")
@@ -363,7 +363,7 @@ elseif(ONS_X86)
             COMPILE_OPTIONS -mmmx
         )
 
-        target_compile_definitions(onscripter-en USE_X86_GFX)
+        target_compile_definitions(onscripter-en PRIVATE USE_X86_GFX)
     endif()
 elseif(ONS_PPC)
     if (NOT NINTENDO_GAMECUBE
@@ -377,7 +377,7 @@ elseif(ONS_PPC)
             COMPILE_OPTIONS -maltivec
         )
         
-        target_compile_definitions(onscripter-en USE_PPC_GFX)
+        target_compile_definitions(onscripter-en PRIVATE USE_PPC_GFX)
     endif()
 endif()
 
