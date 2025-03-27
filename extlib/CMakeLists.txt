@@ -193,6 +193,8 @@ else()
 
             if (${ONS_X86})
                 target_link_options(SDLmain PUBLIC -e _WinMain@16)
+            elseif(${ONS_X8664})
+                target_link_options(SDLmain PUBLIC -e WinMain)
             endif()
         elseif(APPLE)
             file(
