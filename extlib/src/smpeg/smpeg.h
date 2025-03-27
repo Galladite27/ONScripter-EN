@@ -95,7 +95,10 @@ typedef void(*SMPEG_DisplayCallback)(SDL_Surface* dst, int x, int y,
 extern DECLSPEC SMPEG* SMPEG_new(const char *file, SMPEG_Info* info, int sdl_audio);
 
 /* The same as above for a file descriptor */
+
+#ifndef NXDK
 extern DECLSPEC SMPEG* SMPEG_new_descr(int file, SMPEG_Info* info, int sdl_audio);
+#endif
 
 /*
    The same as above but for a raw chunk of data.  SMPEG makes a copy of the

@@ -112,7 +112,21 @@ do
         UNSUPPORTED_COMPILER=$arg
         ;;
       --no-cpu-gfx | -no-cpu-gfx)
-        USE_CPU_GFX=false ;;
+        USE_CPU_GFX=false
+        ONS_X86_MMX_AVAILIBLE=false
+        ONS_X86_SSE_AVAILIBLE=false
+        ONS_X86_SSE2_AVAILIBLE=false
+        ONS_X86_SSE3_AVAILIBLE=false
+        ONS_X86_SSSE3_AVAILIBLE=false
+        ONS_X86_SSE4_1_AVAILIBLE=false
+        ONS_X86_SSE4_2_AVAILIBLE=false
+        ONS_X86_AVX_AVAILIBLE=false
+        ONS_X86_AVX2_AVAILIBLE=false
+        ONS_PPC_ALTIVEC_AVAILIBLE=false
+        ONS_ARM_NEON_AVAILIBLE=false
+        ONS_ARM_SVE_AVAILIBLE=false
+        ONS_ARM_SVE2_AVAILIBLE=false
+        ;;
       --novectorize | -novectorize)
         VECTORIZE=false ;;
       --vectorize | -vectorize)

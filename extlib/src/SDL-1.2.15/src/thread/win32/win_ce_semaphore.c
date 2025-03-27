@@ -31,6 +31,8 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
+#if defined(_WIN32_WCE) && (_WIN32_WCE < 300)
+
 #include "win_ce_semaphore.h"
 
 static SYNCHHANDLE CleanUp (SYNCHHANDLE hSynch, DWORD Flags);
@@ -214,3 +216,5 @@ static SYNCHHANDLE CleanUp (SYNCHHANDLE hSynch, DWORD Flags)
    /* Everything worked */
    return hSynch;
 }
+
+#endif

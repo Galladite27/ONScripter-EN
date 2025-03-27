@@ -89,9 +89,9 @@ static void optionHelp()
     printf( "      --force-png-nscmask\talways use NScripter-style masks\n");
     printf( "      --detect-png-nscmask\tdetect PNG alpha images that actually use masks\n");
     printf( "      --force-button-shortcut\tignore useescspc and getenter command\n");
-#ifdef USE_X86_GFX
+#if ONS_X86 || ONS_X8664
     printf( "      --disable-cpu-gfx\tdo not use MMX/SSE2 graphics acceleration routines\n");
-#elif  USE_PPC_GFX
+#elif  ONS_PPC
     printf( "      --disable-cpu-gfx\tdo not use Altivec graphics acceleration routines\n");
 #endif
     printf( "      --automode-time time\tdefault time at clickwaits before continuing, when in automode\n");
@@ -262,7 +262,7 @@ static void parseOptions(int argc, char **argv, ONScripterLabel &ons, bool &hasA
             else if ( !strcmp( argv[0]+1, "-debug" ) ){
                 ons.add_debug_level();
             }
-#if defined (USE_X86_GFX) || defined(USE_PPC_GFX)
+#if ONS_X86 || ONS_X8664 || ONS_PPC
             else if ( !strcmp( argv[0]+1, "-disable-cpu-gfx" ) ){
                 ons.disableCpuGfx();
                 printf("disabling CPU accelerated graphics routines\n");
@@ -422,7 +422,14 @@ static bool parseOptionFile(const char *filename, ONScripterLabel &ons, bool &ha
 
 void redirect_output();
 
+#ifdef PSP
+extern "C" int main( int argc, char **argv )
+#elif defined(NXDK)
+#undef SDL_main
+int main( void )
+#else
 int main( int argc, char **argv )
+#endif
 {
     // Handle redirection of stdout/stderr on a per-platform basis.
     redirect_output();
@@ -458,8 +465,10 @@ int main( int argc, char **argv )
         }
     } else
 #endif
+#ifndef NXDK
     parseOptionFile(CFG_FILE, ons, hasArchivePath);
     parseOptions(argc, argv, ons, hasArchivePath);
+#endif
 
     // ----------------------------------------
     // Run ONScripter
