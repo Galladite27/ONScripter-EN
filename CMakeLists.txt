@@ -348,6 +348,8 @@ if (ONS_X8664)
             graphics_mmx.cpp
             COMPILE_OPTIONS -mmmx
         )
+
+        target_compile_definitions(onscripter-en USE_X86_GFX)
     endif()
 elseif(ONS_X86)
     if(ONS_COMPILER_FLAG_STYLE STREQUAL "GNU")
@@ -360,6 +362,8 @@ elseif(ONS_X86)
             graphics_mmx.cpp
             COMPILE_OPTIONS -mmmx
         )
+
+        target_compile_definitions(onscripter-en USE_X86_GFX)
     endif()
 elseif(ONS_PPC)
     if (NOT NINTENDO_GAMECUBE
@@ -372,6 +376,8 @@ elseif(ONS_PPC)
             graphics_altivec.cpp
             COMPILE_OPTIONS -maltivec
         )
+        
+        target_compile_definitions(onscripter-en USE_PPC_GFX)
     endif()
 endif()
 
