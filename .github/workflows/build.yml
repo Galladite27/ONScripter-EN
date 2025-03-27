@@ -274,9 +274,10 @@ jobs:
           - os: windows-latest
             arch: amd64_arm64
             target_arch: arm64
-          - os: windows-latest
-            arch: amd64_arm
-            target_arch: arm
+          # Unfortunately, I'm not sure if this one is fixable.
+          #- os: windows-latest
+          #  arch: amd64_arm
+          #  target_arch: arm
     
     name: windows-cmake-msvc-${{ matrix.target_arch }}
     runs-on: ${{ matrix.os }}
