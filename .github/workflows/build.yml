@@ -268,9 +268,10 @@ jobs:
           - os: windows-latest
             arch: x64
             target_arch: x86_64
-          - os: windows-latest
-            arch: x86       
-            target_arch: x86
+          # Temporarily disabled, waiting to see if SDL12_compat will fix this platform, otherwise we can build using SDL12.
+          #- os: windows-latest
+          #  arch: x86       
+          #  target_arch: x86
           - os: windows-latest
             arch: amd64_arm64
             target_arch: arm64
@@ -389,28 +390,29 @@ jobs:
           cmake --build build --config Release
 
   ##########################################
-  Xbox:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: recursive
-
-      - uses: lukka/get-cmake@latest
-
-      - name: Install dependencies
-        run: |
-          sudo apt-get update -y && sudo apt-get install -y flex bison clang lld llvm
-          
-      - name: Download and install NXDK SDK, then build.
-        run: |
-          git clone --depth 1 --recurse-submodules --shallow-submodules https://github.com/XboxDev/nxdk.git
-          
-          eval $(nxdk/bin/activate -s)
-          cd nxdk
-          make NXDK_ONLY=y
-          make tools
-          cd ..
-          
-          cmake --preset=ninja -DCMAKE_TOOLCHAIN_FILE=nxdk/share/toolchain-nxdk.cmake -B build
-          cmake --build build --config Release
+  # Temporarily disabled
+  #Xbox:
+  #  runs-on: ubuntu-latest
+  #  steps:
+  #    - uses: actions/checkout@v4
+  #      with:
+  #        submodules: recursive
+  #
+  #    - uses: lukka/get-cmake@latest
+  #
+  #    - name: Install dependencies
+  #      run: |
+  #        sudo apt-get update -y && sudo apt-get install -y flex bison clang lld llvm
+  #        
+  #    - name: Download and install NXDK SDK, then build.
+  #      run: |
+  #        git clone --depth 1 --recurse-submodules --shallow-submodules https://github.com/XboxDev/nxdk.git
+  #        
+  #        eval $(nxdk/bin/activate -s)
+  #        cd nxdk
+  #        make NXDK_ONLY=y
+  #        make tools
+  #        cd ..
+  #        
+  #        cmake --preset=ninja -DCMAKE_TOOLCHAIN_FILE=nxdk/share/toolchain-nxdk.cmake -B build
+  #        cmake --build build --config Release
