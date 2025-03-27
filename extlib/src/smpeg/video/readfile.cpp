@@ -48,7 +48,10 @@
  * SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
  */
 
+
+#ifndef NXDK
 #include <sys/types.h>
+#endif
 #ifdef __STDC__
 #include <stdlib.h>
 #include <string.h>

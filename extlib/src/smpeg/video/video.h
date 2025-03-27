@@ -436,11 +436,7 @@ extern unsigned int cacheMiss[8][8];
 #undef  LITTLE_ENDIAN_ARCHITECTURE
 #define BIG_ENDIAN_ARCHITECTURE 1
 #else
-#ifdef ENDIAN_IN_SYS
-#include <sys/endian.h>
-#else
-#include <endian.h>
-#endif
+#include "SDL_endian.h"
 #if __BYTE_ORDER == __LITTLE_ENDIAN
 #undef  BIG_ENDIAN_ARCHITECTURE
 #define LITTLE_ENDIAN_ARCHITECTURE 1

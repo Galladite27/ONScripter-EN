@@ -90,6 +90,7 @@ SMPEG* SMPEG_new(const char *file, SMPEG_Info* info, int sdl_audio)
     return(mpeg);
 }
 
+#ifndef NXDK
 /* The same as above except for file descriptors */
 SMPEG* SMPEG_new_descr(int file, SMPEG_Info* info, int sdl_audio)
 {
@@ -108,6 +109,7 @@ SMPEG* SMPEG_new_descr(int file, SMPEG_Info* info, int sdl_audio)
     /* We're done! */
     return(mpeg);
 }
+#endif
 
 /*
    The same as above but for a raw chunk of data.  SMPEG makes a copy of the

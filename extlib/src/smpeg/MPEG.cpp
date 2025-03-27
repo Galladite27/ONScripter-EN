@@ -2,12 +2,14 @@
 
 #include "MPEG.h"
 
-#ifdef WIN32
+#ifdef WIN32 !defined(NXDK)
 #include <io.h>
-#else
+#elif !defined(NXDK)
 #include <unistd.h>
-#endif
 #include <fcntl.h>
+#else
+#include <stdio.h>
+#endif
 #include <string.h>
 #include <errno.h>
 
@@ -31,6 +33,7 @@ MPEG::MPEG(const char * name, bool SDLaudio) :
   Init(source, SDLaudio);
 }
 
+#ifndef NXDK
 MPEG::MPEG(int Mpeg_FD, bool SDLaudio) :
   MPEGerror()
 {
@@ -55,6 +58,7 @@ MPEG::MPEG(int Mpeg_FD, bool SDLaudio) :
   }
   Init(source, SDLaudio);
 }
+#endif
 
 MPEG::MPEG(void *data, int size, bool SDLaudio) :
   MPEGerror()

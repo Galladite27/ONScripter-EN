@@ -51,7 +51,7 @@ export RANLIB  := ranlib
 export LD      := c++ -m32 -o
 
 # ONScripter variables
-OSCFLAGSEXTRA = -Wall  -DUSE_X86_GFX $(OSCTMPFLAGS)
+OSCFLAGSEXTRA = -Wall $(OSCTMPFLAGS)
 INCS = $(shell $(SDL_CONFIG) --cflags)      \
                         $(shell smpeg-config --cflags)    \
                         $(shell pkg-config freetype2 --cflags)
@@ -83,7 +83,13 @@ EXT_OBJS = win32rc.o graphics_mmx.o graphics_sse2.o
 .SUFFIXES: .o .cpp .h .c
 
 ifdef DEBUG
-OSCFLAGS = -O0 -g -pg -ggdb -pipe -Wpointer-arith -Wall  $(OSCFLAGSEXTRA)
+OSCFLAGS = -O0 -g -pg -ggdb -pipe -Wpointer-arith -Wall \
+	-DONS_X86=1 -DONS_X8664=0 -DONS_X86_MMX_AVAILIBLE=1 -DONS_X86_SSE_AVAILIBLE=1 \
+	-DONS_X86_SSE2_AVAILIBLE=1 -DONS_X86_SSE3_AVAILIBLE=0 -DONS_X86_SSSE3_AVAILIBLE=0 \
+	-DONS_X86_SSE4_1_AVAILIBLE=0 -DONS_X86_SSE4_2_AVAILIBLE=0 -DONS_X86_AVX_AVAILIBLE=0 \
+	-DONS_X86_AVX2_AVAILIBLE=0 -DONS_PPC=0 -DONS_PPC_ALTIVEC_AVAILIBLE=0 -DONS_ARM=0 \
+	-DONS_ARM_NEON_AVAILIBLE=0 -DONS_ARM_SVE_AVAILIBLE=0 -DONS_ARM_SVE2_AVAILIBLE=0 \
+	-DONS_MIPS=0 $(OSCFLAGSEXTRA)
 export LDFLAGS  := -pg $(LDFLAGS)
 else
   ifdef PROF
@@ -150,10 +156,10 @@ clean_libgnurx:
 
 
 graphics_sse2.o: graphics_sse2.cpp graphics_sse2.h graphics_common.h graphics_sum.h graphics_blend.h
-	$(CXX) $(CXXSTD) $(OSCFLAGS) $(INCS) $(DEFS) -fpermissive -msse2 -DUSE_X86_GFX -c $< -o $@
+	$(CXX) $(CXXSTD) $(OSCFLAGS) $(INCS) $(DEFS) -fpermissive -msse2 -c $< -o $@
 
 graphics_mmx.o: graphics_mmx.cpp graphics_mmx.h graphics_common.h graphics_sum.h
-	$(CXX) $(CXXSTD) $(OSCFLAGS) $(INCS) $(DEFS) -fpermissive -mmmx -DUSE_X86_GFX -c $< -o $@
+	$(CXX) $(CXXSTD) $(OSCFLAGS) $(INCS) $(DEFS) -fpermissive -mmmx -c $< -o $@
 
 .PHONY: dist
 dist:

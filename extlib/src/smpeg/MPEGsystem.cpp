@@ -2,7 +2,10 @@
 #include <string.h>        /* for memmove() */
 #include <errno.h>
 #include <assert.h>
-#ifdef WIN32
+#ifdef NXDK
+#include <stdint.h>
+typedef int32_t off_t;
+#elif defined(WIN32)
 #include <sys/types.h>
 #include <io.h>
 #include <winsock.h>
@@ -11,7 +14,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/time.h>
-#ifndef __BEOS__
+#if !defined(__BEOS__) && !defined(NXDK)
 #include <sys/select.h>
 #endif
 #endif
