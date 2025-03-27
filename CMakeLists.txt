@@ -22,6 +22,73 @@ if (ONS_COMPILER_FLAG_STYLE STREQUAL "GNU" AND (CMAKE_GENERATOR STREQUAL Ninja O
     add_compile_options(-fdiagnostics-color=always)
 endif()
 
+
+
+
+# Handle Architecture and SIMD Detection and availibility.
+set(ONS_X86 0)
+set(ONS_X8664 0)
+set(ONS_X86_MMX_AVAILIBLE 0)
+set(ONS_X86_SSE_AVAILIBLE 0)
+set(ONS_X86_SSE2_AVAILIBLE 0)
+set(ONS_X86_SSE3_AVAILIBLE 0)
+set(ONS_X86_SSSE3_AVAILIBLE 0)
+set(ONS_X86_SSE4_1_AVAILIBLE 0)
+set(ONS_X86_SSE4_2_AVAILIBLE 0)
+set(ONS_X86_AVX_AVAILIBLE 0)
+set(ONS_X86_AVX2_AVAILIBLE 0)
+set(ONS_PPC 0)
+set(ONS_PPC_ALTIVEC_AVAILIBLE 0)
+set(ONS_ARM 0)
+set(ONS_ARM_NEON_AVAILIBLE 0)
+set(ONS_ARM_SVE_AVAILIBLE 0)
+set(ONS_ARM_SVE2_AVAILIBLE 0)
+set(ONS_MIPS 0)
+
+if (${ONS_TARGET_ARCH} STREQUAL "x86_64")    
+    set(ONS_X8664 1)
+    
+    if (NOT MSVC)
+        set(ONS_X86_MMX_AVAILIBLE 1)
+    endif()
+    
+    set(ONS_X86_SSE_AVAILIBLE 1)
+    set(ONS_X86_SSE2_AVAILIBLE 1)
+    set(ONS_X86_SSE3_AVAILIBLE 1)
+    set(ONS_X86_SSSE3_AVAILIBLE 1)
+    set(ONS_X86_SSE4_1_AVAILIBLE 1)
+    set(ONS_X86_SSE4_2_AVAILIBLE 1)
+    set(ONS_X86_AVX_AVAILIBLE 1)
+    set(ONS_X86_AVX2_AVAILIBLE 1)
+elseif(${ONS_TARGET_ARCH} STREQUAL "i386")
+    set(ONS_X86 1)
+    
+    set(ONS_X86_MMX_AVAILIBLE 1)
+    set(ONS_X86_SSE_AVAILIBLE 1)
+    
+    if (NOT NXDK)
+        set(ONS_X86_SSE2_AVAILIBLE 1)
+    endif()
+elseif(${ONS_TARGET_ARCH} STREQUAL "ppc" OR ${ONS_TARGET_ARCH} STREQUAL "ppc")
+    set(ONS_PPC 1)
+elseif(${ONS_TARGET_ARCH} STREQUAL "armv9" OR
+       ${ONS_TARGET_ARCH} STREQUAL "armv8" OR
+       ${ONS_TARGET_ARCH} STREQUAL "armv7" OR
+       ${ONS_TARGET_ARCH} STREQUAL "armv6" OR
+       ${ONS_TARGET_ARCH} STREQUAL "armv5" OR
+       ${ONS_TARGET_ARCH} STREQUAL "arm")
+       
+    set(ONS_ARM 1)
+
+    set(ONS_ARM_NEON_AVAILIBLE 1)
+    if (NOT MSVC)
+        set(ONS_ARM_SVE_AVAILIBLE 1)
+        set(ONS_ARM_SVE2_AVAILIBLE 1)
+    endif()
+elseif(${ONS_TARGET_ARCH} STREQUAL "mips")
+    set(ONS_MIPS 1)
+endif()
+
 # Options we can pass into CMake, platform will determine some defaults.
 if (NINTENDO_WIIU
     OR NINTENDO_SWITCH
@@ -270,43 +337,7 @@ if (ONS_USE_LIBMAD)
         ONS::mad
     )
 endif()
-
-# Handle Architecture and SIMD Detection and availibility.
-set(ONS_X86 0)
-set(ONS_X8664 0)
-set(ONS_X86_MMX_AVAILIBLE 0)
-set(ONS_X86_SSE_AVAILIBLE 0)
-set(ONS_X86_SSE2_AVAILIBLE 0)
-set(ONS_X86_SSE3_AVAILIBLE 0)
-set(ONS_X86_SSSE3_AVAILIBLE 0)
-set(ONS_X86_SSE4_1_AVAILIBLE 0)
-set(ONS_X86_SSE4_2_AVAILIBLE 0)
-set(ONS_X86_AVX_AVAILIBLE 0)
-set(ONS_X86_AVX2_AVAILIBLE 0)
-set(ONS_PPC 0)
-set(ONS_PPC_ALTIVEC_AVAILIBLE 0)
-set(ONS_ARM 0)
-set(ONS_ARM_NEON_AVAILIBLE 0)
-set(ONS_ARM_SVE_AVAILIBLE 0)
-set(ONS_ARM_SVE2_AVAILIBLE 0)
-set(ONS_MIPS 0)
-
-if (${ONS_TARGET_ARCH} STREQUAL "x86_64")    
-    set(ONS_X8664 1)
-    
-    if (NOT MSVC)
-        set(ONS_X86_MMX_AVAILIBLE 1)
-    endif()
-    
-    set(ONS_X86_SSE_AVAILIBLE 1)
-    set(ONS_X86_SSE2_AVAILIBLE 1)
-    set(ONS_X86_SSE3_AVAILIBLE 1)
-    set(ONS_X86_SSSE3_AVAILIBLE 1)
-    set(ONS_X86_SSE4_1_AVAILIBLE 1)
-    set(ONS_X86_SSE4_2_AVAILIBLE 1)
-    set(ONS_X86_AVX_AVAILIBLE 1)
-    set(ONS_X86_AVX2_AVAILIBLE 1)
-
+if (ONS_X8664)
     if(ONS_COMPILER_FLAG_STYLE STREQUAL "GNU")
         set_source_files_properties(
             graphics_sse2.cpp
@@ -318,16 +349,7 @@ if (${ONS_TARGET_ARCH} STREQUAL "x86_64")
             COMPILE_OPTIONS -mmmx
         )
     endif()
-elseif(${ONS_TARGET_ARCH} STREQUAL "i386")
-    set(ONS_X86 1)
-    
-    set(ONS_X86_MMX_AVAILIBLE 1)
-    set(ONS_X86_SSE_AVAILIBLE 1)
-    
-    if (NOT NXDK)
-        set(ONS_X86_SSE2_AVAILIBLE 1)
-    endif()
-
+elseif(ONS_X86)
     if(ONS_COMPILER_FLAG_STYLE STREQUAL "GNU")
         set_source_files_properties(
             graphics_sse2.cpp
@@ -339,9 +361,7 @@ elseif(${ONS_TARGET_ARCH} STREQUAL "i386")
             COMPILE_OPTIONS -mmmx
         )
     endif()
-elseif(${ONS_TARGET_ARCH} STREQUAL "ppc" OR ${ONS_TARGET_ARCH} STREQUAL "ppc")
-    set(ONS_PPC 1)
-
+elseif(ONS_PPC)
     if (NOT NINTENDO_GAMECUBE
         AND NOT NINTENDO_WII
         AND NOT NINTENDO_WIIU)
@@ -353,24 +373,7 @@ elseif(${ONS_TARGET_ARCH} STREQUAL "ppc" OR ${ONS_TARGET_ARCH} STREQUAL "ppc")
             COMPILE_OPTIONS -maltivec
         )
     endif()
-elseif(${ONS_TARGET_ARCH} STREQUAL "armv9" OR
-       ${ONS_TARGET_ARCH} STREQUAL "armv8" OR
-       ${ONS_TARGET_ARCH} STREQUAL "armv7" OR
-       ${ONS_TARGET_ARCH} STREQUAL "armv6" OR
-       ${ONS_TARGET_ARCH} STREQUAL "armv5" OR
-       ${ONS_TARGET_ARCH} STREQUAL "arm")
-       
-    set(ONS_ARM 1)
-
-    set(ONS_ARM_NEON_AVAILIBLE 1)
-    if (NOT MSVC)
-        set(ONS_ARM_SVE_AVAILIBLE 1)
-        set(ONS_ARM_SVE2_AVAILIBLE 1)
-    endif()
-elseif(${ONS_TARGET_ARCH} STREQUAL "mips")
-    set(ONS_MIPS 1)
 endif()
-
 
 target_compile_definitions(onscripter-en
 PRIVATE

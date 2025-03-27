@@ -190,7 +190,10 @@ else()
             
             target_sources(SDL PRIVATE ${SDL_WIN32_SOURCES})
             target_sources(SDLmain PRIVATE ${sdl_source_prefix}/src/main/win32/SDL_win32_main.c)
-            target_link_options(SDLmain PUBLIC -e _WinMain@16)
+
+            if (${ONS_X86})
+                target_link_options(SDLmain PUBLIC -e _WinMain@16)
+            endif()
         elseif(APPLE)
             file(
                 GLOB SDL_MACOS_SOURCES CONFIGURE_DEPENDS
@@ -928,7 +931,7 @@ if (NOT ONS_PREFER_SYSTEM_PACKAGES OR NOT TARGET PkgConfigWrapper::SDL_mixer)
             ${sdl_mixer_source_prefix}/native_midi/native_midi_common.c
             ${sdl_mixer_source_prefix}/native_midi/native_midi_macosx.c
         )
-        
+
         target_link_libraries(SDL_mixer PRIVATE "-framework AudioToolbox" -Wl "-framework AudioUnit")
     endif()
 
