@@ -15,25 +15,26 @@ Through CMake, we're slowly bringing online support for various new targets, as 
 | -------- | ------- | -------  |  -------  |  -------  |  -------  |
 | Windows | x86 | mingw32 | ✅ | ✅ | ✅ |
 | Windows | x86_64 | mingw64 | ✅ | ✅ | ✅ |
-| Windows | x86 | MSVC | ❌ | ❌ | ❌ |
+| Windows | x86 | MSVC | ✅ | ✅ | ✅ |
 | Windows | x86_64 | MSVC | ✅ | ✅ | ✅ |
 | Windows | ARM | MSVC | ❌ | ❌ | ❌ |
 | Windows | ARM64 | MSVC | ✅ | ✅ | ✅ (?) |
 | Linux | x86_64 | gcc | ✅ | ✅ | ✅ (?) |
-| Linux | x86 | gcc | ✅ | ❌ | ❌ |
-| Linux | ARM | gcc | ✅ | ❌ | ❌ |
-| Linux | ARM64 | gcc | ✅ | ❌ | ❌ |
+| Linux | x86 | gcc | ✅ | ✅ | ✅ |
+| Linux | ARM | gcc | ✅ | ✅ | ✅ |
+| Linux | ARM64 | gcc | ✅ | ✅ | ✅ |
 | Linux | x86_64 | clang | ✅ | ✅ | ✅ (?) |
-| Linux | x86 | clang | ✅ | ❌ | ❌ |
-| Linux | ARM | clang | ✅ | ❌ | ❌ |
-| MacOS | ARM64 | clang | ❌ | ❌ | ❌ |
-| MacOS | x86_64 | clang | ❌ | ❌ | ❌ |
+| Linux | x86 | clang | ✅ | ✅ | ✅ |
+| Linux | ARM | clang | ✅ | ✅ | ✅ |
+| MacOS | ARM64 | clang | ✅ | ✅ | ✅ |
+| MacOS | x86_64 | clang | ✅ | ✅ | ✅ |
 | MacOS | PowerPC | [Retro68](https://github.com/autc04/Retro68) | ❌ | ❌ | ❌ |
 | PSP | MIPS | [PSPDEV](https://pspdev.github.io/installation.html) | ✅ | ✅ | ❌ |
 | Nintendo Switch | ARM64 | [devkitPro](https://github.com/devkitPro/pacman/releases) | ✅ | ✅ | ❌ |
 | Wii U | PowerPC | [devkitPro](https://github.com/devkitPro/pacman/releases) | ✅ | ✅ | ❌ |
 | Wii | PowerPC | [devkitPro](https://github.com/devkitPro/pacman/releases) | ✅ | ✅ | ❌ |
-| Original Xbox | x86 | [nxdk](https://github.com/XboxDev/nxdk) | ✅ | ❌ | ❌ |
+| Gamecube | PowerPC | [devkitPro](https://github.com/devkitPro/pacman/releases) | ✅ | ✅ | ❌ |
+| Original Xbox | x86 | [nxdk](https://github.com/XboxDev/nxdk) | ❌ | ❌ | ❌ |
 
 # Getting the code
 
