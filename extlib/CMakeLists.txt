@@ -190,6 +190,7 @@ else()
             
             target_sources(SDL PRIVATE ${SDL_WIN32_SOURCES})
             target_sources(SDLmain PRIVATE ${sdl_source_prefix}/src/main/win32/SDL_win32_main.c)
+            target_compile_definitions(SDL PRIVATE SDL_CDROM_WIN32)
 
             if (${ONS_X86})
                 target_link_options(SDLmain PUBLIC -e _WinMain@16)
