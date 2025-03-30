@@ -153,7 +153,7 @@ pacman -S mingw-w64-i686-SDL mingw-w64-i686-SDL_ttf mingw-w64-i686-SDL_mixer min
 
 And then while inside of the ONScripter-EN directory you cloned earlier:
 
-```
+```bash
 cmake --preset=ninja -B build_mingw32
 cmake --build build_mingw32 --config Release
 ```
