@@ -657,6 +657,7 @@ endif()
 
 if (NOT ONS_PREFER_SYSTEM_PACKAGES OR NOT TARGET PkgConfigWrapper::freetype2)
 #    if (APPLE OR NOT ONS_PREFER_OLD_DEPS)
+        option(FT_DISABLE_BROTLI "Disable support of compressed WOFF2 fonts." ON)
         add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/src/freetype-2.13.3)
         add_library(ONS::freetype ALIAS freetype)
 #    else()
