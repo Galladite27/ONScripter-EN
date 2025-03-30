@@ -31,7 +31,7 @@ OGGSRC  = $(ES)/libogg-1.3.5
 VORBSRC = $(ES)/libvorbis-1.3.7
 SMPGSRC = $(ES)/smpeg
 BZSRC   = $(ES)/bzip2-1.0.8
-FTSRC   = $(ES)/freetype-2.13.0
+FTSRC   = $(ES)/freetype-2.13.3
 SDLTSRC = $(ES)/SDL_ttf-2.0.11
 
 LPREFIX = $(shell pwd)/extlib
