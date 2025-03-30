@@ -40,11 +40,6 @@ function(add_onsen_test target_name)
         cxx_std_14
     )
 
-    target_compile_definitions(${target_name}
-    PRIVATE
-        GTEST_LANG_CXX11=0
-    )
-
     target_include_directories(${target_name}
     PRIVATE
         ..
