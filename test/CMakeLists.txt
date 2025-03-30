@@ -37,7 +37,7 @@ function(add_onsen_test target_name)
 
     target_compile_features(${target_name}
     PRIVATE
-        cxx_std_11
+        cxx_std_14
     )
 
     target_compile_definitions(${target_name}
