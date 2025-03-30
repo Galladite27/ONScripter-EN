@@ -37,7 +37,7 @@ function(add_onsen_test target_name)
 
     target_compile_features(${target_name}
     PRIVATE
-        cxx_std_98
+        cxx_std_11
     )
 
     target_compile_definitions(${target_name}
@@ -52,6 +52,7 @@ function(add_onsen_test target_name)
 
     target_link_libraries(${target_name}
     PRIVATE
+        gmock
         gtest
         gtest_main
     )
@@ -68,4 +69,35 @@ PRIVATE
     test_Encoding.cpp
     ../Encoding.cpp
     ../sjis2utf16.cpp
+)
+
+#############################################
+# onscripter_basereader_test
+add_onsen_test(onscripter_basereader_test)
+
+target_sources(onscripter_basereader_test
+PRIVATE
+    test_BaseReader.cpp
+)
+
+#############################################
+# onscripter_directreader_test
+add_onsen_test(onscripter_directreader_test)
+
+target_sources(onscripter_directreader_test
+PRIVATE
+    test_DirectReader.cpp
+    ../DirectReader.cpp
+)
+
+target_link_libraries(onscripter_directreader_test PRIVATE ONS::bzip2)
+
+#############################################
+# onscripter_dirpaths_test
+add_onsen_test(onscripter_dirpaths_test)
+
+target_sources(onscripter_dirpaths_test
+PRIVATE
+    test_DirPaths.cpp
+    ../DirPaths.cpp
 )
