@@ -60,7 +60,8 @@ extern unsigned short convUTF8ToUTF16(const char **src);
  * int pitch_xy[2]      Width and height of a character
  *
  * Oh, and tateyoko_mode means whether text is being written
- * horizontally or vertically. On is "tate" and one is "yoko".
+ * horizontally or vertically. Vertical is "tate" and horizontal is
+ * "yoko".
  *
  *
  *
@@ -538,7 +539,6 @@ void ONScripterLabel::drawString( const char *str, uchar3 color, Fontinfo *info,
             */
             if (script_h.preferred_script == ScriptHandler::JAPANESE_SCRIPT) {
                 // This fix may be unnecessary now, but just in case...
-                // Yippee nesting
                 for (int i=0; i<3; i++) {
                     if (*str && *str != 0x0a){
                         text[0] = *str++;
@@ -792,8 +792,16 @@ bool ONScripterLabel::clickNewPage()
         num_chars_in_sentence = 0;
 
         event_mode = IDLE_EVENT_MODE;
-        if (waitEvent(0)) return false;
+
+        bool skip_slowly_flag = ctrl_pressed_status && (sentence_font.skip_speed > 0);
+        if (skip_slowly_flag) {
+            event_mode = WAIT_TEXTOUT_MODE;
+            waitEvent( sentence_font.skip_speed );
+        }
+
+        else if (waitEvent(0)) return false;
     }
+
     else{
         key_pressed_flag = false;
 
@@ -969,6 +977,12 @@ int ONScripterLabel::textCommand()
     if (debug_level > 1)
         printf("textCommand %s %d %d %d\n", script_h.getStringBuffer() + string_buffer_offset, string_buffer_offset, event_mode, line_enter_status);
     while(processText());
+
+    bool skip_slowly_flag = ctrl_pressed_status && (sentence_font.skip_speed > 0);
+    if (skip_slowly_flag) {
+        event_mode = WAIT_TEXTOUT_MODE;
+        waitEvent( sentence_font.skip_speed );
+    }
 
     return RET_CONTINUE;
 }

@@ -46,6 +46,7 @@ public:
     int xy[2]; // Current position
     int pitch_xy[2]; // Width and height of a character
     int wait_time;
+    int skip_speed;
     bool is_bold;
     bool is_shadow;
     bool is_transparent;

@@ -1,3 +1,9 @@
+2025-3-30
+  Added skipspeed command (define block only) to make CTRL-skipping
+  slower if desired (for eien Jisatsu 101 port)
+  Still needs adding to the command ref.
+  -Galladite
+
 2025-3-2
   Fixed the splitonce command (lol). This helped to fix a couple of
   bugs in Tenshi no Oshigoto.

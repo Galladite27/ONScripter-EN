@@ -850,6 +850,16 @@ int ONScripterLabel::spbtnCommand()
     return RET_CONTINUE;
 }
 
+int ONScripterLabel::skipspeedCommand()
+{
+    if ( current_mode != DEFINE_MODE )
+        errorAndExit( "skipspeed: not in the define section" );
+
+    sentence_font.skip_speed = script_h.readInt();
+
+    return RET_CONTINUE;
+}
+
 int ONScripterLabel::skipoffCommand()
 {
     skip_mode &= ~SKIP_NORMAL;

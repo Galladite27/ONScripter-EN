@@ -220,6 +220,7 @@ public:
     int splitCommand();
     int spclclkCommand();
     int spbtnCommand();
+    int skipspeedCommand();
     int skipoffCommand();
     int shellCommand();
     int sevolCommand();

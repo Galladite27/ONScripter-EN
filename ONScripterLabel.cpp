@@ -141,6 +141,7 @@ static struct FuncLUT{
     {"split",   &ONScripterLabel::splitCommand},
     {"spclclk",   &ONScripterLabel::spclclkCommand},
     {"spbtn",   &ONScripterLabel::spbtnCommand},
+    {"skipspeed", &ONScripterLabel::skipspeedCommand},
     {"skipoff",   &ONScripterLabel::skipoffCommand},
     {"shell",   &ONScripterLabel::shellCommand},
     {"sevol",   &ONScripterLabel::sevolCommand},
@@ -1612,6 +1613,7 @@ void ONScripterLabel::resetSentenceFont()
     sentence_font.pitch_xy[0] = sentence_font.font_size_xy[0];
     sentence_font.pitch_xy[1] = 2 + sentence_font.font_size_xy[1];
     sentence_font.wait_time = 20;
+    sentence_font.skip_speed = 0;
     sentence_font.window_color[0] = sentence_font.window_color[1] = sentence_font.window_color[2] = 0x99;
     sentence_font.color[0] = sentence_font.color[1] = sentence_font.color[2] = 0xff;
     sentence_font_info.reset();
