@@ -510,7 +510,7 @@ elseif(WIN32)
 
         target_link_options(onscripter-en
         PRIVATE
-            -subsystem windows
+            $<$<CONFIG:RELEASE>:-Wl,-subsystem,windows>
         )
     elseif(ONS_COMPILER_FLAG_STYLE STREQUAL "MSVC")
         target_compile_options(onscripter-en
@@ -519,7 +519,7 @@ elseif(WIN32)
 
         target_link_options(onscripter-en
         PRIVATE
-            /SUBSYSTEM:WINDOWS
+            $<$<CONFIG:RELEASE>:/SUBSYSTEM:WINDOWS>
         )
     endif()
 
