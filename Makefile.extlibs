@@ -250,7 +250,7 @@ dclean_freetype:
 $(FTCONFIGURE): $(if $(INTERNAL_LIBPNG),$(EL)/libz$(LIBSUFFIX))
 	@echo Configuring internal Freetype...
 	@cd $(FTSRC) && \
-	./configure --prefix="$(LPREFIX)" --disable-shared --without-harfbuzz --without-brotli $(OTHERCONFIG) $(REDIR)
+	./configure --prefix="$(LPREFIX)" --disable-shared --without-png --without-harfbuzz --without-brotli $(OTHERCONFIG) $(REDIR)
 
 $(EB)/freetype-config: $(FTCONFIGURE) | $(EB)
 	@echo Building internal Freetype...

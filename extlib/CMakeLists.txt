@@ -657,6 +657,7 @@ endif()
 
 if (NOT ONS_PREFER_SYSTEM_PACKAGES OR NOT TARGET PkgConfigWrapper::freetype2)
 #    if (APPLE OR NOT ONS_PREFER_OLD_DEPS)
+        option(FT_DISABLE_PNG "Disable support of PNG compressed OpenType embedded bitmaps." ON)
         option(FT_DISABLE_BROTLI "Disable support of compressed WOFF2 fonts." ON)
         add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/src/freetype-2.13.3)
         add_library(ONS::freetype ALIAS freetype)
@@ -1091,8 +1092,10 @@ if (NOT ONS_PREFER_SYSTEM_PACKAGES OR NOT TARGET PkgConfigWrapper::zlib)
         ${zlib_source_prefix}/
     )
 
+    message(STATUS "Using embedded zlib")
     add_library(ONS::zlib ALIAS zlib)
 else()
+    message(STATUS "Using packaged zlib")
     add_library(ONS::zlib ALIAS PkgConfigWrapper::zlib)
 endif()
 
@@ -1159,8 +1162,10 @@ if (NOT ONS_PREFER_SYSTEM_PACKAGES OR NOT TARGET PkgConfigWrapper::libpng)
         ${libpng_source_prefix}/
     )
 
+    message(STATUS "Using embedded libpng")
     add_library(ONS::libpng ALIAS libpng)
 else()
+    message(STATUS "Using packaged libpng")
     add_library(ONS::libpng ALIAS PkgConfigWrapper::libpng)
 endif()
 
