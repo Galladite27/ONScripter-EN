@@ -36,11 +36,14 @@ ON-LINE
   ONScripter-EN's official site is, as of its revival, a single page available at the link provided
   here: https://galladite.net/~galladite/ons-en/index.html
 
-  However, unlike under Mion's maintainership, this site only serves as a landing page. Most activity
-  including releases is carried out on Github, as mentioned above.
+  However, unlike under Mion's maintainership, this site only serves as a landing page. Most
+  activity including releases is carried out on Github, as mentioned above.
 
   A live version of the *NScripter API documentation is available through a link provided here:
   https://galladite.net/~galladite/nscripter/mirrors/archives/reference/NScrAPI-framed.html
+
+  A mirror of the *NScripter API documentation (provided by Chaos Kaiser) is available through a
+  link provided here: https://kaisernet.org/onscripter/api/NScrAPI-framed.html
 
   Other git repositories related to ONScripter-EN may be found through links provided below:
   API documentation:            https://github.com/insani-org/nscripter-api-doc
@@ -66,7 +69,7 @@ GENERAL GUIDELINES
     system
       \--> This includes compiling through IDEs, such as Visual Studio Code
       \--> CMake MAY be used as an ALTERNATE build system, as long as MacOS is supported
-           \--> See the EPS repo
+           \--> See the EPS repo for cmake lists
   * The updating of SDL 1.2 to SDL 2 or 3 - pending review
   * The use of QT, GTK, or similar
   * The implementation of a menu bar in line with NScripter
@@ -89,8 +92,15 @@ GENERAL GUIDELINES
       \--> The use of external software for uses such as testing is explicity permitted for Sean
            McGovern's sake, since it only requires a couple of tiny files in the source tree and
            does not affect the compiled binary
+  * The use of AI-generated code (such as Github Copilot) is forbidden for multiple reasons, but
+    most pragmatically because we don't want to sift through and check AI-generated code that you
+    couldn't be bothered to write and review yourself, and so allowing any AI-generated code sets
+    a bad precedent.
+      \--> The use of AI for code review, however, is perfectly fine to help catch logic errors. A
+           good understanding of the codebase is also recommended, however - don't use AI as a
+           crutch.
 
   Changes which the current maintainers are not adverse to but will never contribute towards or
   support are outlined below:
   * Support for platforms other than Windows (32- & 64-bit, Win XP+), Linux, and MacOS
-    \--> See EPS repo
+    \--> See EPS repo for 2nd-class support for these systems
