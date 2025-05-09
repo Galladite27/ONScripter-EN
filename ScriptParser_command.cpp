@@ -35,8 +35,11 @@
 
 #include "ScriptParser.h"
 #include <math.h>
+
+#ifndef NXDK
 #include <sys/stat.h>
 #include <sys/types.h>
+#endif
 
 #ifdef WIN32
 #include <direct.h>

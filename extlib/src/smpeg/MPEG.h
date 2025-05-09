@@ -57,7 +57,10 @@ public:
 	MPEG(bool Sdlaudio, char *addresse,char *asset,long buffersize){}
 
     MPEG(const char * name, bool SDLaudio = true);
+    
+#ifndef NXDK
     MPEG(int Mpeg_FD, bool SDLaudio = true);
+#endif
     MPEG(void *data, int size, bool SDLaudio = true);
     MPEG(SDL_RWops *mpeg_source,bool SDLaudio = true);
     virtual ~MPEG();

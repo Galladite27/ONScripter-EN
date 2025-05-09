@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<app version="1">
+	<name>onscripter-en</name>
+	<coder>Galladite</coder>
+	<version>20230628-en</version>
+	<release_date>20230628</release_date>
+	<short_description>An enhanced portable open-source NScripter implementation</short_description>
+	<long_description>An enhanced portable open-source NScripter implementation
+
+https://github.com/Galladite27/ONScripter-EN/
+</long_description>
+</app>

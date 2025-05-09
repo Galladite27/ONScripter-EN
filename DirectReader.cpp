@@ -32,7 +32,7 @@
 
 #include "DirectReader.h"
 #include <bzlib.h>
-#if !defined(WIN32) && !defined(MACOS9) && !defined(PSP) && !defined(__OS2__)
+#if !defined(WIN32) && !defined(MACOS9) && !defined(PSP) && !defined(__OS2__) && !defined(NXDK)
 #include <dirent.h>
 #endif
 
@@ -172,7 +172,7 @@ FILE *DirectReader::fopen(const char *path, const char *mode)
 #endif
     }
 
-#if !defined(WIN32) && !defined(MACOS9) && !defined(PSP) && !defined(__OS2__)
+#if !defined(WIN32) && !defined(MACOS9) && !defined(PSP) && !defined(__OS2__) && !defined(NXDK)
     // If the file wasn't found, try a case-insensitive search.
     char *cur_p = NULL;
     DIR *dp = NULL;

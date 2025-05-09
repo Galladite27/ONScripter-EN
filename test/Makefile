@@ -8,8 +8,8 @@ OBJSUFFIX ?= .o
 LIBSUFFIX ?= .a
 
 CXX ?= g++
-CXXSTD = -std=c++98
-CXXFLAGS = -g -Wall -Wextra -DGTEST_LANG_CXX11=0 $(DEFS) -pthread
+CXXSTD = -std=c++14
+CXXFLAGS = -g -Wall -Wextra $(DEFS) -pthread
 
 ifeq ($(COVERAGE),1)
 CXXFLAGS += -fprofile-arcs -ftest-coverage -O0

@@ -31,16 +31,22 @@
  *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <ctype.h>
+
 #include "Encoding.h"
 #include "ONScripterLabel.h"
 #include "graphics_resize.h"
 #include "version.h"
 
+
 #include <cstdio>
-#include <sys/stat.h>
-#include <sys/types.h>
 #include <string.h>
 #include <errno.h>
+
+#ifndef NXDK
+#include <sys/stat.h>
+#include <sys/types.h>
+#endif
 
 #ifdef WIN32
 #include <direct.h>
@@ -1409,6 +1415,7 @@ int ONScripterLabel::savetimeCommand()
 
 int ONScripterLabel::savescreenshotCommand()
 {
+#ifndef NXDK
     if      ( script_h.isName( "savescreenshot" ) ){
     }
     else if ( script_h.isName( "savescreenshot2" ) ){
@@ -1445,6 +1452,7 @@ int ONScripterLabel::savescreenshotCommand()
     }
     else
         printf("savescreenshot: file %s is not supported.\n", buf );
+#endif
 
     return RET_CONTINUE;
 }
