@@ -35,6 +35,7 @@
 // Ogapee's 20091115 release source code.
 
 #include "ONScripterLabel.h"
+#include "ScriptParser.h"
 #ifdef LINUX
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -543,7 +544,9 @@ bool ONScripterLabel::waitEvent( int count )
     while(1){
         waitEventSub( count );
         if ( system_menu_mode == SYSTEM_NULL ) break;
-        if ( rgosub_label ) {
+        // Only do this if we *actually tried to use the menu*
+        // -Galladite 2025-05-09
+        if ( rgosub_label && system_menu_mode == SYSTEM_MENU ) {
             system_menu_mode = SYSTEM_NULL;
             char *tmp = script_h.rgosub_wait_pos[script_h.cur_rgosub_wait];
             if(select_release & SELECT_RELEASE_REQUIRED) {
@@ -656,10 +659,17 @@ bool ONScripterLabel::mousePressEvent( SDL_MouseButtonEvent *event )
           (event_mode & (WAIT_BUTTON_MODE | WAIT_RCLICK_MODE)) )){
         current_button_state.set(-1);
         if (rmode_flag && (event_mode & WAIT_TEXT_MODE)){
+            // Behaviour only emerged after the fix to
+            // ONScripterLabel::waitEvent()
+            // See also the behaviour of the "escape key."
+            // -Galladite 2025-05-09
+            /*
             if (root_rmenu_link.next)
                 system_menu_mode = SYSTEM_MENU;
             else
                 system_menu_mode = SYSTEM_WINDOWERASE;
+            */
+            system_menu_mode = SYSTEM_MENU;
         }
     }
 #if 0
@@ -721,20 +731,21 @@ bool ONScripterLabel::mousePressEvent( SDL_MouseButtonEvent *event )
     else if ((event->button == SDL_BUTTON_WHEELUP) &&
              ((event_mode & WAIT_TEXT_MODE) ||
               (usewheel_flag && (event_mode & WAIT_BUTTON_MODE)) ||
-              (system_menu_mode == SYSTEM_LOOKBACK))){
+              (system_menu_mode == SYSTEM_LOOKBACK))) {
+
         current_button_state.set(-2);
-        if (event_mode & WAIT_TEXT_MODE) system_menu_mode = SYSTEM_LOOKBACK;
+        if (event_mode & WAIT_TEXT_MODE)
+            system_menu_mode = SYSTEM_LOOKBACK;
     }
     else if ( (event->button == SDL_BUTTON_WHEELDOWN) &&
               ((enable_wheeldown_advance_flag && (event_mode & WAIT_TEXT_MODE)) ||
                (usewheel_flag && (event_mode & WAIT_BUTTON_MODE)) ||
-               (system_menu_mode == SYSTEM_LOOKBACK) ) ){
-        if (event_mode & WAIT_TEXT_MODE){
+               (system_menu_mode == SYSTEM_LOOKBACK) ) ) {
+
+        if (event_mode & WAIT_TEXT_MODE)
             current_button_state.set(0);
-        }
-        else{
+        else
             current_button_state.set(-3);
-        }
     }
 #endif
     else return false;
@@ -1182,10 +1193,17 @@ bool ONScripterLabel::keyPressEvent( SDL_KeyboardEvent *event )
         if (!useescspc_flag && (event->keysym.sym == SDLK_ESCAPE)){
             current_button_state.set(-1);
             if (rmode_flag && (event_mode & WAIT_TEXT_MODE)){
+                // Behaviour only emerged after the fix to
+                // ONScripterLabel::waitEvent()
+                // See also the behaviour of the "escape key."
+                // -Galladite 2025-05-09
+                /*
                 if (root_rmenu_link.next)
                     system_menu_mode = SYSTEM_MENU;
                 else
                     system_menu_mode = SYSTEM_WINDOWERASE;
+                */
+                system_menu_mode = SYSTEM_MENU;
             }
         }
         else if (useescspc_flag && (event->keysym.sym == SDLK_ESCAPE)){
