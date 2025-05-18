@@ -39,7 +39,7 @@ bindir = ${exec_prefix}/bin
 mandir = ${prefix}/man
 
 CC = gcc -mthreads
-CFLAGS = -g -O2 -I ${srcdir}
+CFLAGS = $(CSTD) -g -O2 -I ${srcdir}
 LDFLAGS =  -Wl,--enable-auto-image-base -Wl,--out-implib,libgnurx.dll.a
 
 SOURCES = $(wildcard ${srcdir}/*.c ${srcdir}/*.h)
