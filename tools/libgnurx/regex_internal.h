@@ -46,7 +46,9 @@
 #if defined HAVE_STDBOOL_H || defined _LIBC
 # include <stdbool.h>
 #else
+#if __STDC_VERSION__ < 202311L /* C23 */
 typedef enum { false, true } bool;
+#endif /* C23 */
 #endif /* HAVE_STDBOOL_H || _LIBC */
 #if defined HAVE_STDINT_H || defined _LIBC
 # include <stdint.h>

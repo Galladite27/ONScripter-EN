@@ -64,7 +64,7 @@ jobs:
       with:
         name: Linux x86-64 Build
         path: ${{ github.workspace }}/onscripter-en.Linux.x86-64.tar.gz
-        
+
   windows:
     strategy:
       fail-fast: false
@@ -75,22 +75,17 @@ jobs:
             sys: mingw64
             env: x86_64
             arch: x86-64
-          - os: windows-latest
-            cc: gcc
-            sys: mingw32
-            env: i686
-            arch: i686
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v4
       with:
         submodules: recursive
-    
+
     - uses: msys2/setup-msys2@v2
       with:
         msystem: ${{matrix.sys}}
         update: true
-        install: 
+        install:
           mingw-w64-${{matrix.env}}-SDL
           mingw-w64-${{matrix.env}}-SDL_ttf
           mingw-w64-${{matrix.env}}-SDL_mixer
@@ -104,6 +99,7 @@ jobs:
           mingw-w64-${{matrix.env}}-zlib
           mingw-w64-${{matrix.env}}-toolchain
           mingw-w64-${{matrix.env}}-autotools
+          mingw-w64-${{matrix.env}}-flac
           autotools
           make
           zip
