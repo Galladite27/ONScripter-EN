@@ -44,6 +44,8 @@
 
 #include "ScriptParser.h"
 #include "Encoding.h"
+#include <cstdio>
+#include <cstdlib>
 
 #ifdef MACOSX
 #include "cocoa_bundle.h"
@@ -232,6 +234,11 @@ ScriptParser::ScriptParser()
     file_io_buf_len = 0;
     save_data_len = 0;
 
+    CSVInfo.fp = NULL;
+    CSVInfo.mode = csvinfo::NONE;
+    CSVInfo.contents = NULL;
+    CSVInfo.contents_ptr = NULL;
+
     /* ---------------------------------------- */
     /* Sound related variables */
     int i;
@@ -329,6 +336,13 @@ void ScriptParser::reset()
 
     // reset misc variables
     nsa_path = DirPaths();
+
+    if (CSVInfo.fp != NULL) fclose(CSVInfo.fp);
+    CSVInfo.fp = NULL;
+    CSVInfo.mode = csvinfo::NONE;
+    if (CSVInfo.contents != NULL) free(CSVInfo.contents);
+    CSVInfo.contents = NULL;
+    CSVInfo.contents_ptr = NULL;
 
     if (version_str) delete[] version_str;
     version_str = new char[strlen(VERSION_STR1)+

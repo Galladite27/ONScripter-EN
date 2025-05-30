@@ -34,6 +34,7 @@
 // Ogapee's 20091115 release source code.
 
 #include "ScriptParser.h"
+#include <cstdio>
 #include <math.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -1462,6 +1463,42 @@ int ScriptParser::dateCommand()
 
     script_h.readInt();
     script_h.setInt( &script_h.current_variable, tm.tm_mday );
+
+    return RET_CONTINUE;
+}
+
+int ScriptParser::csvwriteCommand() {
+    return RET_CONTINUE;
+}
+
+int ScriptParser::csvreadCommand() {
+    return RET_CONTINUE;
+}
+
+int ScriptParser::csvopenCommand() {
+    return RET_CONTINUE;
+}
+
+int ScriptParser::csveofCommand() {
+    if (*CSVInfo.contents_ptr == '\0')
+        ;
+    else
+        ;
+
+    return RET_CONTINUE;
+}
+
+int ScriptParser::csvcloseCommand() {
+    if (CSVInfo.fp != NULL) {
+        fclose(CSVInfo.fp);
+        CSVInfo.fp = NULL;
+    }
+    CSVInfo.mode = csvinfo::NONE;
+    if (CSVInfo.contents != NULL) {
+        free(CSVInfo.contents);
+        CSVInfo.contents = NULL;
+    }
+    CSVInfo.contents_ptr = NULL;
 
     return RET_CONTINUE;
 }

@@ -97,6 +97,15 @@ struct OVInfo{
 #endif
 };
 
+typedef struct {
+    FILE *fp;
+    enum { NONE,
+           R, RC,
+           W, WC } mode;
+    char *contents;
+    char *contents_ptr;
+} csvinfo;
+
 class ScriptParser
 {
 public:
@@ -108,6 +117,7 @@ public:
         MusicStruct()
         : ovi(NULL), volume(0), is_mute(false), voice_sample(NULL) {}
     };
+    csvinfo CSVInfo;
 
     ScriptParser();
     virtual ~ScriptParser();
@@ -224,6 +234,11 @@ public:
     int defaultfontCommand();
     int decCommand();
     int dateCommand();
+    int csvwriteCommand();
+    int csvreadCommand();
+    int csvopenCommand();
+    int csveofCommand();
+    int csvcloseCommand();
     int cosCommand();
     int cmpCommand();
     int clickvoiceCommand();
