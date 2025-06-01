@@ -124,28 +124,28 @@ void ONScripterLabel::searchSaveFile( SaveFileInfo &save_file_info, int no )
         sprintf( file_name, "%ssave%d.dat", script_h.savedir, no );
     else
         sprintf( file_name, "%ssave%d.dat", script_h.save_path, no );
-	CInfoPBRec  pb;
-	Str255      p_file_name;
-	FSSpec      file_spec;
-	DateTimeRec tm;
-	c2pstrcpy( p_file_name, file_name );
-	if ( FSMakeFSSpec(0, 0, p_file_name, &file_spec) != noErr ){
-		save_file_info.valid = false;
-		return;
-	}
-	pb.hFileInfo.ioNamePtr = file_spec.name;
-	pb.hFileInfo.ioVRefNum = file_spec.vRefNum;
-	pb.hFileInfo.ioFDirIndex = 0;
-	pb.hFileInfo.ioDirID = file_spec.parID;
-	if (PBGetCatInfoSync(&pb) != noErr) {
-		save_file_info.valid = false;
-		return;
-	}
-	SecondsToDate( pb.hFileInfo.ioFlMdDat, &tm );
-	save_file_info.month  = tm.month;
-	save_file_info.day    = tm.day;
-	save_file_info.hour   = tm.hour;
-	save_file_info.minute = tm.minute;
+        CInfoPBRec  pb;
+        Str255      p_file_name;
+        FSSpec      file_spec;
+        DateTimeRec tm;
+        c2pstrcpy( p_file_name, file_name );
+        if ( FSMakeFSSpec(0, 0, p_file_name, &file_spec) != noErr ){
+        	save_file_info.valid = false;
+        	return;
+        }
+        pb.hFileInfo.ioNamePtr = file_spec.name;
+        pb.hFileInfo.ioVRefNum = file_spec.vRefNum;
+        pb.hFileInfo.ioFDirIndex = 0;
+        pb.hFileInfo.ioDirID = file_spec.parID;
+        if (PBGetCatInfoSync(&pb) != noErr) {
+        	save_file_info.valid = false;
+        	return;
+        }
+        SecondsToDate( pb.hFileInfo.ioFlMdDat, &tm );
+        save_file_info.month  = tm.month;
+        save_file_info.day    = tm.day;
+        save_file_info.hour   = tm.hour;
+        save_file_info.minute = tm.minute;
 #elif defined(PSP)
     if (script_h.savedir)
         sprintf( file_name, "%ssave%d.dat", script_h.savedir, no );

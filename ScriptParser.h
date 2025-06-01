@@ -98,12 +98,12 @@ struct OVInfo{
 };
 
 typedef struct {
-    FILE *fp;
+    FILE *fp; // May be unneeded
     enum { NONE,
            R, RC,
            W, WC } mode;
-    char *contents;
-    char *contents_ptr;
+    unsigned char *contents;
+    unsigned char *contents_ptr;
 } csvinfo;
 
 class ScriptParser

@@ -56,7 +56,7 @@
 #endif
 
 #define VERSION_STR1 "ONScripter-EN"
-#define VERSION_STR2 "Copyright (C) 2001-2010 Studio O.G.A., 2007-2010 \"Uncle\" Mion Sonozaki. All Rights Reserved."
+#define VERSION_STR2 "Copyright (C) 2001-2010 Studio O.G.A., 2007-2010 \"Uncle\" Mion Sonozaki, 2023-2025 Galladite. All Rights Reserved."
 
 #define DEFAULT_TEXT_SPEED_LOW    40
 #define DEFAULT_TEXT_SPEED_MIDDLE 20
@@ -178,6 +178,11 @@ static struct FuncLUT{
     {"dec",   &ScriptParser::decCommand},
     {"dec",   &ScriptParser::decCommand},
     {"date",   &ScriptParser::dateCommand},
+    {"csvwrite",   &ScriptParser::csvwriteCommand},
+    {"csvread",   &ScriptParser::csvreadCommand},
+    {"csvopen",   &ScriptParser::csvopenCommand},
+    {"csveof",   &ScriptParser::csveofCommand},
+    {"csvclose",   &ScriptParser::csvcloseCommand},
     {"cos", &ScriptParser::cosCommand},
     {"cmp",      &ScriptParser::cmpCommand},
     {"clickvoice",   &ScriptParser::clickvoiceCommand},

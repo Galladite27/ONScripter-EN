@@ -1,3 +1,13 @@
+2025-06-01
+  Implemented the csvopen command, currently erroring attempts to
+  request CSV file encryption since it's not yet supported.
+  -Galladite
+
+2025-05-30
+  Begun implementing CSV-file manipulation commands. Framework and
+  csvinfo struct created.
+  -Galladite
+
 2025-05-09
   Fixed a couple of bugs to do with rgosubs and keybindings.
   -Galladite

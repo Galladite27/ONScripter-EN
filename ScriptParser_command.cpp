@@ -1476,6 +1476,52 @@ int ScriptParser::csvreadCommand() {
 }
 
 int ScriptParser::csvopenCommand() {
+    if (CSVInfo.mode != csvinfo::NONE) {
+        errorAndCont("csvopen: CSV file already open - closing now");
+        csvcloseCommand();
+    }
+
+    script_h.readStr();
+    char *filename = script_h.saveStringBuffer();
+    const char *mode = script_h.readStr();
+
+    if (!strcmp(mode, "r")) {
+        CSVInfo.mode = csvinfo::R;
+    }
+    else if (!strcmp(mode, "rc")) {
+        CSVInfo.mode = csvinfo::RC;
+    }
+    else if (!strcmp(mode, "w")) {
+        CSVInfo.mode = csvinfo::W;
+    }
+    else if (!strcmp(mode, "wc")) {
+        CSVInfo.mode = csvinfo::WC;
+    }
+    else {
+        errorAndExit("csvopen: invalid access method");
+    }
+
+    if (CSVInfo.mode == csvinfo::R) {
+        unsigned long len = script_h.cBR->getFileLength(filename);
+        if (len == 0){
+            errorAndExit("csvopen: could not open file");
+        }
+
+        CSVInfo.contents = new unsigned char[len];
+        int loc;
+        script_h.cBR->getFile(filename, CSVInfo.contents, &loc);
+    }
+    else if (CSVInfo.mode == csvinfo::RC) {
+        errorAndExit("csvopen: cannot read file: encrypted CSV files not yet supported");
+    }
+    else if (CSVInfo.mode == csvinfo::W) {
+        // Do nothing here - csvwrite will open the file each time to
+        // write a single line.
+    }
+    else if (CSVInfo.mode == csvinfo::WC) {
+        errorAndExit("csvopen: cannot write file: encrypted CSV files not yet supported");
+    }
+
     return RET_CONTINUE;
 }
 
