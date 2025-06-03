@@ -1,3 +1,14 @@
+2025-06-03
+  Implemented the csvread command besides actually saving read values
+  to onsen variables. Also will need testing.
+
+  Implemented the csveof command besides one use case, the behaviour
+  of which I need to confirm in NScripter.
+
+  Progress on CSV files is going well!
+
+  -Galladite
+
 2025-06-01
   Implemented the csvopen command, currently erroring attempts to
   request CSV file encryption since it's not yet supported.

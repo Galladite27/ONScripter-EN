@@ -34,6 +34,7 @@
 // Ogapee's 20091115 release source code.
 
 #include "ScriptParser.h"
+#include <cctype>
 #include <cstdio>
 #include <math.h>
 #include <sys/stat.h>
@@ -1472,6 +1473,82 @@ int ScriptParser::csvwriteCommand() {
 }
 
 int ScriptParser::csvreadCommand() {
+    int alreadyEOF;   // To skip reading and set var to 0/""
+    unsigned char *c; // For checking individual characters
+    int isInt;        // If the type is int (1) or string (0)
+    int len;          // Used for both num and str
+    int valueInt;     // Holds val before saving to var
+    char *valueStr;   // Holds val before saving to var
+
+    int tempDoOnce = 1; // TODO
+    while (/*while still another var arg given*/ tempDoOnce == 1) {
+        tempDoOnce = 0;
+
+        // Cleanup from previous iterations
+        free(valueStr);
+
+        // If EOF, we can skip straight to setting the value
+        alreadyEOF = *CSVInfo.contents_ptr == '\0';
+
+        // Check if it's a number
+        c = CSVInfo.contents_ptr;
+        if (*c == '-' && std::isdigit(*(c+1))) c++; // Allow negative numbers
+        while (std::isdigit(*c))
+            c++;
+        len = c - CSVInfo.contents_ptr; // Will be overwritten if str
+        c = CSVInfo.contents_ptr; // Reset tracker
+
+        // Mark if integer or string & get relevant length
+        isInt = len > 0;
+        if (!isInt) {
+            // Get length of string
+            // Tracker c already reset above
+            while (*c != ',' && *c != '\n' && *c != '\0')
+                c++;
+            len = c - CSVInfo.contents_ptr;
+        }
+
+        // Get value based on if it's a number or string
+        if (isInt) {
+            // Copy appropriate number of chars into valueStr (used
+            // temporarily before converting to int)
+            valueStr = (char *)malloc(sizeof(char) * (len+1));
+            std::strncpy(valueStr, (char *)CSVInfo.contents_ptr, len);
+            valueStr[len] = '\0';
+
+            // Convert that string into a signed integer
+            valueInt = atoi(valueStr);
+        } else {
+            // Copy appropriate number of chars into valueStr
+            // (Also accommodates for empty strings)
+            valueStr = (char *)malloc(sizeof(char) * (len+1));
+            std::strncpy(valueStr, (char *)CSVInfo.contents_ptr, len);
+            valueStr[len] = '\0';
+        }
+
+        // Save variable based on if it's a number or string
+        // TODO
+        if (isInt) {
+            // Check if arg is int.
+            // If so, save valueInt as normal.
+            // If not, TODO check if nscr allows int vals to be read into string vars
+            // \--> If so, save valueStr into the var
+        } else {
+            // Check if arg is str
+            // If so, save valueStr as normal.
+            // If not, save 0 into the var
+        }
+
+        // Advance to beginning of next value
+        CSVInfo.contents_ptr += len;
+        // Only do this once - there should only be one of these
+        // characters at a time, and if we iterate until we have text we
+        // might end up skipping over empty strings
+        if (*CSVInfo.contents_ptr == ',' ||
+            *CSVInfo.contents_ptr == '\n')
+            CSVInfo.contents_ptr++;
+    }
+
     return RET_CONTINUE;
 }
 
@@ -1526,15 +1603,21 @@ int ScriptParser::csvopenCommand() {
 }
 
 int ScriptParser::csveofCommand() {
-    if (*CSVInfo.contents_ptr == '\0')
-        ;
-    else
-        ;
+    // Contents_ptr should always point to first char of the next val
+    // if possible. Commas and newlines should be skipped over by the
+    // csvread command immediately after reading the preceding value.
+    if (CSVInfo.mode == csvinfo::R || CSVInfo.mode == csvinfo::RC) {
+        script_h.readInt();
+        script_h.setInt( &script_h.current_variable, *CSVInfo.contents_ptr=='\0' ?1:0 );
+    } else {
+        // TODO check what nscripter does in this situation
+    }
 
     return RET_CONTINUE;
 }
 
 int ScriptParser::csvcloseCommand() {
+    // Remove if fp removed from struct
     if (CSVInfo.fp != NULL) {
         fclose(CSVInfo.fp);
         CSVInfo.fp = NULL;
