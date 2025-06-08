@@ -237,6 +237,7 @@ public:
     int saveonCommand();
     int saveoffCommand();
     int savegameCommand();
+    int savefileremoveCommand();
     int savefileexistCommand();
     int savescreenshotCommand();
     int rndCommand();

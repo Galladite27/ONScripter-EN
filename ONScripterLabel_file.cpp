@@ -188,6 +188,11 @@ void ONScripterLabel::searchSaveFile( SaveFileInfo &save_file_info, int no )
     script_h.getStringFromInteger( save_file_info.sjis_minute,
                                    save_file_info.minute, 2,
                                    true, use_fullwidth );
+
+    // Should already by null/unassigned when passed in as argument.
+    // This isn't our job to manage here.
+    save_file_info.realPath = (char *)malloc(sizeof(char) * (strlen(file_name)+1));
+    strcpy(save_file_info.realPath, file_name);
 }
 
 int ONScripterLabel::loadSaveFile( int no, bool input_flag )

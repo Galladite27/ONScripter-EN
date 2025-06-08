@@ -1,3 +1,7 @@
+2025-06-08
+  Implemented savefileremove command with assistance from Ciox.
+  -Galladite
+
 2025-06-03
   Implemented the csvread command besides actually saving read values
   to onsen variables. Also will need testing.

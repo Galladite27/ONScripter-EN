@@ -1495,6 +1495,19 @@ int ONScripterLabel::savegameCommand()
     return RET_CONTINUE;
 }
 
+int ONScripterLabel::savefileremoveCommand()
+{
+    int no = script_h.readInt();
+
+    SaveFileInfo info;
+    searchSaveFile( info, no );
+
+    if (info.valid == true)
+        std::remove(info.realPath);
+
+    return RET_CONTINUE;
+}
+
 int ONScripterLabel::savefileexistCommand()
 {
     script_h.readInt();

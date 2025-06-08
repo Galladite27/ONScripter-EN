@@ -164,6 +164,7 @@ static struct FuncLUT{
     {"saveoff",   &ONScripterLabel::saveoffCommand},
     {"savegame2",   &ONScripterLabel::savegameCommand},
     {"savegame",   &ONScripterLabel::savegameCommand},
+    {"savefileremove",   &ONScripterLabel::savefileremoveCommand},
     {"savefileexist",   &ONScripterLabel::savefileexistCommand},
     {"r_trap",   &ONScripterLabel::trapCommand},
     {"rnd",   &ONScripterLabel::rndCommand},
