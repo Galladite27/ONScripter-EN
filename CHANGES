@@ -1,5 +1,6 @@
 2025-06-08
   Implemented savefileremove command with assistance from Ciox.
+  Finished implementing and basically testing csvread command.
   -Galladite
 
 2025-06-03

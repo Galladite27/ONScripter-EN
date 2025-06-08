@@ -1473,15 +1473,21 @@ int ScriptParser::csvwriteCommand() {
 }
 
 int ScriptParser::csvreadCommand() {
-    int alreadyEOF;   // To skip reading and set var to 0/""
-    unsigned char *c; // For checking individual characters
-    int isInt;        // If the type is int (1) or string (0)
-    int len;          // Used for both num and str
-    int valueInt;     // Holds val before saving to var
-    char *valueStr;   // Holds val before saving to var
+    int alreadyEOF;        // To skip reading and set var to 0/""
+    unsigned char *c;      // For checking individual characters
+    int isInt;             // If the type is int (1) or string (0)
+    int len;               // Used for both num and str
+    int valueInt;          // Holds val before saving to var
+    char *valueStr = NULL; // Holds val before saving to var
 
-    int tempDoOnce = 1; // TODO
-    while (/*while still another var arg given*/ tempDoOnce == 1) {
+    // Ensure we have a file open for reading
+    if (CSVInfo.mode != csvinfo::R && CSVInfo.mode != csvinfo::RC) {
+        errorAndCont("csvread: file not open for reading");
+        return RET_CONTINUE;
+    }
+
+    int tempDoOnce = 1; // To get it kick-started
+    while (script_h.getEndStatus() & ScriptHandler::END_COMMA || tempDoOnce) {
         tempDoOnce = 0;
 
         // Cleanup from previous iterations
@@ -1489,12 +1495,15 @@ int ScriptParser::csvreadCommand() {
 
         // If EOF, we can skip straight to setting the value
         alreadyEOF = *CSVInfo.contents_ptr == '\0';
+        // TODO does this actually do anything yet??
+
 
         // Check if it's a number
         c = CSVInfo.contents_ptr;
         if (*c == '-' && std::isdigit(*(c+1))) c++; // Allow negative numbers
         while (std::isdigit(*c))
             c++;
+        if (*c != ',' && *c != '\n' && *c != '\0') c = CSVInfo.contents_ptr; // Reset so len is 0 and the code block beneath runs
         len = c - CSVInfo.contents_ptr; // Will be overwritten if str
         c = CSVInfo.contents_ptr; // Reset tracker
 
@@ -1527,17 +1536,28 @@ int ScriptParser::csvreadCommand() {
         }
 
         // Save variable based on if it's a number or string
-        // TODO
+        script_h.readVariable();
+        script_h.pushVariable();
         if (isInt) {
             // Check if arg is int.
             // If so, save valueInt as normal.
-            // If not, TODO check if nscr allows int vals to be read into string vars
-            // \--> If so, save valueStr into the var
+            if (script_h.current_variable.type == ScriptHandler::VAR_INT ||
+                script_h.current_variable.type == ScriptHandler::VAR_ARRAY)
+                script_h.setInt( &script_h.pushed_variable, valueInt, 0 );
+
+            else
+                setStr(&script_h.getVariableData(script_h.pushed_variable.var_no).str, valueStr);
         } else {
             // Check if arg is str
             // If so, save valueStr as normal.
+            if (script_h.current_variable.type == ScriptHandler::VAR_STR)
+                setStr(&script_h.getVariableData(script_h.pushed_variable.var_no).str, valueStr);
+
             // If not, save 0 into the var
+            else
+                script_h.setInt(&script_h.pushed_variable, 0, 0);
         }
+
 
         // Advance to beginning of next value
         CSVInfo.contents_ptr += len;
@@ -1547,6 +1567,7 @@ int ScriptParser::csvreadCommand() {
         if (*CSVInfo.contents_ptr == ',' ||
             *CSVInfo.contents_ptr == '\n')
             CSVInfo.contents_ptr++;
+        printf("Final val of contents_ptr: >%s<\n", CSVInfo.contents_ptr);
     }
 
     return RET_CONTINUE;
@@ -1584,9 +1605,11 @@ int ScriptParser::csvopenCommand() {
             errorAndExit("csvopen: could not open file");
         }
 
-        CSVInfo.contents = new unsigned char[len];
+        CSVInfo.contents = new unsigned char[len+1];
         int loc;
         script_h.cBR->getFile(filename, CSVInfo.contents, &loc);
+        CSVInfo.contents[len] = '\0';
+        CSVInfo.contents_ptr = CSVInfo.contents;
     }
     else if (CSVInfo.mode == csvinfo::RC) {
         errorAndExit("csvopen: cannot read file: encrypted CSV files not yet supported");
