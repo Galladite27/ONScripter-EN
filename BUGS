@@ -85,6 +85,7 @@ DOCUMENTATION UPDATING LIST
 * Add skipspeed command
 
 * Add notes for CSV commands & update to mention onsen support with version number (once released)
+  \--> Add csvdelete command
 
 
 TODO LIST

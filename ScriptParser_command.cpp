@@ -1469,6 +1469,33 @@ int ScriptParser::dateCommand()
 }
 
 int ScriptParser::csvwriteCommand() {
+    // Ensure we have a file open for reading
+    if (CSVInfo.mode != csvinfo::W && CSVInfo.mode != csvinfo::WC) {
+        errorAndCont("csvread: file not open for writing");
+        return RET_CONTINUE;
+    }
+
+    int tempDoOnce = 1; // To get it kick-started
+    while (script_h.getEndStatus() & ScriptHandler::END_COMMA || tempDoOnce) {
+        // Add comma for every value after the first
+        if (!tempDoOnce) fprintf(CSVInfo.fp, ",");
+        tempDoOnce = 0;
+
+        script_h.readVariable();
+        if (script_h.current_variable.type == ScriptHandler::VAR_INT ||
+            script_h.current_variable.type == ScriptHandler::VAR_ARRAY)
+            fprintf(CSVInfo.fp, "%d", script_h.getIntVariable(&script_h.current_variable));
+
+        else if ( script_h.current_variable.type == ScriptHandler::VAR_STR )
+            fprintf(CSVInfo.fp, "%s", script_h.getVariableData(script_h.current_variable.var_no).str);
+
+        else
+            errorAndExit("csvwrite: no variable");
+    }
+
+    // Add newline
+    fprintf(CSVInfo.fp, "\n");
+
     return RET_CONTINUE;
 }
 
@@ -1492,11 +1519,6 @@ int ScriptParser::csvreadCommand() {
 
         // Cleanup from previous iterations
         free(valueStr);
-
-        // If EOF, we can skip straight to setting the value
-        alreadyEOF = *CSVInfo.contents_ptr == '\0';
-        // TODO does this actually do anything yet??
-
 
         // Check if it's a number
         c = CSVInfo.contents_ptr;
@@ -1545,8 +1567,11 @@ int ScriptParser::csvreadCommand() {
                 script_h.current_variable.type == ScriptHandler::VAR_ARRAY)
                 script_h.setInt( &script_h.pushed_variable, valueInt, 0 );
 
-            else
+            else if (script_h.current_variable.type == ScriptHandler::VAR_STR)
                 setStr(&script_h.getVariableData(script_h.pushed_variable.var_no).str, valueStr);
+
+            else
+                errorAndExit("csvread: no variable");
         } else {
             // Check if arg is str
             // If so, save valueStr as normal.
@@ -1554,8 +1579,12 @@ int ScriptParser::csvreadCommand() {
                 setStr(&script_h.getVariableData(script_h.pushed_variable.var_no).str, valueStr);
 
             // If not, save 0 into the var
-            else
+            else if (script_h.current_variable.type == ScriptHandler::VAR_INT ||
+                     script_h.current_variable.type == ScriptHandler::VAR_ARRAY)
                 script_h.setInt(&script_h.pushed_variable, 0, 0);
+
+            else
+                errorAndExit("csvread: no variable");
         }
 
 
@@ -1636,12 +1665,9 @@ int ScriptParser::csvopenCommand() {
                 real_filename[last_delim] = DELIMITER;
             }
 
-            printf("Real filename: >%s<\n", real_filename);
-            CSVInfo.fp = fopen(real_filename, "a");
-            if (CSVInfo.fp == NULL) {
-                perror("fopen");
-                exit(-1);
-            }
+            CSVInfo.fp = std::fopen(real_filename, "a");
+            if (CSVInfo.fp == NULL)
+                errorAndExit("csvopen: could not open file for writing");
         }
         else {
             errorAndExit("csvopen: bad file extension");
@@ -1660,18 +1686,36 @@ int ScriptParser::csveofCommand() {
     // csvread command immediately after reading the preceding value.
     if (CSVInfo.mode == csvinfo::R || CSVInfo.mode == csvinfo::RC) {
         script_h.readInt();
-        script_h.setInt( &script_h.current_variable, *CSVInfo.contents_ptr=='\0' ?1:0 );
+        script_h.setInt(&script_h.current_variable, *CSVInfo.contents_ptr=='\0' ?1:0);
     } else {
-        // TODO check what nscripter does in this situation
+        script_h.readInt();
+        script_h.setInt(&script_h.current_variable, 0);
     }
 
     return RET_CONTINUE;
 }
 
+int ScriptParser::csvdeleteCommand() {
+    const char *filename;
+    char real_filename[4096];
+
+    filename = script_h.readStr();
+    printf("File to delete: >%s<\n", filename);
+
+    const char *ext = strrchr( filename, '.' );
+    if ( ext && (!strcmp( ext+1, "CSV" ) || !strcmp( ext+1, "csv" ) ) ){
+        sprintf( real_filename, "%s%s", script_h.save_path, filename );
+        std::remove(real_filename);
+    }
+    else
+        errorAndExit("csvopen: bad file extension");
+
+    return RET_CONTINUE;
+}
+
 int ScriptParser::csvcloseCommand() {
-    // Remove if fp removed from struct
     if (CSVInfo.fp != NULL) {
-        fclose(CSVInfo.fp);
+        std::fclose(CSVInfo.fp);
         CSVInfo.fp = NULL;
     }
     CSVInfo.mode = csvinfo::NONE;

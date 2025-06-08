@@ -98,7 +98,7 @@ struct OVInfo{
 };
 
 typedef struct {
-    FILE *fp; // May be unneeded
+    FILE *fp;
     enum { NONE,
            R, RC,
            W, WC } mode;
@@ -238,6 +238,7 @@ public:
     int csvreadCommand();
     int csvopenCommand();
     int csveofCommand();
+    int csvdeleteCommand();
     int csvcloseCommand();
     int cosCommand();
     int cmpCommand();

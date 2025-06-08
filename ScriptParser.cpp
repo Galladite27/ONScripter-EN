@@ -182,6 +182,7 @@ static struct FuncLUT{
     {"csvread",   &ScriptParser::csvreadCommand},
     {"csvopen",   &ScriptParser::csvopenCommand},
     {"csveof",   &ScriptParser::csveofCommand},
+    {"csvdelete",   &ScriptParser::csvdeleteCommand},
     {"csvclose",   &ScriptParser::csvcloseCommand},
     {"cos", &ScriptParser::cosCommand},
     {"cmp",      &ScriptParser::cmpCommand},

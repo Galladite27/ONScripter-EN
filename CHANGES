@@ -1,6 +1,9 @@
 2025-06-08
   Implemented savefileremove command with assistance from Ciox.
   Finished implementing and basically testing csvread command.
+  Implemented csvwrite command
+  Implemented csvdelete command (new)
+  Prepared for release
   -Galladite
 
 2025-06-03
