@@ -1567,7 +1567,6 @@ int ScriptParser::csvreadCommand() {
         if (*CSVInfo.contents_ptr == ',' ||
             *CSVInfo.contents_ptr == '\n')
             CSVInfo.contents_ptr++;
-        printf("Final val of contents_ptr: >%s<\n", CSVInfo.contents_ptr);
     }
 
     return RET_CONTINUE;
@@ -1602,7 +1601,7 @@ int ScriptParser::csvopenCommand() {
     if (CSVInfo.mode == csvinfo::R) {
         unsigned long len = script_h.cBR->getFileLength(filename);
         if (len == 0){
-            errorAndExit("csvopen: could not open file");
+            errorAndExit("csvopen: could not open file for reading");
         }
 
         CSVInfo.contents = new unsigned char[len+1];
@@ -1615,8 +1614,38 @@ int ScriptParser::csvopenCommand() {
         errorAndExit("csvopen: cannot read file: encrypted CSV files not yet supported");
     }
     else if (CSVInfo.mode == csvinfo::W) {
-        // Do nothing here - csvwrite will open the file each time to
-        // write a single line.
+        char real_filename[4096];
+
+        const char *ext = strrchr( filename, '.' );
+        if ( ext && (!strcmp( ext+1, "CSV" ) || !strcmp( ext+1, "csv" ) ) ){
+            sprintf( real_filename, "%s%s", script_h.save_path, filename );
+            int last_delim = 0;
+            for ( unsigned int i=0 ; i<strlen( real_filename ) ; i++ ) {
+                if ( real_filename[i] == '/' || real_filename[i] == '\\' ) {
+                    real_filename[i] = DELIMITER;
+                    last_delim = i;
+                }
+            }
+            if (last_delim) {
+                real_filename[last_delim] = 0;
+                mkdir(real_filename
+#ifndef WIN32
+                      , 0755
+#endif
+                     );
+                real_filename[last_delim] = DELIMITER;
+            }
+
+            printf("Real filename: >%s<\n", real_filename);
+            CSVInfo.fp = fopen(real_filename, "a");
+            if (CSVInfo.fp == NULL) {
+                perror("fopen");
+                exit(-1);
+            }
+        }
+        else {
+            errorAndExit("csvopen: bad file extension");
+        }
     }
     else if (CSVInfo.mode == csvinfo::WC) {
         errorAndExit("csvopen: cannot write file: encrypted CSV files not yet supported");
