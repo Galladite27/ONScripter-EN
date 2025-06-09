@@ -229,7 +229,6 @@ $(SMPGSRC)/Makefile: $(if $(INTERNAL_SDL),$(EB)/sdl-config)
 	./configure --prefix="$(LPREFIX)" $(OTHERCONFIG) \
 	    $(addprefix --disable-,shared gtk-player opengl-player $(SMPEG_DEBUG)) \
 	    $(REDIR)
-	@sed -i '/hufftable\.lo: audio\/hufftable\.cpp/{n;s/$$(CXXFLAGS)/$$(CXXFLAGS) -Wno-narrowing/}' $(SMPGSRC)/Makefile # Fix for unnecessary error -Galladite 2023-2-9
 
 $(EB)/smpeg-config: $(SMPGSRC)/Makefile | $(EB)
 	@echo Building internal smpeg...
