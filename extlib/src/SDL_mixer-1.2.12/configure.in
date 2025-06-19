@@ -117,7 +117,7 @@ case "$host" in
         EXE=".exe"
 	;;
     *-*-cygwin* | *-*-mingw*)
-        VERSION_SOURCES="$srcdir/version.rc"
+        VERSION_SOURCES=""
         EXE=".exe"
         if test "$build" != "$host"; then # cross-compiling
             # Default cross-compile location
