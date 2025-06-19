@@ -75,6 +75,11 @@ jobs:
             sys: mingw64
             env: x86_64
             arch: x86-64
+          - os: windows-latest
+            cc: gcc
+            sys: mingw32
+            env: i686
+            arch: i686
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v4
