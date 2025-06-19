@@ -67,7 +67,7 @@ TOOL_LIBS = -Wl,--start-group \
 LIBS = -static -s -Wl,--start-group \
        $(shell $(SDL_CONFIG) --static-libs) \
        -lSDL_ttf \
-       $(shell smpeg-config --libs) $(shell pkg-config freetype2 --libs) \
+       $(shell smpeg-config --libs) $(shell pkg-config freetype2 --libs) -ldwrite \
        -lSDL_image -ljpeg -lpng -lz \
        -lSDL_mixer -logg -lvorbis -lvorbisfile \
        -lbrotlidec -lbrotlicommon -lharfbuzz -ltiff -lwebp -lmad -lgraphite2 -ljbig -lsharpyuv -lzstd -ldeflate -lLerc -llzma -liconv -ldinput -lwinmm -ldxguid -lrpcrt4 \

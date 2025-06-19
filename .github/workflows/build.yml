@@ -93,9 +93,10 @@ jobs:
         install:
           mingw-w64-${{matrix.env}}-SDL
           mingw-w64-${{matrix.env}}-SDL_ttf
-          mingw-w64-${{matrix.env}}-SDL_mixer
           mingw-w64-${{matrix.env}}-SDL_image
           mingw-w64-${{matrix.env}}-bzip2
+          mingw-w64-${{matrix.env}}-libmikmod
+          mingw-w64-${{matrix.env}}-libmad
           mingw-w64-${{matrix.env}}-libogg
           mingw-w64-${{matrix.env}}-libvorbis
           mingw-w64-${{matrix.env}}-freetype
@@ -115,6 +116,14 @@ jobs:
         (cd extlib/src/smpeg && ./configure --disable-{shared,gtk-player,opengl-player,debug})
         make -j $NCPUS -C extlib/src/smpeg VERBOSE=true
         make -C extlib/src/smpeg install VERBOSE=true
+
+    - shell: msys2 {0}
+      name: Build SDL_mixer 1.2.12 extlib
+      run: |
+        NCPUS=$(getconf _NPROCESSORS_ONLN)
+        (cd extlib/src/SDL_mixer-1.2.12 && ./configure --disable-{shared,music-cmd,music-timidity-midi} CFLAGS="${CFLAGS} -Wno-error=implicit-function-declaration")
+        make -j $NCPUS -C extlib/src/SDL_mixer-1.2.12 VERBOSE=true
+        make -C extlib/src/SDL_mixer-1.2.12 install VERBOSE=true
 
     - shell: msys2 {0}
       name: Build
