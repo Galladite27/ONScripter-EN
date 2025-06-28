@@ -38,7 +38,9 @@ SDL_CONFIG=sdl-config
 #export PATH     :=   $(shell pwd)/extlib/bin:$(PATH)
 #export CFLAGS   := -I$(shell pwd)/extlib/include $(CFLAGS) 
 #export CPPFLAGS := -I$(shell pwd)/extlib/include $(CPPFLAGS) 
-#export LDFLAGS  := -L$(shell pwd)/extlib/lib $(LDFLAGS) 
+# NOTE the following LDFLAGS sets the PE headers correctly for Windows 7 (0x601)
+# Ultimately, we want to target XP but we should be honest for now
+export LDFLAGS  := -Wl,--major-os-version,6 -Wl,--minor-os-version,1 $(LDFLAGS)
 export CSTD     := -std=c99
 export CXXSTD   := -std=c++98
 
@@ -67,7 +69,7 @@ TOOL_LIBS = -Wl,--start-group \
 LIBS = -static -s -Wl,--start-group \
        $(shell $(SDL_CONFIG) --static-libs) \
        -lSDL_ttf \
-       $(shell smpeg-config --libs) $(shell pkg-config freetype2 --libs) \
+       $(shell smpeg-config --libs) $(shell pkg-config freetype2 --libs) -ldwrite \
        -lSDL_image -ljpeg -lpng -lz \
        -lSDL_mixer -logg -lvorbis -lvorbisfile \
        -lbrotlidec -lbrotlicommon -lharfbuzz -ltiff -lwebp -lmad -lgraphite2 -ljbig -lsharpyuv -lzstd -ldeflate -lLerc -llzma -liconv -ldinput -lwinmm -ldxguid -lrpcrt4 \
