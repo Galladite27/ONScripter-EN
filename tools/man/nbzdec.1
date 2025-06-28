@@ -1,0 +1,38 @@
+.TH nbzdec 1 "May 12, 2025" "version 20250512" "USER COMMANDS"
+.SH NAME
+.HP
+.B nbzdec 
+\- for extracting files from a NBZ archive file (e.g. "BLAH.nbz")
+.SH SYNOPSIS
+.HP
+.B "nbzdec" 
+.RB [ -o
+.IR out_dir "] " nbz_file
+.SH DESCRIPTION
+This tool is used to extract the files from an NScripter or ONScripter archive
+file in NBZ format (typically "BLAH.nbz").  All files are extracted and
+the directory structure within the archive is preserved.
+.SH OPTIONS
+.TP
+.BI "-o " out_dir
+Specifies that the extracted files should be placed in
+.I out_dir
+instead of the current directory.
+.SH EXAMPLES
+.TP
+Extract BLAH.nbz to the current directory:
+
+.B nbzdec
+BLAH.nbz
+.TP
+Extract BLAH.nbz to a directory called "arc":
+
+.B nbzdec -o
+nbz BLAH.nbz
+.SH EXIT STATUS
+.B nbzdec
+returns zero on success and a nonzero value if an error occurs.
+.SH AUTHOR
+Sean McGovern <gseanmcg@gmail.com>
+
+https://galladite.net/~galladite/ons-en/
