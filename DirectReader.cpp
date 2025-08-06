@@ -180,8 +180,11 @@ FILE *DirectReader::fopen(const char *path, const char *mode)
     len = 0;
     int n = archive_path->get_num_paths();
     int i=1;
-    if (n > 0)
-        len = strlen(archive_path->get_path(0));
+    if (n > 0) {
+        const char* mypath = archive_path->get_path(0);
+        if (!mypath) return fp;
+        len = strlen(mypath);
+    }
     if (len > 0) {
         dp = opendir(archive_path->get_path(0));
         sprintf( file_full_path, "%s%s", archive_path->get_path(0), path );
