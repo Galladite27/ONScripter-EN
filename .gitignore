@@ -17,6 +17,7 @@ test/test_*
 build*/
 .vscode/
 .vs/
+eps/
 
 # CLion project files
 .idea
