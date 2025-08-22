@@ -208,7 +208,6 @@ public:
 
     void setInt( VariableInfo *var_info, int val, int offset=0 );
     void setNumVariable( int no, int val );
-    void convertNumToFullWidthStr(int num, char* str);
     void pushVariable();
     int  getIntVariable( VariableInfo *var_info=NULL );
 
