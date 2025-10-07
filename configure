@@ -1024,6 +1024,36 @@ case $POSIX in
     ;;
 esac
 
+PTHREAD_OPT=
+
+case $POSIX in
+  Linux)
+    rm -rf .configtest
+    mkdir .configtest
+    cd .configtest
+
+    $echo_n "Checking if compiler needs -pthread option ... ${nobr}"
+    need_pthread_opt=no
+    cat > test.cc <<-_EOF
+	#include <pthread.h>
+	int main(int argc, char **argv){pthread_join((pthread_t)0, NULL); return 0;}
+	_EOF
+    $CXX test.cc -o ttest >/dev/null 2>&1
+    if test "$?" = 0
+    then echo "no";
+    else
+        $CXX -pthread test.cc -o ttest >/dev/null 2>&1 && echo "yes" && need_pthread_opt=yes
+    fi
+
+    cd ..
+    rm -rf .configtest
+
+    if test "x$need_pthread_opt" = "xyes"; then
+        PTHREAD_OPT="-pthread"
+    fi
+    ;;
+esac
+
 DEPS=
 MLIB=
 require() {
@@ -1200,7 +1230,7 @@ _EOF
 ;;
 Posix)
 case "$POSIX" in
-Linux)   INTERNAL_LDFLAGS="-ldl -lasound -lX11 -lXext -lXrandr -pthread -lpulse-simple -lpulse" ;; # Why is linker flags :(
+Linux)   INTERNAL_LDFLAGS="-ldl -lasound -lX11 -lXext -lXrandr -lpulse-simple -lpulse $PTHREAD_OPT" ;; # Why is linker flags :(
 FreeBSD) INTERNAL_LDFLAGS="-L/usr/X11R6/lib -lX11 -lXi -lXrandr -liconv"
          EXTRA_DEPS="-DCONST_ICONV" ;;
 NetBSD)  INTERNAL_LDFLAGS="\$(foreach x,11 i randr ext render,/usr/X11R6/lib/libX\$(x).a) -lossaudio" ;;
