@@ -65,7 +65,11 @@ FEATURES REQUESTED
 * Allow the switching of font files mid-line, for example through the
   use of a !fX command, similar to the !wX command.
 
-* Red borders for the Linux pop-ups
+* Red borders for the Linux pop-ups (do these even exist any more?)
+
+* There should be an option for fullscreen without changing the aspect
+  ratio. Perhaps a define-block command which sets this functionality?
+  Or should it be changeable at any time during the script?
 
 
 DOCUMENTATION UPDATING LIST
