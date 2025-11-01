@@ -1887,9 +1887,8 @@ int ScriptHandler::readScript( DirPaths &path )
             }
         }
         else if ( tokenMatch( &buf, ";gameid " ) && !game_identifier ){
-            int i = 0;
-            while ( buf[++i] != '\n' );
-            game_identifier = new char[i];
+            int i = strcspn(buf, "\n");
+            game_identifier = new char[i + 1];
             strncpy( game_identifier, buf, i );
             game_identifier[i] = 0;
             buf += i;
