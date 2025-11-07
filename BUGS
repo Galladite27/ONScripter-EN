@@ -93,6 +93,8 @@ DOCUMENTATION UPDATING LIST
 * Add notes for CSV commands & update to mention onsen support with version number (once released)
   \--> Add csvdelete command
 
+* getreg IS supported in ONScr and ONScr-EN. Explain about how it is emulated.
+
 
 TODO LIST
 
