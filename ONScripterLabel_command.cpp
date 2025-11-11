@@ -782,7 +782,7 @@ int ONScripterLabel::splitonceCommand()
 
     // Advance buffer
     save_buf += c;
-    if (save_buf != '\0') save_buf++; // Don't include the delimeter in the remainder, unless we had no delimeter.
+    if (*save_buf != '\0') save_buf++; // Don't include the delimeter in the remainder, unless we had no delimeter.
     // If we have more of the string, save it into another variable
     //
     // UPDATE: do this no matter what. If there is nothing left over,
