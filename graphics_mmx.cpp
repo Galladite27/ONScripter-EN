@@ -26,6 +26,8 @@
 
 #ifdef USE_X86_GFX
 
+#include <stdint.h>
+
 #include <mmintrin.h>
 #include <math.h>
 #ifndef M_PI
