@@ -26,6 +26,8 @@
 
 #ifdef USE_X86_GFX
 
+#include <stdint.h>
+
 #include <emmintrin.h>
 #include <math.h>
 #ifndef M_PI
@@ -42,7 +44,7 @@ int imageFilterMean_SSE2(unsigned char *src1, unsigned char *src2, unsigned char
     int n = length;
 
     // Compute first few values so we're on a 16-byte boundary in dst
-    while( (((long)dst & 0xF) > 0) && (n > 0) ) {
+    while( (((uintptr_t)dst & 0xF) > 0) && (n > 0) ) {
         MEAN_PIXEL();
         --n; ++dst; ++src1; ++src2;
     }
@@ -75,7 +77,7 @@ int imageFilterAddTo_SSE2(unsigned char *dst, unsigned char *src, int length)
     int n = length;
 
     // Compute first few values so we're on a 16-byte boundary in dst
-    while( (((long)dst & 0xF) > 0) && (n > 0) ) {
+    while( (((uintptr_t)dst & 0xF) > 0) && (n > 0) ) {
         ADDTO_PIXEL();
         --n; ++dst; ++src;
     }
@@ -103,7 +105,7 @@ void imageFilterSubFrom_SSE2(unsigned char *dst, unsigned char *src, int length)
     int n = length;
 
     // Compute first few values so we're on a 16-byte boundary in dst
-    while( (((long)dst & 0xF) > 0) && (n > 0) ) {
+    while( (((uintptr_t)dst & 0xF) > 0) && (n > 0) ) {
         SUBFROM_PIXEL();
         --n; ++dst; ++src;
     }
@@ -162,7 +164,7 @@ int imageFilterBlend_SSE2(Uint32 *dst_buffer, Uint32 *src_buffer, Uint8 *alphap,
     int n = length;
 
     // Compute first few values so we're on a 16-byte boundary in dst_buffer
-    while( (((long)dst_buffer & 0xF) > 0) && (n > 0) ) {
+    while( (((uintptr_t)dst_buffer & 0xF) > 0) && (n > 0) ) {
         BLEND_PIXEL();
         --n; ++dst_buffer; ++src_buffer;
     }
@@ -198,7 +200,7 @@ int imageFilterEffectBlend_SSE2(Uint32 *dst_buffer, Uint32 *src1_buffer, Uint32 
     int n = length;
 
     // Compute first few values so we're on a 16-byte boundary in dst_buffer
-    while( (((long)dst_buffer & 0xF) > 0) && (n > 0) ) {
+    while( (((uintptr_t)dst_buffer & 0xF) > 0) && (n > 0) ) {
         BLEND_EFFECT_PIXEL();
         --n; ++dst_buffer; ++src1_buffer; ++src2_buffer;
     }
@@ -233,7 +235,7 @@ int imageFilterEffectMaskBlend_SSE2(Uint32 *dst_buffer, Uint32 *src1_buffer, Uin
     int n = length;
 
     // Compute first few values so we're on a 16-byte boundary in dst_buffer
-    while( (((long)dst_buffer & 0xF) > 0) && (n > 0) ) {
+    while( (((uintptr_t)dst_buffer & 0xF) > 0) && (n > 0) ) {
         BLEND_EFFECT_MASK_PIXEL();
         --n; ++dst_buffer; ++src1_buffer; ++src2_buffer; ++mask_buffer;
     }
