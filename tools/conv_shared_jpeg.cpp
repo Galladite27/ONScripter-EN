@@ -145,7 +145,7 @@ size_t rescaleJPEGWrite( unsigned int width, unsigned int height, int byte_per_p
 }
 
 size_t rescaleJPEG( unsigned char *original_buffer, size_t length,
-                    unsigned char **rescaled_buffer, int quality, int num_of_cells=1 )
+                    unsigned char **rescaled_buffer, int quality, int num_of_cells )
 {
     struct jpeg_decompress_struct cinfo;
     jpeg_error_mgr jerr;

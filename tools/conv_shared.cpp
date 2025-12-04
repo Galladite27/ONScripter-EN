@@ -36,9 +36,7 @@
 #include "conv_shared.h"
 
 //Mion: for png image file support
-namespace libpng {
 #include <png.h>
-}
 
 #include <bzlib.h>
 #include "resize_image.h"
@@ -143,7 +141,7 @@ void my_write_data(png_structp png_ptr, png_bytep data,
         *(dst_mgr->buf++) = *data++;
 }
 
-void my_flush_data(libpng::png_structp /*png_ptr*/)
+void my_flush_data(png_structp /*png_ptr*/)
 {
 }
 
