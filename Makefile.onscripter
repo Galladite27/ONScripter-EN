@@ -33,7 +33,8 @@ GUI_OBJS = ONScripterReporter$(OBJSUFFIX)           \
 	ONScripterLabel_file2$(OBJSUFFIX)				\
 	ONScripterLabel_image$(OBJSUFFIX) AnimationInfo$(OBJSUFFIX)	\
 	FontInfo$(OBJSUFFIX) DirtyRect$(OBJSUFFIX)			\
-	graphics_routines$(OBJSUFFIX) resize_image$(OBJSUFFIX)
+	graphics_routines$(OBJSUFFIX) resize_image$(OBJSUFFIX) \
+	ShiftJISData$(OBJSUFFIX)
 DECODER_OBJS = DirectReader$(OBJSUFFIX) SarReader$(OBJSUFFIX)	\
                NsaReader$(OBJSUFFIX)
 ONSCRIPTER_OBJS = onscripter$(OBJSUFFIX) $(DECODER_OBJS)		\

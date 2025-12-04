@@ -42,6 +42,7 @@
 #include "ScriptHandler.h"
 #include "Encoding.h"
 #include "Reporter.h" // error reporting
+#include "ShiftJISData.h"
 #include <sys/stat.h>
 #include <sys/types.h>
 #ifdef WIN32
@@ -1510,30 +1511,23 @@ int ScriptHandler::getStringFromInteger( char *buffer, int no, int num_column,
         n = 3;
     int c = 0;
     if (is_zero_inserted){
-        // "０" in shift-jis, no nul terminator
-        const unsigned char data[2] = { 0x82, 0x4F };
         for (i=0 ; i<num_space ; i++){
-            buffer[c++] = (char)data[0];
-            buffer[c++] = (char)data[1];
+            buffer[c++] = (char)shiftjis_data::inserts::wide_zero[0];
+            buffer[c++] = (char)shiftjis_data::inserts::wide_zero[1];
         }
     }
     else{
-        // "　" in shift-jis, no nul terminator
-        const unsigned char data[2] = { 0x81, 0x40 };
         for (i=0 ; i<num_space ; i++){
-            buffer[c++] = (char)data[0];
-            buffer[c++] = (char)data[1];
+            buffer[c++] = (char)shiftjis_data::inserts::wide_space[0];
+            buffer[c++] = (char)shiftjis_data::inserts::wide_space[1];
         }
     }
     if (num_minus == 1){
         if (code == Encoding::CODE_CP932){
             // This probably should use the bigger dash, but SJIS
             // doesn't like that. Can this file use UTF-8?
-            //
-            // "−" in shift-jis, no nul terminator
-            const unsigned char data[2] = { 0x81, 0x7C };
-            buffer[c++] = (char)data[0];
-            buffer[c++] = (char)data[1];
+            buffer[c++] = (char)shiftjis_data::inserts::wide_dash[0];
+            buffer[c++] = (char)shiftjis_data::inserts::wide_dash[1];
         }
         if (code == Encoding::CODE_UTF8){
             buffer[c++] = 0xef;
@@ -1542,15 +1536,10 @@ int ScriptHandler::getStringFromInteger( char *buffer, int no, int num_column,
         }
     }
     c = (num_column-1)*n;
-    // "０１２３４５６７８９" in shift-jis
-    const unsigned char num_str[21] = {
-        0x82, 0x4F, 0x82, 0x50, 0x82, 0x51, 0x82, 0x52, 0x82, 0x53, 0x82, 0x54, 0x82, 0x55, 0x82, 0x56, 
-        0x82, 0x57, 0x82, 0x58, 0x00
-    };
     for (i=0 ; i<num_digit ; i++){
         if (code == Encoding::CODE_CP932){
-            buffer[c]   = (char)num_str[no % 10 * 2];
-            buffer[c+1] = (char)num_str[no % 10 * 2 + 1];
+            buffer[c]   = (char)shiftjis_data::inserts::wide_numbers[no % 10 * 2];
+            buffer[c+1] = (char)shiftjis_data::inserts::wide_numbers[no % 10 * 2 + 1];
         }
         if (code == Encoding::CODE_UTF8){
             buffer[c]   = 0xef;

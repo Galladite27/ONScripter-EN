@@ -44,6 +44,7 @@
 
 #include "ScriptParser.h"
 #include "Encoding.h"
+#include "ShiftJISData.h"
 #include <cstdio>
 #include <cstdlib>
 
@@ -64,25 +65,8 @@
 
 #define MAX_PAGE_LIST 16
 
-namespace kinsoku_defaults {
-    // "」』）］｝、。，．・？！ヽヾゝゞ々ー" in shift-jis
-    const unsigned char start_kinsoku[73] = {
-        0xEF, 0xBF, 0xBD, 0x76, 0xEF, 0xBF, 0xBD, 0x78, 0xEF, 0xBF, 0xBD, 0x6A, 0xEF, 0xBF, 0xBD, 0x6E, 
-        0xEF, 0xBF, 0xBD, 0x70, 0xEF, 0xBF, 0xBD, 0x41, 0xEF, 0xBF, 0xBD, 0x42, 0xEF, 0xBF, 0xBD, 0x43, 
-        0xEF, 0xBF, 0xBD, 0x44, 0xEF, 0xBF, 0xBD, 0x45, 0xEF, 0xBF, 0xBD, 0x48, 0xEF, 0xBF, 0xBD, 0x49, 
-        0xEF, 0xBF, 0xBD, 0x52, 0xEF, 0xBF, 0xBD, 0x53, 0xEF, 0xBF, 0xBD, 0x54, 0xEF, 0xBF, 0xBD, 0x55, 
-        0xEF, 0xBF, 0xBD, 0x58, 0xEF, 0xBF, 0xBD, 0x5B, 0x00
-    };
-
-    // "「『（［｛" in shift-jis
-    const unsigned char end_kinsoku[21] = {
-        0xEF, 0xBF, 0xBD, 0x75, 0xEF, 0xBF, 0xBD, 0x77, 0xEF, 0xBF, 0xBD, 0x69, 0xEF, 0xBF, 0xBD, 0x6D, 
-        0xEF, 0xBF, 0xBD, 0x6F, 0x00
-    };
-}
-
-const char* DEFAULT_START_KINSOKU = (const char*)kinsoku_defaults::start_kinsoku;
-const char* DEFAULT_END_KINSOKU = (const char*)kinsoku_defaults::end_kinsoku;
+const char* DEFAULT_START_KINSOKU = (const char*)shiftjis_data::kinsoku_defaults::start_kinsoku;
+const char* DEFAULT_END_KINSOKU = (const char*)shiftjis_data::kinsoku_defaults::end_kinsoku;
 
 typedef int (ScriptParser::*FuncList)();
 static struct FuncLUT{
@@ -1278,23 +1262,9 @@ void ScriptParser::setDefaultMenuLabels()
         setStr( &save_item_name, "Slot " );
     }
     else {
-        // "＜セーブ＞" in shift-jis
-        const uint8_t save_menu_name_str[11] = {
-            0x81, 0x83, 0x83, 0x5A, 0x81, 0x5B, 0x83, 0x75, 0x81, 0x84, 0x00
-        };
-        setStr( &save_menu_name, (const char*)save_menu_name_str );
-
-        // "＜ロード＞" in shift-jis
-        const uint8_t load_menu_name_str[11] = {
-            0x81, 0x83, 0x83, 0x8D, 0x81, 0x5B, 0x83, 0x68, 0x81, 0x84, 0x00
-        };
-        setStr( &load_menu_name, (const char*)load_menu_name_str );
-
-        // "しおり" in shift-jis
-        const uint8_t save_item_name_str[7] = {
-            0x82, 0xB5, 0x82, 0xA8, 0x82, 0xE8, 0x00
-        };
-        setStr( &save_item_name, (const char*)save_item_name_str );
+        setStr( &save_menu_name, (const char*)shiftjis_data::menu_labels::save_menu_name );
+        setStr( &load_menu_name, (const char*)shiftjis_data::menu_labels::load_menu_name );
+        setStr( &save_item_name, (const char*)shiftjis_data::menu_labels::save_item_name );
     }
 }
 
