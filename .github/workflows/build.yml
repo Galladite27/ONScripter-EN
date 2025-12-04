@@ -63,7 +63,7 @@ jobs:
 
     - uses: actions/upload-artifact@v4
       with:
-        name: Onscripter-EN Linux x86-64 ${{ matrix.c_compiler }} Build
+        name: ONScripter-EN Linux x86-64 ${{ matrix.c_compiler }} Build
         path: ${{ github.workspace }}/onscripter-en.Linux.${{ matrix.c_compiler }}.x86-64.tar.gz
 
   windows:
@@ -154,5 +154,5 @@ jobs:
 
     - uses: actions/upload-artifact@v4
       with:
-        name: Onscripter-EN Windows ${{matrix.arch}} Build
+        name: ONScripter-EN Windows ${{matrix.arch}} Build
         path: ${{ github.workspace }}/onscripter-en.Windows.${{matrix.arch}}.zip
