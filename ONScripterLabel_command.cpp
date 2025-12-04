@@ -2932,7 +2932,9 @@ int ONScripterLabel::gettagCommand()
 
                 else {
                     unicode1 = script_h.enc.getUTF16(buf);
-                    unicode2 = script_h.enc.getUTF16("?¿½?¿½", Encoding::CODE_CP932);
+                    // "?ï½¿ï½½?ï½¿ï½½" in shift-jis encoding.
+                    const unsigned char data[7] = { 0x3F, 0xBF, 0xBD, 0x3F, 0xBF, 0xBD, 0x00 };
+                    unicode2 = script_h.enc.getUTF16((const char *)data, Encoding::CODE_CP932);
                     while(*buf != '/' && *buf != 0 && unicode1 != unicode2) {
                         buf += script_h.enc.getBytes(buf[0]);
                     }

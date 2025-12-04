@@ -1510,23 +1510,30 @@ int ScriptHandler::getStringFromInteger( char *buffer, int no, int num_column,
         n = 3;
     int c = 0;
     if (is_zero_inserted){
+        // "Ôºê" in shift-jis, no nul terminator
+        const unsigned char data[2] = { 0x82, 0x4F };
         for (i=0 ; i<num_space ; i++){
-            buffer[c++] = ((char*)"ÇO")[0];
-            buffer[c++] = ((char*)"ÇO")[1];
+            buffer[c++] = (char)data[0];
+            buffer[c++] = (char)data[1];
         }
     }
     else{
+        // "„ÄÄ" in shift-jis, no nul terminator
+        const unsigned char data[2] = { 0x81, 0x40 };
         for (i=0 ; i<num_space ; i++){
-            buffer[c++] = ((char*)"Å@")[0];
-            buffer[c++] = ((char*)"Å@")[1];
+            buffer[c++] = (char)data[0];
+            buffer[c++] = (char)data[1];
         }
     }
     if (num_minus == 1){
         if (code == Encoding::CODE_CP932){
             // This probably should use the bigger dash, but SJIS
             // doesn't like that. Can this file use UTF-8?
-            buffer[c++] = "Å|"[0];
-            buffer[c++] = "Å|"[1];
+            //
+            // "‚àí" in shift-jis, no nul terminator
+            const unsigned char data[2] = { 0x81, 0x7C };
+            buffer[c++] = (char)data[0];
+            buffer[c++] = (char)data[1];
         }
         if (code == Encoding::CODE_UTF8){
             buffer[c++] = 0xef;
@@ -1535,11 +1542,15 @@ int ScriptHandler::getStringFromInteger( char *buffer, int no, int num_column,
         }
     }
     c = (num_column-1)*n;
-    char num_str[] = "ÇOÇPÇQÇRÇSÇTÇUÇVÇWÇX";
+    // "ÔºêÔºëÔºíÔºìÔºîÔºïÔºñÔºóÔºòÔºô" in shift-jis
+    const unsigned char num_str[21] = {
+        0x82, 0x4F, 0x82, 0x50, 0x82, 0x51, 0x82, 0x52, 0x82, 0x53, 0x82, 0x54, 0x82, 0x55, 0x82, 0x56, 
+        0x82, 0x57, 0x82, 0x58, 0x00
+    };
     for (i=0 ; i<num_digit ; i++){
         if (code == Encoding::CODE_CP932){
-            buffer[c]   = num_str[no % 10 * 2];
-            buffer[c+1] = num_str[no % 10 * 2 + 1];
+            buffer[c]   = (char)num_str[no % 10 * 2];
+            buffer[c+1] = (char)num_str[no % 10 * 2 + 1];
         }
         if (code == Encoding::CODE_UTF8){
             buffer[c]   = 0xef;

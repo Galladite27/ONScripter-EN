@@ -1258,9 +1258,23 @@ void ScriptParser::setDefaultMenuLabels()
         setStr( &save_item_name, "Slot " );
     }
     else {
-        setStr( &save_menu_name, "ƒƒZ[ƒu„" );
-        setStr( &load_menu_name, "ƒƒ[ƒh„" );
-        setStr( &save_item_name, "‚µ‚¨‚è" );
+        // "ï¼œã‚»ãƒ¼ãƒ–ï¼" in shift-jis
+        const uint8_t save_menu_name_str[11] = {
+            0x81, 0x83, 0x83, 0x5A, 0x81, 0x5B, 0x83, 0x75, 0x81, 0x84, 0x00
+        };
+        setStr( &save_menu_name, (const char*)save_menu_name_str );
+
+        // "ï¼œãƒ­ãƒ¼ãƒ‰ï¼" in shift-jis
+        const uint8_t load_menu_name_str[10] = {
+            0x81, 0x83, 0x83, 0x8D, 0x81, 0x5B, 0x83, 0x68, 0x81, 0x84, 0x00
+        };
+        setStr( &load_menu_name, (const char*)load_menu_name_str );
+
+        // "ã—ãŠã‚Š" in shift-jis
+        const uint8_t save_item_name_str[6] = {
+            0x82, 0xB5, 0x82, 0xA8, 0x82, 0xE8, 0x00
+        };
+        setStr( &save_item_name, (const char*)save_item_name_str );
     }
 }
 
