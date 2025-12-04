@@ -1227,7 +1227,7 @@ int ONScripterLabel::init()
 #if defined(MACOSX)
     char* macos_font_file;
     NSFileManager *fm = [NSFileManager defaultManager];
-    NSString *hiraginoPath = @"/System/Library/Fonts/ヒラギノ丸コ�? ProN W4.ttc";
+    NSString *hiraginoPath = [NSString stringWithCString:(const char *)shiftjis_data::paths::hiragino_shiftjis encoding:NSShiftJISStringEncoding];
     if ([fm fileExistsAtPath:hiraginoPath])
     {
         macos_font_file = new char[ strlen([hiraginoPath UTF8String]) + 1 ];

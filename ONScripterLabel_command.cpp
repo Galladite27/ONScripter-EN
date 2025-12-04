@@ -34,6 +34,7 @@
 #include "Encoding.h"
 #include "ONScripterLabel.h"
 #include "graphics_resize.h"
+#include "ShiftJISData.h"
 #include "version.h"
 
 #include <cstdio>
@@ -2932,7 +2933,7 @@ int ONScripterLabel::gettagCommand()
 
                 else {
                     unicode1 = script_h.enc.getUTF16(buf);
-                    unicode2 = script_h.enc.getUTF16("?¿½?¿½", Encoding::CODE_CP932);
+                    unicode2 = script_h.enc.getUTF16((const char *)shiftjis_data::inserts::questions, Encoding::CODE_CP932);
                     while(*buf != '/' && *buf != 0 && unicode1 != unicode2) {
                         buf += script_h.enc.getBytes(buf[0]);
                     }

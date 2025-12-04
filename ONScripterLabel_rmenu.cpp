@@ -35,6 +35,7 @@
 
 #include "Encoding.h"
 #include "ONScripterLabel.h"
+#include "ShiftJISData.h"
 
 static const char* messages[][8] = {
     { "`%s%s    Date %s/%s    Time %s:%s",
@@ -45,14 +46,14 @@ static const char* messages[][8] = {
       "`Quit?",
       "Yes",
       "No" },
-    { "%s%s@%sŒ%s“ú%s%s•ª",
-      "%s%s@||||||||||||",
-      "%s%s‚ÉƒZ[ƒu‚µ‚Ü‚·B‚æ‚ë‚µ‚¢‚Å‚·‚©H",
-      "%s%s‚ğƒ[ƒh‚µ‚Ü‚·B‚æ‚ë‚µ‚¢‚Å‚·‚©H",
-      "ƒŠƒZƒbƒg‚µ‚Ü‚·B‚æ‚ë‚µ‚¢‚Å‚·‚©H",
-      "I—¹‚µ‚Ü‚·B‚æ‚ë‚µ‚¢‚Å‚·‚©H",
-      "‚Í‚¢",
-      "‚¢‚¢‚¦" }
+    { (const char *)shiftjis_data::messages::datetime,
+      (const char *)shiftjis_data::messages::spacing,
+      (const char *)shiftjis_data::messages::saving,
+      (const char *)shiftjis_data::messages::loading,
+      (const char *)shiftjis_data::messages::return_to_title,
+      (const char *)shiftjis_data::messages::quit,
+      (const char *)shiftjis_data::messages::yes,
+      (const char *)shiftjis_data::messages::no }
 };
 
 const char* ONScripterLabel::getMessageString( MessageId which )

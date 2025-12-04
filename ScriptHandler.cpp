@@ -42,6 +42,7 @@
 #include "ScriptHandler.h"
 #include "Encoding.h"
 #include "Reporter.h" // error reporting
+#include "ShiftJISData.h"
 #include <sys/stat.h>
 #include <sys/types.h>
 #ifdef WIN32
@@ -1511,22 +1512,22 @@ int ScriptHandler::getStringFromInteger( char *buffer, int no, int num_column,
     int c = 0;
     if (is_zero_inserted){
         for (i=0 ; i<num_space ; i++){
-            buffer[c++] = ((char*)"‚O")[0];
-            buffer[c++] = ((char*)"‚O")[1];
+            buffer[c++] = (char)shiftjis_data::inserts::wide_zero[0];
+            buffer[c++] = (char)shiftjis_data::inserts::wide_zero[1];
         }
     }
     else{
         for (i=0 ; i<num_space ; i++){
-            buffer[c++] = ((char*)"@")[0];
-            buffer[c++] = ((char*)"@")[1];
+            buffer[c++] = (char)shiftjis_data::inserts::wide_space[0];
+            buffer[c++] = (char)shiftjis_data::inserts::wide_space[1];
         }
     }
     if (num_minus == 1){
         if (code == Encoding::CODE_CP932){
             // This probably should use the bigger dash, but SJIS
             // doesn't like that. Can this file use UTF-8?
-            buffer[c++] = "|"[0];
-            buffer[c++] = "|"[1];
+            buffer[c++] = (char)shiftjis_data::inserts::wide_dash[0];
+            buffer[c++] = (char)shiftjis_data::inserts::wide_dash[1];
         }
         if (code == Encoding::CODE_UTF8){
             buffer[c++] = 0xef;
@@ -1535,11 +1536,10 @@ int ScriptHandler::getStringFromInteger( char *buffer, int no, int num_column,
         }
     }
     c = (num_column-1)*n;
-    char num_str[] = "‚O‚P‚Q‚R‚S‚T‚U‚V‚W‚X";
     for (i=0 ; i<num_digit ; i++){
         if (code == Encoding::CODE_CP932){
-            buffer[c]   = num_str[no % 10 * 2];
-            buffer[c+1] = num_str[no % 10 * 2 + 1];
+            buffer[c]   = (char)shiftjis_data::inserts::wide_numbers[no % 10 * 2];
+            buffer[c+1] = (char)shiftjis_data::inserts::wide_numbers[no % 10 * 2 + 1];
         }
         if (code == Encoding::CODE_UTF8){
             buffer[c]   = 0xef;

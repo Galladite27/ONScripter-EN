@@ -44,6 +44,7 @@
 
 #include "ScriptParser.h"
 #include "Encoding.h"
+#include "ShiftJISData.h"
 #include <cstdio>
 #include <cstdlib>
 
@@ -63,6 +64,9 @@
 #define DEFAULT_TEXT_SPEED_HIGHT  10
 
 #define MAX_PAGE_LIST 16
+
+const char* DEFAULT_START_KINSOKU = (const char*)shiftjis_data::kinsoku_defaults::start_kinsoku;
+const char* DEFAULT_END_KINSOKU = (const char*)shiftjis_data::kinsoku_defaults::end_kinsoku;
 
 typedef int (ScriptParser::*FuncList)();
 static struct FuncLUT{
@@ -1258,9 +1262,9 @@ void ScriptParser::setDefaultMenuLabels()
         setStr( &save_item_name, "Slot " );
     }
     else {
-        setStr( &save_menu_name, "＜セーブ＞" );
-        setStr( &load_menu_name, "＜ロード＞" );
-        setStr( &save_item_name, "しおり" );
+        setStr( &save_menu_name, (const char*)shiftjis_data::menu_labels::save_menu_name );
+        setStr( &load_menu_name, (const char*)shiftjis_data::menu_labels::load_menu_name );
+        setStr( &save_item_name, (const char*)shiftjis_data::menu_labels::save_item_name );
     }
 }
 

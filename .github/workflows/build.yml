@@ -1,10 +1,6 @@
 name: build
 
-on:
-  push:
-    branches: [ "master", "ci" ]
-  pull_request:
-    branches: [ "master", "ci" ]
+on: [push, pull_request]
 
 jobs:
   linux:
@@ -13,7 +9,11 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            cc: gcc
+            c_compiler: gcc
+            cpp_compiler: g++
+          - os: ubuntu-latest
+            c_compiler: clang
+            cpp_compiler: clang++
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v4
@@ -24,10 +24,11 @@ jobs:
       run: |
         sudo add-apt-repository -y "deb http://archive.ubuntu.com/ubuntu `lsb_release -sc` main universe"
         sudo apt-get update -y -qq
-        sudo apt-get install libasound2-dev libpulse-dev libwebp-dev libxrandr-dev tar
+        sudo apt-get install libasound2-dev libpulse-dev libwebp-dev libxrandr-dev tar autoconf libtool clang
     - name: configure
       env:
-        CC: ${{ matrix.cc }}
+        CC: ${{ matrix.c_compiler }}
+        CXX: ${{ matrix.cpp_compiler }}
       run: |
         ./configure --with-internal-libs
     - name: reconfigure extlibs (ogg)
@@ -41,7 +42,7 @@ jobs:
         make -j $NCPUS VERBOSE=true
         make -j $NCPUS VERBOSE=true tools
         make check
-        tar -czvf onscripter-en.Linux.x86-64.tar.gz \
+        tar -czvf onscripter-en.Linux.${{ matrix.c_compiler }}.x86-64.tar.gz \
           onscripter-en \
           README.md \
           COPYING \
@@ -62,8 +63,8 @@ jobs:
 
     - uses: actions/upload-artifact@v4
       with:
-        name: Linux x86-64 Build
-        path: ${{ github.workspace }}/onscripter-en.Linux.x86-64.tar.gz
+        name: ONScripter-EN Linux x86-64 ${{ matrix.c_compiler }} Build
+        path: ${{ github.workspace }}/onscripter-en.Linux.${{ matrix.c_compiler }}.x86-64.tar.gz
 
   windows:
     strategy:
@@ -153,5 +154,5 @@ jobs:
 
     - uses: actions/upload-artifact@v4
       with:
-        name: Windows ${{matrix.arch}} Build
+        name: ONScripter-EN Windows ${{matrix.arch}} Build
         path: ${{ github.workspace }}/onscripter-en.Windows.${{matrix.arch}}.zip
