@@ -1265,13 +1265,13 @@ void ScriptParser::setDefaultMenuLabels()
         setStr( &save_menu_name, (const char*)save_menu_name_str );
 
         // "＜ロード＞" in shift-jis
-        const uint8_t load_menu_name_str[10] = {
+        const uint8_t load_menu_name_str[11] = {
             0x81, 0x83, 0x83, 0x8D, 0x81, 0x5B, 0x83, 0x68, 0x81, 0x84, 0x00
         };
         setStr( &load_menu_name, (const char*)load_menu_name_str );
 
         // "しおり" in shift-jis
-        const uint8_t save_item_name_str[6] = {
+        const uint8_t save_item_name_str[7] = {
             0x82, 0xB5, 0x82, 0xA8, 0x82, 0xE8, 0x00
         };
         setStr( &save_item_name, (const char*)save_item_name_str );
