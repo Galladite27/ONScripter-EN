@@ -6,55 +6,53 @@ namespace shiftjis_data {
     
     namespace messages {
         //"%s%s　%s月%s日%s時%s分" in shift-jis
-        extern const unsigned char datetime[41];
+        extern const unsigned char datetime[23];
 
         //"%s%s　−−−−−−−−−−−−" in shift-jis
-        extern const unsigned char spacing[57];
+        extern const unsigned char spacing[31];
 
         //"%s%sにセーブします。よろしいですか？" in shift-jis
-        extern const unsigned char saving[70];
+        extern const unsigned char saving[37];
 
         //"%s%sをロードします。よろしいですか？" in shift-jis
-        extern const unsigned char loading[76];
+        extern const unsigned char loading[37];
 
         //"リセットします。よろしいですか？" in shift-jis
-        extern const unsigned char return_to_title[70];
+        extern const unsigned char return_to_title[33];
 
         //"終了します。よろしいですか？" in shift-jis
-        extern const unsigned char quit[62];
+        extern const unsigned char quit[29];
 
         //"はい" in shift-jis
-        extern const unsigned char yes[9];
+        extern const unsigned char yes[5];
 
         //"いいえ" in shift-jis
-        extern const unsigned char no[19];
+        extern const unsigned char no[7];
     }
     namespace paths {
-#if defined(MACOSX)
         // "/System/Library/Fonts/繝偵Λ繧ｭ繧吶ヮ荳ｸ繧ｳ繧? ProN W4.ttc" in shift-jis
-        extern const unsigned char hiragino_shiftjis[59]
-#endif
+        extern const unsigned char hiragino_shiftjis[59];
     }
     namespace kinsoku_defaults {
         // "」』）］｝、。，．・？！ヽヾゝゞ々ー" in shift-jis
-        extern const unsigned char start_kinsoku[73];
+        extern const unsigned char start_kinsoku[37];
 
         // "「『（［｛" in shift-jis
-        extern const unsigned char end_kinsoku[21];
+        extern const unsigned char end_kinsoku[11];
     }
 
     namespace inserts {
         // "?ｿｽ?ｿｽ" in shift-jis encoding.
         extern const unsigned char questions[7];
 
-        // "０" in shift-jis, no nul terminator
-        extern const unsigned char wide_zero[2];
+        // "０" in shift-jis
+        extern const unsigned char wide_zero[3];
 
-        // "　" in shift-jis, no nul terminator
-        extern const unsigned char wide_space[2];
+        // "　" in shift-jis
+        extern const unsigned char wide_space[3];
 
-        // "−" in shift-jis, no nul terminator
-        extern const unsigned char wide_dash[2];
+        // "−" in shift-jis
+        extern const unsigned char wide_dash[3];
 
         // "０１２３４５６７８９" in shift-jis
         extern const unsigned char wide_numbers[21];
