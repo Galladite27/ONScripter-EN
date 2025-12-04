@@ -13,7 +13,7 @@ tools/*make
 *.exe
 onscripter.rc
 test/googletest
-test/test_*
+test/test_*.exe
 build*/
 .vscode/
 .vs/
