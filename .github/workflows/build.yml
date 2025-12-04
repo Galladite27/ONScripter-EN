@@ -9,7 +9,11 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            compiler: [ {cpp: g++, c: gcc}, {cpp: clang++, c: clang} ]
+            c_compiler: gcc
+            cpp_compiler: g++
+          - os: ubuntu-latest
+            c_compiler: clang
+            cpp_compiler: clang++
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v4
@@ -23,8 +27,8 @@ jobs:
         sudo apt-get install libasound2-dev libpulse-dev libwebp-dev libxrandr-dev tar autoconf libtool clang
     - name: configure
       env:
-        CC: ${{ matrix.compiler.c }}
-        CXX: ${{ matrix.compiler.cpp }}
+        CC: ${{ matrix.c_compiler }}
+        CXX: ${{ matrix.cpp_compiler }}
       run: |
         ./configure --with-internal-libs
     - name: reconfigure extlibs (ogg)
