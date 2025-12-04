@@ -42,7 +42,7 @@ jobs:
         make -j $NCPUS VERBOSE=true
         make -j $NCPUS VERBOSE=true tools
         make check
-        tar -czvf onscripter-en.Linux.x86-64.tar.gz \
+        tar -czvf onscripter-en.Linux.${{ matrix.c_compiler }}.x86-64.tar.gz \
           onscripter-en \
           README.md \
           COPYING \
