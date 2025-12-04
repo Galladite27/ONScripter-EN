@@ -62,7 +62,7 @@ You must have the following packages available when building ONScripter-EN:
 
 
 ```bash
-sudo apt-get install libasound2-dev libpulse-dev libwebp-dev libxrandr-dev
+sudo apt-get install libasound2-dev libpulse-dev libwebp-dev libxrandr-dev autoconf libtool
 ```
 > NOTE: Installing these is only needed the first time you set up this environment.
 
@@ -74,9 +74,10 @@ autoreconf -fi
 autoupdate
 ```
 
-Finally you can build ONScripter-EN and it's tools:
+Finally you can configure and build ONScripter-EN and its tools:
 
 ```bash
+./configure --with-internal-libs
 make all
 ```
 
