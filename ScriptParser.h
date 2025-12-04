@@ -78,8 +78,8 @@
 #define DEFAULT_LOOKBACK_NAME3 "doffcur.bmp"
 
 // Mion: kinsoku
-const char* DEFAULT_START_KINSOKU;
-const char* DEFAULT_END_KINSOKU;
+extern const char* DEFAULT_START_KINSOKU;
+extern const char* DEFAULT_END_KINSOKU;
 
 typedef unsigned char uchar3[3];
 
