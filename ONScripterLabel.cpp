@@ -2447,6 +2447,13 @@ void ONScripterLabel::decodeExbtnControl( const char *ctl_str, SDL_Rect *check_s
             else
                 cell_no = 0;
             refreshSprite( sprite_no, true, cell_no, check_src_rect, check_dst_rect );
+# if 0
+            if ( sprite_info[sprite_no].is_animatable )
+                forceResetAnimTimer();
+#else
+            // Needs a kick-start here
+            advanceAnimPhase();
+#endif
         }
         else if (com == 'S' || com == 's'){
             sprite_no = getNumberFromBuffer( &ctl_str );

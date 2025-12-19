@@ -444,6 +444,9 @@ protected:
     void flushEvent();
     void advancePhase( int count=0 );
     void advanceAnimPhase( int count=0 );
+#if 0
+    void forceResetAnimTimer(); // Hopefully we won't need other types of this
+#endif
     void waitEventSub(int count);
     bool waitEvent(int count);
     void trapHandler();

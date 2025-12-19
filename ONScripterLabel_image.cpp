@@ -622,7 +622,7 @@ void ONScripterLabel::refreshSprite( int sprite_no, bool active_flag,
 {
     if (( sprite_info[sprite_no].image_name ||
           ((sprite_info[sprite_no].trans_mode == AnimationInfo::TRANS_STRING) &&
-           sprite_info[sprite_no].file_name) ) && 
+          sprite_info[sprite_no].file_name) ) &&
         ( (sprite_info[ sprite_no ].visible != active_flag) ||
           ((cell_no >= 0) && (sprite_info[ sprite_no ].current_cell != cell_no)) ||
           (AnimationInfo::doClipping(check_src_rect, &sprite_info[ sprite_no ].pos) == 0) ||

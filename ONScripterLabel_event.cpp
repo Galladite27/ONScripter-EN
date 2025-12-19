@@ -494,6 +494,14 @@ void ONScripterLabel::advanceAnimPhase( int count )
     }
 }
 
+# if 0
+void ONScripterLabel::forceResetAnimTimer()
+{
+    clearTimer( anim_timer_id );
+    animEvent();
+}
+#endif
+
 void ONScripterLabel::waitEventSub(int count)
 {
     if (break_id != NULL){ // already in wait queue
