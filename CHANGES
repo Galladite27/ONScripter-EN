@@ -1,3 +1,9 @@
+2025-12-19
+  Fixed a bug to do with displaying animated sprites using exbtn
+  This sapped four hours and a lot of my sanity just to understand
+  the code, but I have a better understanding because of it.
+  -Galladite
+
 2025-06-08
   Implemented savefileremove command with assistance from Ciox.
   Finished implementing and basically testing csvread command.

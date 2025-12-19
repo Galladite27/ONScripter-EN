@@ -52,6 +52,23 @@ BUGS OR MISFEATURES
 * Engine doesn't give warning when you try to assign to the same alias
   multiple times - currently silently maintains initial value
 
+* There was a Sekai Project employee who commented on PONscripter,
+  saying something to the effect of "the entire design of this
+  interpreter is arguably a bug." I'm starting to think that about the
+  effects timing system in ONScripter-EN. There is only one timer for
+  every animated sprite to share, and it obviously gets messy. The
+  system ideally needs a re-write to take into account the times for
+  every animation, and then provide a command to reset that timer and
+  sync animations. The current system becomes particularly egregious
+  when you have a slow (say, 5 second) animation and then add a fast
+  (say, 100ms) animation. Until the slow animation's timer is
+  complete, the fast animation will not advance. Then, the timer will
+  be set to the lowest common denominator, and the slow animation will
+  be forced to play at 10fps since that's the speed of the fastest
+  required timer. I don't know who thought this was a good idea, and
+  even if it is for parity with NScripter I don't think anyone would
+  resist it being fixed. I'll still have to check, though.
+
 FEATURES REQUESTED
   
 * Allow the specification of a "fallback" font to use for characters
@@ -83,17 +100,26 @@ DOCUMENTATION UPDATING LIST
 
 * Enginereset didn't appear to be on the documentation page, was it
   ever added or does my website just need updating? (Galladite)
+  Is this still bugged?
 
-* Add splitonce command
+* Add splitonce command (also check if code is fixed lol)
 
 * Add skipspeed command
 
 * Add strpxlen command
 
-* Add notes for CSV commands & update to mention onsen support with version number (once released)
+* Add notes for CSV commands & update to mention onsen support with
+  version number (once released)
   \--> Add csvdelete command
 
 * getreg IS supported in ONScr and ONScr-EN. Explain about how it is emulated.
+
+* Add note to vsp about showing animation 1 sprites causing the
+  animation to reset; note that this is the same with other commands
+  that unhide sprites such as exbtn
+
+* Add note to exbtn about control string elements which accept number
+  ranges as well as individual values
 
 
 TODO LIST
@@ -121,7 +147,6 @@ TODO LIST
 * "Requested features"
 * Implement a fix for the PDA build for the sake of completion
 * Redo the "dist" target to make building releases easier
-* The devkit desperately needs me to start making it lol
 
 
 COMPLETED
