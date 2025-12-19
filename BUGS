@@ -121,6 +121,8 @@ DOCUMENTATION UPDATING LIST
 * Add note to exbtn about control string elements which accept number
   ranges as well as individual values
 
+* Is savefileremove command documented?
+
 
 TODO LIST
 
