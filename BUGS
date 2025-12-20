@@ -112,17 +112,6 @@ DOCUMENTATION UPDATING LIST
   version number (once released)
   \--> Add csvdelete command
 
-* getreg IS supported in ONScr and ONScr-EN. Explain about how it is emulated.
-
-* Add note to vsp about showing animation 1 sprites causing the
-  animation to reset; note that this is the same with other commands
-  that unhide sprites such as exbtn
-
-* Add note to exbtn about control string elements which accept number
-  ranges as well as individual values
-
-* Is savefileremove command documented?
-
 
 TODO LIST
 
