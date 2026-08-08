@@ -2311,7 +2311,7 @@ include the following information:
        autoconf:       `($AUTOCONF --version) 2>/dev/null |$SED 1q`
 
 Report bugs to <bug-libtool@gnu.org>.
-GNU libtool home page: <http://www.gnu.org/s/libtool/>.
+GNU libtool home page: <http://www.gnu.org/software/libtool/>.
 General help using GNU software: <http://www.gnu.org/gethelp/>."
     exit 0
 }
@@ -4531,15 +4531,8 @@ func_mode_install ()
 	func_append dir "$objdir"
 
 	if test -n "$relink_command"; then
-	  # Strip any trailing slash from the destination.
-	  func_stripname '' '/' "$libdir"
-	  destlibdir=$func_stripname_result
-
-	  func_stripname '' '/' "$destdir"
-	  s_destdir=$func_stripname_result
-
 	  # Determine the prefix the user has applied to our future dir.
-	  inst_prefix_dir=`$ECHO "X$s_destdir" | $Xsed -e "s%$destlibdir\$%%"`
+	  inst_prefix_dir=`$ECHO "$destdir" | $SED -e "s%$libdir\$%%"`
 
 	  # Don't allow the user to place us outside of our expected
 	  # location b/c this prevents finding dependent libraries that
@@ -8654,7 +8647,7 @@ func_mode_link ()
 	      fi
 	    else
 	      # We cannot seem to hardcode it, guess we'll fake it.
-	      add_dir="-L$lt_sysroot$libdir"
+	      add_dir=-L$libdir
 	      # Try looking first in the location we're being installed to.
 	      if test -n "$inst_prefix_dir"; then
 		case $libdir in

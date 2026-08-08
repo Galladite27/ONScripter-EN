@@ -810,7 +810,7 @@ with_pic
 enable_fast_install
 with_aix_soname
 with_gnu_ld
-with_libtool_sysroot
+with_sysroot
 enable_libtool_lock
 enable_dependency_tracking
 enable_silent_rules
@@ -1478,8 +1478,7 @@ Optional Packages:
                           shared library versioning (aka "SONAME") variant to
                           provide on AIX, [default=aix].
   --with-gnu-ld           assume the C compiler uses GNU ld [default=no]
-  --with-libtool-sysroot[=DIR]
-                          Search for dependent libraries within DIR (or the
+  --with-sysroot[=DIR]    Search for dependent libraries within DIR (or the
                           compiler's sysroot if not specified).
 
 Some influential environment variables:
@@ -6431,33 +6430,33 @@ fi
 
 
 
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for libtool-sysroot" >&5
-printf %s "checking for libtool-sysroot... " >&6; }
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for sysroot" >&5
+printf %s "checking for sysroot... " >&6; }
 
-# Check whether --with-libtool-sysroot was given.
-if test ${with_libtool_sysroot+y}
+# Check whether --with-sysroot was given.
+if test ${with_sysroot+y}
 then :
-  withval=$with_libtool_sysroot;
+  withval=$with_sysroot;
 else $as_nop
-  with_libtool_sysroot=no
+  with_sysroot=no
 fi
 
 
 lt_sysroot=
-case $with_libtool_sysroot in #(
+case $with_sysroot in #(
  yes)
    if test yes = "$GCC"; then
      lt_sysroot=`$CC --print-sysroot 2>/dev/null`
    fi
    ;; #(
  /*)
-   lt_sysroot=`echo "$with_libtool_sysroot" | $SED -e "$sed_quote_subst"`
+   lt_sysroot=`echo "$with_sysroot" | $SED -e "$sed_quote_subst"`
    ;; #(
  no|'')
    ;; #(
  *)
-   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $with_libtool_sysroot" >&5
-printf "%s\n" "$with_libtool_sysroot" >&6; }
+   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $with_sysroot" >&5
+printf "%s\n" "$with_sysroot" >&6; }
    as_fn_error $? "The sysroot must be an absolute path." "$LINENO" 5
    ;;
 esac
