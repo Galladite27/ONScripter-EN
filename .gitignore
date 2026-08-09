@@ -1,4 +1,5 @@
 *~
+*.d
 *.o
 *.lo
 *.a
@@ -18,6 +19,7 @@ build*/
 .vscode/
 .vs/
 eps/
+/Makefile
 
 # CLion project files
 .idea

@@ -6,82 +6,86 @@
 TARGET ?= onscripter-en
 
 TDIR = tools/
-TOOLBINS = sardec$(EXESUFFIX) nsadec$(EXESUFFIX)	\
-        ns2dec$(EXESUFFIX) nscdec$(EXESUFFIX)	\
-        sarconv$(EXESUFFIX) nsaconv$(EXESUFFIX)	\
-        ns2conv$(EXESUFFIX) batchconv$(EXESUFFIX)	\
-        sarmake$(EXESUFFIX) nsamake$(EXESUFFIX)	\
-        ns2make$(EXESUFFIX) nscmake$(EXESUFFIX)	\
-        nbzdec$(EXESUFFIX)
-TOOLS = $(TOOLBINS:%=$(TDIR)%)
-TOOL_INCS = -I`pwd` -Iextlib/include $(TOOL_EXTRA_INCS)
+TOOLS = \
+	$(TBUILDDIR)sardec$(EXESUFFIX) $(TBUILDDIR)nsadec$(EXESUFFIX) \
+	$(TBUILDDIR)ns2dec$(EXESUFFIX) $(TBUILDDIR)nscdec$(EXESUFFIX) \
+	$(TBUILDDIR)sarconv$(EXESUFFIX) $(TBUILDDIR)nsaconv$(EXESUFFIX) \
+	$(TBUILDDIR)ns2conv$(EXESUFFIX) $(TBUILDDIR)batchconv$(EXESUFFIX) \
+	$(TBUILDDIR)sarmake$(EXESUFFIX) $(TBUILDDIR)nsamake$(EXESUFFIX) \
+	$(TBUILDDIR)ns2make$(EXESUFFIX) $(TBUILDDIR)nscmake$(EXESUFFIX) \
+	$(TBUILDDIR)nbzdec$(EXESUFFIX)
+TOOL_INCS = -I`pwd` -I$(INSTALLDIR)/include $(TOOL_EXTRA_INCS)
 TOOL_DEFS = $(DEFS) -DTOOLS_BUILD
 
-GUI_OBJS = ONScripterReporter$(OBJSUFFIX)           \
-	ONScripterLabel$(OBJSUFFIX)					    \
-	ONScripterLabel_command$(OBJSUFFIX)				\
-	ONScripterLabel_text$(OBJSUFFIX)				\
-	ONScripterLabel_effect$(OBJSUFFIX)				\
-	ONScripterLabel_effect_breakup$(OBJSUFFIX)		\
-	ONScripterLabel_effect_cascade$(OBJSUFFIX)		\
-	ONScripterLabel_effect_trig$(OBJSUFFIX)			\
-	ONScripterLabel_event$(OBJSUFFIX)				\
-	ONScripterLabel_rmenu$(OBJSUFFIX)				\
-	ONScripterLabel_animation$(OBJSUFFIX)			\
-	ONScripterLabel_sound$(OBJSUFFIX)				\
-	ONScripterLabel_file$(OBJSUFFIX)				\
-	ONScripterLabel_file2$(OBJSUFFIX)				\
-	ONScripterLabel_image$(OBJSUFFIX) AnimationInfo$(OBJSUFFIX)	\
-	FontInfo$(OBJSUFFIX) DirtyRect$(OBJSUFFIX)			\
-	graphics_routines$(OBJSUFFIX) resize_image$(OBJSUFFIX) \
-	ShiftJISData$(OBJSUFFIX)
-DECODER_OBJS = DirectReader$(OBJSUFFIX) SarReader$(OBJSUFFIX)	\
-               NsaReader$(OBJSUFFIX)
-ONSCRIPTER_OBJS = onscripter$(OBJSUFFIX) $(DECODER_OBJS)		\
-                  ScriptHandler$(OBJSUFFIX) ScriptParser$(OBJSUFFIX)	\
-                  ScriptParser_command$(OBJSUFFIX) $(GUI_OBJS)		\
-                  sjis2utf16$(OBJSUFFIX) $(EXT_OBJS) $(OTHER_OBJS)	\
-                  DirPaths$(OBJSUFFIX) Layer$(OBJSUFFIX)		\
-                  Encoding$(OBJSUFFIX)
-SARDEC_OBJS   = $(TDIR)sardec$(OBJSUFFIX) $(TDIR)DirectReader$(OBJSUFFIX)	\
-                $(TDIR)SarReader$(OBJSUFFIX) $(TDIR)DirPaths$(OBJSUFFIX)        \
-                $(TDIR)sjis2utf16$(OBJSUFFIX)
-SARMAKE_OBJS  = $(TDIR)sarmake$(OBJSUFFIX) $(TDIR)DirectReader$(OBJSUFFIX)	\
-                $(TDIR)SarReader$(OBJSUFFIX) $(TDIR)DirPaths$(OBJSUFFIX)        \
-                $(TDIR)sjis2utf16$(OBJSUFFIX)
-SARCONV_OBJS  = $(TDIR)sarconv$(OBJSUFFIX) $(TDIR)DirectReader$(OBJSUFFIX)	\
-                $(TDIR)SarReader$(OBJSUFFIX) $(TDIR)DirPaths$(OBJSUFFIX)	\
-                $(TDIR)resize_image$(OBJSUFFIX) $(TDIR)conv_shared$(OBJSUFFIX)  \
-                $(TDIR)conv_shared_jpeg$(OBJSUFFIX) $(TDIR)sjis2utf16$(OBJSUFFIX) \
-				$(TDIR)conv_shared_png$(OBJSUFFIX)
-NSADEC_OBJS   = $(TDIR)nsadec$(OBJSUFFIX) $(TDIR)DirectReader$(OBJSUFFIX)	\
-                $(TDIR)SarReader$(OBJSUFFIX) $(TDIR)NsaReader$(OBJSUFFIX)	\
-                $(TDIR)DirPaths$(OBJSUFFIX) $(TDIR)sjis2utf16$(OBJSUFFIX)
-NSACONV_OBJS  = $(TDIR)nsaconv$(OBJSUFFIX) $(TDIR)DirectReader$(OBJSUFFIX)	\
-                $(TDIR)SarReader$(OBJSUFFIX) $(TDIR)NsaReader$(OBJSUFFIX)	\
-                $(TDIR)DirPaths$(OBJSUFFIX) $(TDIR)resize_image$(OBJSUFFIX)	\
-                $(TDIR)conv_shared$(OBJSUFFIX) $(TDIR)sjis2utf16$(OBJSUFFIX) \
-                $(TDIR)conv_shared_jpeg$(OBJSUFFIX) $(TDIR)conv_shared_png$(OBJSUFFIX)
-NSAMAKE_OBJS  = $(TDIR)nsamake$(OBJSUFFIX) $(TDIR)DirectReader$(OBJSUFFIX)	\
-                $(TDIR)SarReader$(OBJSUFFIX) $(TDIR)NsaReader$(OBJSUFFIX)	\
-                $(TDIR)DirPaths$(OBJSUFFIX) $(TDIR)sjis2utf16$(OBJSUFFIX)
-NS2DEC_OBJS   = $(TDIR)ns2dec$(OBJSUFFIX) $(TDIR)DirectReader$(OBJSUFFIX)	\
-                $(TDIR)SarReader$(OBJSUFFIX) $(TDIR)NsaReader$(OBJSUFFIX)	\
-                $(TDIR)DirPaths$(OBJSUFFIX) $(TDIR)sjis2utf16$(OBJSUFFIX)
-NS2CONV_OBJS  = $(TDIR)ns2conv$(OBJSUFFIX) $(TDIR)DirectReader$(OBJSUFFIX)	\
-                $(TDIR)SarReader$(OBJSUFFIX) $(TDIR)NsaReader$(OBJSUFFIX)	\
-                $(TDIR)DirPaths$(OBJSUFFIX) $(TDIR)resize_image$(OBJSUFFIX)	\
-                $(TDIR)conv_shared$(OBJSUFFIX) $(TDIR)sjis2utf16$(OBJSUFFIX) \
-                $(TDIR)conv_shared_jpeg$(OBJSUFFIX) $(TDIR)conv_shared_png$(OBJSUFFIX)
-NS2MAKE_OBJS  = $(TDIR)ns2make$(OBJSUFFIX) $(TDIR)DirectReader$(OBJSUFFIX)	\
-                $(TDIR)SarReader$(OBJSUFFIX) $(TDIR)NsaReader$(OBJSUFFIX)	\
-                $(TDIR)DirPaths$(OBJSUFFIX) $(TDIR)sjis2utf16$(OBJSUFFIX)
-BATCONV_OBJS  = $(TDIR)batchconv$(OBJSUFFIX) $(TDIR)resize_image$(OBJSUFFIX)	\
-                $(TDIR)conv_shared$(OBJSUFFIX) $(TDIR)conv_shared_jpeg$(OBJSUFFIX) \
-				$(TDIR)conv_shared_png$(OBJSUFFIX)
-NBZDEC_OBJS   = $(TDIR)nbzdec$(OBJSUFFIX) $(TDIR)DirectReader$(OBJSUFFIX)	\
-                $(TDIR)SarReader$(OBJSUFFIX) $(TDIR)DirPaths$(OBJSUFFIX)	\
-                $(TDIR)sjis2utf16$(OBJSUFFIX)
+GUI_OBJS = \
+	$(OBJDIR)AnimationInfo$(OBJSUFFIX) \
+	$(OBJDIR)FontInfo$(OBJSUFFIX) \
+	$(OBJDIR)DirtyRect$(OBJSUFFIX) \
+	$(OBJDIR)graphics_routines$(OBJSUFFIX) \
+	$(OBJDIR)ONScripterReporter$(OBJSUFFIX) \
+	$(OBJDIR)ONScripterLabel$(OBJSUFFIX) \
+	$(OBJDIR)ONScripterLabel_command$(OBJSUFFIX) \
+	$(OBJDIR)ONScripterLabel_text$(OBJSUFFIX) \
+	$(OBJDIR)ONScripterLabel_effect$(OBJSUFFIX) \
+	$(OBJDIR)ONScripterLabel_effect_breakup$(OBJSUFFIX) \
+	$(OBJDIR)ONScripterLabel_effect_cascade$(OBJSUFFIX) \
+	$(OBJDIR)ONScripterLabel_effect_trig$(OBJSUFFIX) \
+	$(OBJDIR)ONScripterLabel_event$(OBJSUFFIX) \
+	$(OBJDIR)ONScripterLabel_rmenu$(OBJSUFFIX) \
+	$(OBJDIR)ONScripterLabel_animation$(OBJSUFFIX) \
+	$(OBJDIR)ONScripterLabel_sound$(OBJSUFFIX) \
+	$(OBJDIR)ONScripterLabel_file$(OBJSUFFIX) \
+	$(OBJDIR)ONScripterLabel_file2$(OBJSUFFIX) \
+	$(OBJDIR)ONScripterLabel_image$(OBJSUFFIX) \
+	$(OBJDIR)resize_image$(OBJSUFFIX) \
+	$(OBJDIR)ShiftJISData$(OBJSUFFIX)
+DECODER_OBJS = $(OBJDIR)DirectReader$(OBJSUFFIX) $(OBJDIR)SarReader$(OBJSUFFIX)	\
+               $(OBJDIR)NsaReader$(OBJSUFFIX)
+ONSCRIPTER_OBJS = $(OBJDIR)onscripter$(OBJSUFFIX) $(DECODER_OBJS)		\
+                  $(OBJDIR)ScriptHandler$(OBJSUFFIX) $(OBJDIR)ScriptParser$(OBJSUFFIX)	\
+                  $(OBJDIR)ScriptParser_command$(OBJSUFFIX) $(GUI_OBJS)		\
+                  $(OBJDIR)sjis2utf16$(OBJSUFFIX) $(EXT_OBJS) $(OTHER_OBJS)	\
+                  $(OBJDIR)DirPaths$(OBJSUFFIX) $(OBJDIR)Layer$(OBJSUFFIX)		\
+                  $(OBJDIR)Encoding$(OBJSUFFIX)
+SARDEC_OBJS   = $(TOBJDIR)sardec$(OBJSUFFIX) $(TOBJDIR)DirectReader$(OBJSUFFIX)	\
+                $(TOBJDIR)SarReader$(OBJSUFFIX) $(TOBJDIR)DirPaths$(OBJSUFFIX)        \
+                $(TOBJDIR)sjis2utf16$(OBJSUFFIX)
+SARMAKE_OBJS  = $(TOBJDIR)sarmake$(OBJSUFFIX) $(TOBJDIR)DirectReader$(OBJSUFFIX)	\
+                $(TOBJDIR)SarReader$(OBJSUFFIX) $(TOBJDIR)DirPaths$(OBJSUFFIX)        \
+                $(TOBJDIR)sjis2utf16$(OBJSUFFIX)
+SARCONV_OBJS  = $(TOBJDIR)sarconv$(OBJSUFFIX) $(TOBJDIR)DirectReader$(OBJSUFFIX)	\
+                $(TOBJDIR)SarReader$(OBJSUFFIX) $(TOBJDIR)DirPaths$(OBJSUFFIX)	\
+                $(TOBJDIR)resize_image$(OBJSUFFIX) $(TOBJDIR)conv_shared$(OBJSUFFIX)  \
+                $(TOBJDIR)conv_shared_jpeg$(OBJSUFFIX) $(TOBJDIR)sjis2utf16$(OBJSUFFIX) \
+				$(TOBJDIR)conv_shared_png$(OBJSUFFIX)
+NSADEC_OBJS   = $(TOBJDIR)nsadec$(OBJSUFFIX) $(TOBJDIR)DirectReader$(OBJSUFFIX)	\
+                $(TOBJDIR)SarReader$(OBJSUFFIX) $(TOBJDIR)NsaReader$(OBJSUFFIX)	\
+                $(TOBJDIR)DirPaths$(OBJSUFFIX) $(TOBJDIR)sjis2utf16$(OBJSUFFIX)
+NSACONV_OBJS  = $(TOBJDIR)nsaconv$(OBJSUFFIX) $(TOBJDIR)DirectReader$(OBJSUFFIX)	\
+                $(TOBJDIR)SarReader$(OBJSUFFIX) $(TOBJDIR)NsaReader$(OBJSUFFIX)	\
+                $(TOBJDIR)DirPaths$(OBJSUFFIX) $(TOBJDIR)resize_image$(OBJSUFFIX)	\
+                $(TOBJDIR)conv_shared$(OBJSUFFIX) $(TOBJDIR)sjis2utf16$(OBJSUFFIX) \
+                $(TOBJDIR)conv_shared_jpeg$(OBJSUFFIX) $(TOBJDIR)conv_shared_png$(OBJSUFFIX)
+NSAMAKE_OBJS  = $(TOBJDIR)nsamake$(OBJSUFFIX) $(TOBJDIR)DirectReader$(OBJSUFFIX)	\
+                $(TOBJDIR)SarReader$(OBJSUFFIX) $(TOBJDIR)NsaReader$(OBJSUFFIX)	\
+                $(TOBJDIR)DirPaths$(OBJSUFFIX) $(TOBJDIR)sjis2utf16$(OBJSUFFIX)
+NS2DEC_OBJS   = $(TOBJDIR)ns2dec$(OBJSUFFIX) $(TOBJDIR)DirectReader$(OBJSUFFIX)	\
+                $(TOBJDIR)SarReader$(OBJSUFFIX) $(TOBJDIR)NsaReader$(OBJSUFFIX)	\
+                $(TOBJDIR)DirPaths$(OBJSUFFIX) $(TOBJDIR)sjis2utf16$(OBJSUFFIX)
+NS2CONV_OBJS  = $(TOBJDIR)ns2conv$(OBJSUFFIX) $(TOBJDIR)DirectReader$(OBJSUFFIX)	\
+                $(TOBJDIR)SarReader$(OBJSUFFIX) $(TOBJDIR)NsaReader$(OBJSUFFIX)	\
+                $(TOBJDIR)DirPaths$(OBJSUFFIX) $(TOBJDIR)resize_image$(OBJSUFFIX)	\
+                $(TOBJDIR)conv_shared$(OBJSUFFIX) $(TOBJDIR)sjis2utf16$(OBJSUFFIX) \
+                $(TOBJDIR)conv_shared_jpeg$(OBJSUFFIX) $(TOBJDIR)conv_shared_png$(OBJSUFFIX)
+NS2MAKE_OBJS  = $(TOBJDIR)ns2make$(OBJSUFFIX) $(TOBJDIR)DirectReader$(OBJSUFFIX)	\
+                $(TOBJDIR)SarReader$(OBJSUFFIX) $(TOBJDIR)NsaReader$(OBJSUFFIX)	\
+                $(TOBJDIR)DirPaths$(OBJSUFFIX) $(TOBJDIR)sjis2utf16$(OBJSUFFIX)
+BATCONV_OBJS  = $(TOBJDIR)batchconv$(OBJSUFFIX) $(TOBJDIR)resize_image$(OBJSUFFIX)	\
+                $(TOBJDIR)conv_shared$(OBJSUFFIX) $(TOBJDIR)conv_shared_jpeg$(OBJSUFFIX) \
+				$(TOBJDIR)conv_shared_png$(OBJSUFFIX)
+NBZDEC_OBJS   = $(TOBJDIR)nbzdec$(OBJSUFFIX) $(TOBJDIR)DirectReader$(OBJSUFFIX)	\
+                $(TOBJDIR)SarReader$(OBJSUFFIX) $(TOBJDIR)DirPaths$(OBJSUFFIX)	\
+                $(TOBJDIR)sjis2utf16$(OBJSUFFIX)
 READER_HEADER = BaseReader.h DirectReader.h DirPaths.h
 PARSER_HEADER = $(EXTRADEPS) SarReader.h NsaReader.h DirectReader.h	\
                 $(READER_HEADER) ScriptHandler.h ScriptParser.h $(RC_HDRS)	\
@@ -90,52 +94,54 @@ ONSCRIPTER_HEADER = ONScripterLabel.h $(PARSER_HEADER)
 
 ALL: $(TARGET)$(EXESUFFIX) tools
 
-$(TARGET)$(EXESUFFIX): $(ONSCRIPTER_OBJS)
+
+$(TARGET)$(EXESUFFIX): export PKG_CONFIG_PATH=$(TOPSRC)/build/extlib/install/lib/pkgconfig
+$(TARGET)$(EXESUFFIX): $(ONSCRIPTER_OBJS) $(INTERNALLY_BUILT_LIBS)
 	$(CXX) -o $@ $(SANFLAGS) $(LDFLAGS) $(ONSCRIPTER_OBJS) $(LIBS)
 
-$(ONSCRIPTER_OBJS): $(EXTRADEPS)
+$(ONSCRIPTER_OBJS): $(EXTRADEPS) $(INTERNALLY_BUILT_LIBS)
 
 tools: $(TOOL_EXTRADEPS) $(TOOLS)
 
 $(TOOLS): $(EXTRADEPS)
 
-$(TDIR)sardec$(EXESUFFIX): $(SARDEC_OBJS)
+$(TBUILDDIR)sardec$(EXESUFFIX): $(SARDEC_OBJS)
 	$(CXX) -o $@ $(LDFLAGS) $(SARDEC_OBJS) $(TOOL_LIBS)
 
-$(TDIR)sarconv$(EXESUFFIX): $(SARCONV_OBJS)
+$(TBUILDDIR)sarconv$(EXESUFFIX): $(SARCONV_OBJS)
 	$(CXX) -o $@ $(LDFLAGS) $(SARCONV_OBJS) $(TOOL_LIBS)
 
-$(TDIR)sarmake$(EXESUFFIX): $(SARMAKE_OBJS)
+$(TBUILDDIR)sarmake$(EXESUFFIX): $(SARMAKE_OBJS)
 	$(CXX) -o $@ $(LDFLAGS) $(SARMAKE_OBJS) $(TOOL_LIBS)
 
-$(TDIR)nsadec$(EXESUFFIX): $(NSADEC_OBJS)
+$(TBUILDDIR)nsadec$(EXESUFFIX): $(NSADEC_OBJS)
 	$(CXX) -o $@ $(LDFLAGS) $(NSADEC_OBJS) $(TOOL_LIBS)
 
-$(TDIR)nsaconv$(EXESUFFIX): $(NSACONV_OBJS)
+$(TBUILDDIR)nsaconv$(EXESUFFIX): $(NSACONV_OBJS)
 	$(CXX) -o $@ $(LDFLAGS) $(NSACONV_OBJS) $(TOOL_LIBS)
 
-$(TDIR)nsamake$(EXESUFFIX): $(NSAMAKE_OBJS)
+$(TBUILDDIR)nsamake$(EXESUFFIX): $(NSAMAKE_OBJS)
 	$(CXX) -o $@ $(LDFLAGS) $(NSAMAKE_OBJS) $(TOOL_LIBS)
 
-$(TDIR)ns2dec$(EXESUFFIX): $(NS2DEC_OBJS)
+$(TBUILDDIR)ns2dec$(EXESUFFIX): $(NS2DEC_OBJS)
 	$(CXX) -o $@ $(LDFLAGS) $(NS2DEC_OBJS) $(TOOL_LIBS)
 
-$(TDIR)ns2conv$(EXESUFFIX): $(NS2CONV_OBJS)
+$(TBUILDDIR)ns2conv$(EXESUFFIX): $(NS2CONV_OBJS)
 	$(CXX) -o $@ $(LDFLAGS) $(NS2CONV_OBJS) $(TOOL_LIBS)
 
-$(TDIR)ns2make$(EXESUFFIX): $(NS2MAKE_OBJS)
+$(TBUILDDIR)ns2make$(EXESUFFIX): $(NS2MAKE_OBJS)
 	$(CXX) -o $@ $(LDFLAGS) $(NS2MAKE_OBJS) $(TOOL_LIBS)
 
-$(TDIR)batchconv$(EXESUFFIX): $(BATCONV_OBJS)
+$(TBUILDDIR)batchconv$(EXESUFFIX): $(BATCONV_OBJS)
 	$(CXX) -o $@ $(LDFLAGS) $(BATCONV_OBJS) $(TOOL_LIBS)
 
-$(TDIR)nscdec$(EXESUFFIX): $(TDIR)nscdec$(OBJSUFFIX)
+$(TBUILDDIR)nscdec$(EXESUFFIX): $(TOBJDIR)nscdec$(OBJSUFFIX)
 	$(CXX) -o $@ $(LDFLAGS) $< $(TOOL_LIBS)
 
-$(TDIR)nscmake$(EXESUFFIX): $(TDIR)nscmake$(OBJSUFFIX)
+$(TBUILDDIR)nscmake$(EXESUFFIX): $(TOBJDIR)nscmake$(OBJSUFFIX)
 	$(CXX) -o $@ $(LDFLAGS) $< $(TOOL_LIBS)
 
-$(TDIR)nbzdec$(EXESUFFIX): $(NBZDEC_OBJS)
+$(TBUILDDIR)nbzdec$(EXESUFFIX): $(NBZDEC_OBJS)
 	$(CXX) -o $@ $(LDFLAGS) $(NBZDEC_OBJS) $(TOOL_LIBS)
 
 CLEANUP += $(ONSCRIPTER_OBJS:.o=.d)
@@ -153,50 +159,65 @@ ptoolsdistclean: ptoolsclean
 	-$(RM) $(TOOLS)
 
 
-$(TDIR)sardec$(OBJSUFFIX): $(TDIR)arcdec.cpp
+$(TOBJDIR)sardec$(OBJSUFFIX): $(TDIR)arcdec.cpp $(EXTRADEPS)
+	@mkdir -p $(TOBJDIR)
 	$(CXX) -c -o $@ $(CXXSTD) $(OSCFLAGS) $(TOOL_INCS) $(TOOL_DEFS) -DSAR $<
 
-$(TDIR)nsadec$(OBJSUFFIX): $(TDIR)arcdec.cpp
+$(TOBJDIR)nsadec$(OBJSUFFIX): $(TDIR)arcdec.cpp $(EXTRADEPS)
+	@mkdir -p $(TOBJDIR)
 	$(CXX) -c -o $@ $(CXXSTD) $(OSCFLAGS) $(TOOL_INCS) $(TOOL_DEFS) -DNSA $<
 
-$(TDIR)ns2dec$(OBJSUFFIX): $(TDIR)arcdec.cpp
+$(TOBJDIR)ns2dec$(OBJSUFFIX): $(TDIR)arcdec.cpp $(EXTRADEPS)
+	@mkdir -p $(TOBJDIR)
 	$(CXX) -c -o $@ $(CXXSTD) $(OSCFLAGS) $(TOOL_INCS) $(TOOL_DEFS) -DNS2 $<
 
-$(TDIR)sarconv$(OBJSUFFIX): $(TDIR)arcconv.cpp
+$(TOBJDIR)sarconv$(OBJSUFFIX): $(TDIR)arcconv.cpp $(EXTRADEPS)
+	@mkdir -p $(TOBJDIR)
 	$(CXX) -c -o $@ $(CXXSTD) $(OSCFLAGS) $(TOOL_INCS) $(TOOL_DEFS) -DSAR $<
 
-$(TDIR)nsaconv$(OBJSUFFIX): $(TDIR)arcconv.cpp
+$(TOBJDIR)nsaconv$(OBJSUFFIX): $(TDIR)arcconv.cpp $(EXTRADEPS)
+	@mkdir -p $(TOBJDIR)
 	$(CXX) -c -o $@ $(CXXSTD) $(OSCFLAGS) $(TOOL_INCS) $(TOOL_DEFS) -DNSA $<
 
-$(TDIR)ns2conv$(OBJSUFFIX): $(TDIR)arcconv.cpp
+$(TOBJDIR)ns2conv$(OBJSUFFIX): $(TDIR)arcconv.cpp $(EXTRADEPS)
+	@mkdir -p $(TOBJDIR)
 	$(CXX) -c -o $@ $(CXXSTD) $(OSCFLAGS) $(TOOL_INCS) $(TOOL_DEFS) -DNS2 $<
 
-$(TDIR)sarmake$(OBJSUFFIX): $(TDIR)arcmake.cpp
+$(TOBJDIR)sarmake$(OBJSUFFIX): $(TDIR)arcmake.cpp $(EXTRADEPS)
+	@mkdir -p $(TOBJDIR)
 	$(CXX) -c -o $@ $(CXXSTD) $(OSCFLAGS) $(TOOL_INCS) $(TOOL_DEFS) -DSAR $<
 
-$(TDIR)nsamake$(OBJSUFFIX): $(TDIR)arcmake.cpp
+$(TOBJDIR)nsamake$(OBJSUFFIX): $(TDIR)arcmake.cpp $(EXTRADEPS)
+	@mkdir -p $(TOBJDIR)
 	$(CXX) -c -o $@ $(CXXSTD) $(OSCFLAGS) $(TOOL_INCS) $(TOOL_DEFS) -DNSA $<
 
-$(TDIR)ns2make$(OBJSUFFIX): $(TDIR)arcmake.cpp
+$(TOBJDIR)ns2make$(OBJSUFFIX): $(TDIR)arcmake.cpp $(EXTRADEPS)
+	@mkdir -p $(TOBJDIR)
 	$(CXX) -c -o $@ $(CXXSTD) $(OSCFLAGS) $(TOOL_INCS) $(TOOL_DEFS) -DNS2 $<
 
-$(TDIR)%$(OBJSUFFIX): $(TDIR)%.cpp
+$(TOBJDIR)%$(OBJSUFFIX): $(TDIR)%.cpp $(EXTRADEPS)
+	@mkdir -p $(TOBJDIR)
 	$(CXX) -c -o $@ $(CXXSTD) $(OSCFLAGS) $(TOOL_INCS) $(TOOL_DEFS) $<
 
-$(TDIR)%Reader$(OBJSUFFIX): %Reader.cpp
+$(TOBJDIR)%Reader$(OBJSUFFIX): %Reader.cpp $(EXTRADEPS)
+	@mkdir -p $(TOBJDIR)
 	$(CXX) -c -o $@ $(CXXSTD) $(OSCFLAGS) $(TOOL_INCS) $(TOOL_DEFS) $<
 
-$(TDIR)DirPaths$(OBJSUFFIX): DirPaths.cpp
+$(TOBJDIR)DirPaths$(OBJSUFFIX): DirPaths.cpp $(EXTRADEPS)
+	@mkdir -p $(TOBJDIR)
 	$(CXX) -c -o $@ $(CXXSTD) $(OSCFLAGS) $(TOOL_INCS) $(TOOL_DEFS) $<
 
-$(TDIR)resize_image$(OBJSUFFIX): resize_image.cpp
+$(TOBJDIR)resize_image$(OBJSUFFIX): resize_image.cpp $(EXTRADEPS)
+	@mkdir -p $(TOBJDIR)
 	$(CXX) -c -o $@ $(CXXSTD) $(OSCFLAGS) $(TOOL_INCS) $(TOOL_DEFS) $<
 
-$(TDIR)sjis2utf16$(OBJSUFFIX): sjis2utf16.cpp
+$(TOBJDIR)sjis2utf16$(OBJSUFFIX): sjis2utf16.cpp $(EXTRADEPS)
+	@mkdir -p $(TOBJDIR)
 	$(CXX) -c -o $@ $(CXXSTD) $(OSCFLAGS) $(TOOL_INCS) $(TOOL_DEFS) $<
 
-.cpp$(OBJSUFFIX):
-	$(CXX) -c $(CXXSTD) $(OSCFLAGS) $(INCS) $(DEPFLAGS) $(DEFS) $<
+$(OBJDIR)%$(OBJSUFFIX): %.cpp $(INTERNALLY_BUILT_LIBS)
+	@mkdir -p $(OBJDIR)
+	$(CXX) -c -o $@ $(CXXSTD) $(OSCFLAGS) $(INCS) $(DEPFLAGS) $(DEFS) $<
 
 $(TDIR)sardec$(OBJSUFFIX): $(READER_HEADER) SarReader.h
 $(TDIR)sarconv$(OBJSUFFIX): $(READER_HEADER) SarReader.h

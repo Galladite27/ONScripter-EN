@@ -21,9 +21,9 @@ endif
 
 BZIP2_CPPFLAGS=
 
-ifneq (,$(wildcard $(TOPSRC)/extlib/lib/libbz2$(LIBSUFFIX)))
-	BZIP2_CPPFLAGS=-I$(TOPSRC)/extlib/include
-	LIBS_bz2=$(TOPSRC)/extlib/lib/libbz2$(LIBSUFFIX)
+ifneq (,$(wildcard $(TOPSRC)/build/extlib/install/lib/libbz2$(LIBSUFFIX)))
+	BZIP2_CPPFLAGS=-I$(TOPSRC)/build/extlib/install/include
+	LIBS_bz2=$(TOPSRC)/build/extlib/install/lib/libbz2$(LIBSUFFIX)
 else
 	BZIP2_CPPFLAGS=
 	LIBS_bz2=$(shell pkg-config --libs bzip2 || echo -lbz2)
@@ -38,11 +38,13 @@ all: test
 
 include Makefile.testlibs
 
-.cpp$(OBJSUFFIX):
-	$(CXX) $(CXXSTD) -isystem $(GTEST_INCDIR) -I$(GTEST_DIR) $(CXXFLAGS) -c $< -o $@
+%$(OBJSUFFIX): %.cpp 
+	@mkdir -p $(TOPSRC)/build/test/.objs
+	$(CXX) $(CXXSTD) -isystem $(GTEST_INCDIR) -I$(GTEST_DIR) $(CXXFLAGS) -c $< -o $(TOPSRC)/build/test/.objs/$@
 
-.cc$(OBJSUFFIX):
-	$(CXX) $(CXXSTD) -isystem $(GTEST_INCDIR) -I$(GTEST_DIR) $(CXXFLAGS) -c $< -o $@
+%$(OBJSUFFIX): %.cc
+	@mkdir -p $(TOPSRC)/build/test/.objs
+	$(CXX) $(CXXSTD) -isystem $(GTEST_INCDIR) -I$(GTEST_DIR) $(CXXFLAGS) -c $< -o $(TOPSRC)/build/test/.objs/$@
 
 test_%$(EXESUFFIX): test_%.cpp $(TOPSRC)/%.cpp libgtest$(LIBSUFFIX)
 	$(Q)$(CXX) $(CXXSTD) -isystem $(GTEST_INCDIR) -I$(TOPSRC) $(CXXFLAGS) $^ -o $@

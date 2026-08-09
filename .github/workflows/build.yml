@@ -4,83 +4,132 @@ on: [push, pull_request]
 
 jobs:
   linux:
+    name: Linux ${{ case(matrix.packages, 'Packaged Deps', 'Internal Deps') }} with ${{ matrix.compilers.c_compiler }}
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - os: ubuntu-latest
-            c_compiler: gcc
-            cpp_compiler: g++
-          - os: ubuntu-latest
-            c_compiler: clang
-            cpp_compiler: clang++
+        os: [ ubuntu-latest ]
+        packages: [true, false]
+        compilers:
+          - { c_compiler: gcc, cpp_compiler: g++ }
+          - { c_compiler: clang, cpp_compiler: clang++ }
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v4
       with:
         submodules: recursive
 
-    - name: install dependencies (Linux)
+    - name: Install toolchain
+      if: ${{ !matrix.packages }}
       run: |
         sudo add-apt-repository -y "deb http://archive.ubuntu.com/ubuntu `lsb_release -sc` main universe"
         sudo apt-get update -y -qq
-        sudo apt-get install libasound2-dev libpulse-dev libwebp-dev libxrandr-dev tar autoconf libtool clang
-    - name: configure
+        sudo apt-get install \
+          libasound2-dev \
+          libpulse-dev \
+          libxrandr-dev \
+          tar \
+          autoconf \
+          libtool \
+          clang
+
+    - name: Install toolchain and dependencies
+      if: ${{ matrix.packages }}
+      run: |
+        sudo add-apt-repository -y "deb http://archive.ubuntu.com/ubuntu `lsb_release -sc` main universe"
+        sudo apt-get update -y -qq
+        sudo apt-get install \
+          libasound2-dev \
+          libpulse-dev \
+          libxrandr-dev \
+          tar \
+          autoconf \
+          libtool \
+          clang \
+          libpng-dev \
+          libfreetype-dev \
+          libsdl1.2-compat-dev \
+          libsdl-ttf2.0-dev \
+          libsdl-image1.2-dev \
+          libsdl-mixer1.2-dev \
+          libbz2-dev \
+          libmad0-dev \
+          libogg-dev \
+          libvorbis-dev \
+          zlib1g-dev
+
+    - name: Configure with Internal Libs
+      if: ${{ !matrix.packages }}
       env:
-        CC: ${{ matrix.c_compiler }}
-        CXX: ${{ matrix.cpp_compiler }}
+        CC: ${{ matrix.compilers.c_compiler }}
+        CXX: ${{ matrix.compilers.cpp_compiler }}
       run: |
         ./configure --with-internal-libs
-    - name: reconfigure extlibs (ogg)
+
+    - name: Configure with Packaged Libs
+      if: ${{ matrix.packages }}
+      env:
+        CC: ${{ matrix.compilers.c_compiler }}
+        CXX: ${{ matrix.compilers.cpp_compiler }}
       run: |
-        cd extlib/src/libogg-1.3.5
-        autoreconf -fi
-        autoupdate
-    - name: build
+        ./configure
+
+    - name: Build required internal dependencies
+      run: |
+        NCPUS=$(getconf _NPROCESSORS_ONLN)
+        make -j $NCPUS VERBOSE=true extlib
+
+    - name: Build ONScripter-EN
       run: |
         NCPUS=$(getconf _NPROCESSORS_ONLN)
         make -j $NCPUS VERBOSE=true
         make -j $NCPUS VERBOSE=true tools
         make check
-        tar -czvf onscripter-en.Linux.${{ matrix.c_compiler }}.x86-64.tar.gz \
+        tar -czvf onscripter-en.Linux.${{ case(matrix.packages, 'packaged_deps', 'internal_deps') }}.${{ matrix.compilers.c_compiler }}.x86-64.tar.gz \
           onscripter-en \
           README.md \
           COPYING \
           CHANGES \
-          tools/ns2conv \
-          tools/nsaconv \
-          tools/sardec \
-          tools/batchconv \
-          tools/nbzdec \
-          tools/ns2make \
-          tools/nsamake \
-          tools/sarconv \
-          tools/ns2dec \
-          tools/nsadec \
-          tools/nscdec \
-          tools/nscmake \
-          tools/sarmake
+          build/tools/ns2conv \
+          build/tools/nsaconv \
+          build/tools/sardec \
+          build/tools/batchconv \
+          build/tools/nbzdec \
+          build/tools/ns2make \
+          build/tools/nsamake \
+          build/tools/sarconv \
+          build/tools/ns2dec \
+          build/tools/nsadec \
+          build/tools/nscdec \
+          build/tools/nscmake \
+          build/tools/sarmake
 
     - uses: actions/upload-artifact@v4
       with:
-        name: ONScripter-EN Linux x86-64 ${{ matrix.c_compiler }} Build
-        path: ${{ github.workspace }}/onscripter-en.Linux.${{ matrix.c_compiler }}.x86-64.tar.gz
+        name: ONScripter-EN Linux x86-64 ${{ case(matrix.packages, 'packaged_deps', 'internal_deps') }} ${{ matrix.compilers.c_compiler }} Build
+        path: ${{ github.workspace }}/onscripter-en.Linux.${{ case(matrix.packages, 'packaged_deps', 'internal_deps') }}.${{ matrix.compilers.c_compiler }}.x86-64.tar.gz
 
   windows:
+    name: Windows ${{ case(matrix.packages, 'Packaged Deps', 'Internal Deps') }} on ${{ matrix.architecture.sys }}
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - os: windows-latest
-            cc: gcc
-            sys: mingw64
+        os: [ windows-latest ]
+        cc: [ gcc ]
+        packages: [true, false]
+        architecture: 
+          - sys: mingw64
             env: x86_64
             arch: x86-64
-          - os: windows-latest
-            cc: gcc
-            sys: mingw32
+          - sys: mingw32
             env: i686
             arch: i686
+        exclude:
+          - packages: true
+            architecture: 
+              sys: mingw32
+              env: i686
+              arch: i686
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v4
@@ -88,71 +137,88 @@ jobs:
         submodules: recursive
 
     - uses: msys2/setup-msys2@v2
+      if: ${{ !matrix.packages }}
+      name: Install toolchain
       with:
-        msystem: ${{matrix.sys}}
+        msystem: ${{matrix.architecture.sys}}
         update: true
         install:
-          mingw-w64-${{matrix.env}}-SDL
-          mingw-w64-${{matrix.env}}-SDL_ttf
-          mingw-w64-${{matrix.env}}-SDL_image
-          mingw-w64-${{matrix.env}}-bzip2
-          mingw-w64-${{matrix.env}}-libmikmod
-          mingw-w64-${{matrix.env}}-libmad
-          mingw-w64-${{matrix.env}}-libogg
-          mingw-w64-${{matrix.env}}-libvorbis
-          mingw-w64-${{matrix.env}}-freetype
-          mingw-w64-${{matrix.env}}-iconv
-          mingw-w64-${{matrix.env}}-zlib
-          mingw-w64-${{matrix.env}}-toolchain
-          mingw-w64-${{matrix.env}}-autotools
-          mingw-w64-${{matrix.env}}-flac
-          autotools
+          mingw-w64-${{matrix.architecture.env}}-toolchain
+          mingw-w64-${{matrix.architecture.env}}-autotools
+          mingw-w64-${{matrix.architecture.env}}-libtool
           make
           zip
 
-    - shell: msys2 {0}
-      name: Build SMpeg extlib
-      run: |
-        NCPUS=$(getconf _NPROCESSORS_ONLN)
-        (cd extlib/src/smpeg && ./configure --disable-{shared,gtk-player,opengl-player,debug})
-        make -j $NCPUS -C extlib/src/smpeg VERBOSE=true
-        make -C extlib/src/smpeg install VERBOSE=true
+    - uses: msys2/setup-msys2@v2
+      if: ${{ matrix.packages }}
+      name: Install toolchain and dependencies
+      with:
+        msystem: ${{matrix.architecture.sys}}
+        update: true
+        install:
+          mingw-w64-${{matrix.architecture.env}}-toolchain
+          mingw-w64-${{matrix.architecture.env}}-autotools
+          mingw-w64-${{matrix.architecture.env}}-libtool
+          make
+          zip
+          mingw-w64-${{matrix.architecture.env}}-SDL
+          mingw-w64-${{matrix.architecture.env}}-SDL_ttf
+          mingw-w64-${{matrix.architecture.env}}-SDL_image
+          mingw-w64-${{matrix.architecture.env}}-bzip2
+          mingw-w64-${{matrix.architecture.env}}-libmikmod
+          mingw-w64-${{matrix.architecture.env}}-libmad
+          mingw-w64-${{matrix.architecture.env}}-libogg
+          mingw-w64-${{matrix.architecture.env}}-libvorbis
+          mingw-w64-${{matrix.architecture.env}}-freetype
+          mingw-w64-${{matrix.architecture.env}}-iconv
+          mingw-w64-${{matrix.architecture.env}}-zlib
+          mingw-w64-${{matrix.architecture.env}}-flac
 
     - shell: msys2 {0}
-      name: Build SDL_mixer 1.2.12 extlib
+      if: ${{ !matrix.packages }}
+      name: Configure with Internal Libs
       run: |
-        NCPUS=$(getconf _NPROCESSORS_ONLN)
-        (cd extlib/src/SDL_mixer-1.2.12 && ./configure --disable-{shared,music-cmd,music-timidity-midi} CFLAGS="${CFLAGS} -Wno-error=implicit-function-declaration")
-        make -j $NCPUS -C extlib/src/SDL_mixer-1.2.12 VERBOSE=true
-        make -C extlib/src/SDL_mixer-1.2.12 install VERBOSE=true
+        ./configure --with-internal-libs
 
     - shell: msys2 {0}
-      name: Build
+      name: Configure with Packaged Libs
+      if: ${{ matrix.packages }}
+      run: |
+        ./configure
+
+    - shell: msys2 {0}
+      name: Build required internal dependencies
       run: |
         NCPUS=$(getconf _NPROCESSORS_ONLN)
-        make -f ./msys2/Makefile.Windows.MSYS2.${{matrix.arch}}.insani -j $NCPUS VERBOSE=true
-        make -f ./msys2/Makefile.Windows.MSYS2.${{matrix.arch}}.insani -j $NCPUS VERBOSE=true tools
-        make -f ./msys2/Makefile.Windows.MSYS2.${{matrix.arch}}.insani check
-        zip onscripter-en.Windows.${{matrix.arch}}.zip \
+        make -j $NCPUS VERBOSE=true extlib
+
+    - shell: msys2 {0}
+      name: Build ONScripter-EN
+      run: |
+        NCPUS=$(getconf _NPROCESSORS_ONLN)
+        make -j $NCPUS VERBOSE=true
+        make -j $NCPUS VERBOSE=true tools
+        make check
+        zip onscripter-en.Windows.${{ case(matrix.packages, 'packaged_deps', 'internal_deps') }}.${{matrix.architecture.arch}}.zip \
           onscripter-en.exe \
           README.md \
           COPYING \
           CHANGES \
-          tools/ns2conv.exe \
-          tools/nsaconv.exe \
-          tools/sardec.exe \
-          tools/batchconv.exe \
-          tools/nbzdec.exe \
-          tools/ns2make.exe \
-          tools/nsamake.exe \
-          tools/sarconv.exe \
-          tools/ns2dec.exe \
-          tools/nsadec.exe \
-          tools/nscdec.exe \
-          tools/nscmake.exe \
-          tools/sarmake.exe
+          build/tools/ns2conv.exe \
+          build/tools/nsaconv.exe \
+          build/tools/sardec.exe \
+          build/tools/batchconv.exe \
+          build/tools/nbzdec.exe \
+          build/tools/ns2make.exe \
+          build/tools/nsamake.exe \
+          build/tools/sarconv.exe \
+          build/tools/ns2dec.exe \
+          build/tools/nsadec.exe \
+          build/tools/nscdec.exe \
+          build/tools/nscmake.exe \
+          build/tools/sarmake.exe
 
     - uses: actions/upload-artifact@v4
       with:
-        name: ONScripter-EN Windows ${{matrix.arch}} Build
-        path: ${{ github.workspace }}/onscripter-en.Windows.${{matrix.arch}}.zip
+        name: ONScripter-EN Windows ${{ case(matrix.packages, 'packaged_deps', 'internal_deps') }} ${{matrix.architecture.arch}} Build
+        path: ${{ github.workspace }}/onscripter-en.Windows.${{ case(matrix.packages, 'packaged_deps', 'internal_deps') }}.${{matrix.architecture.arch}}.zip

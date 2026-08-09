@@ -285,9 +285,9 @@ internalise_SDL() {
     INTERNAL_SDL_MIXER=true
     INTERNAL_SDL_TTF=true
     INTERNAL_SMPEG=true
-    SDL_CONFIG=./extlib/bin/sdl-config
+    SDL_CONFIG=./build/extlib/install/bin/sdl-config
     SDLOTHERCONFIG=--disable-rpath
-    SMPEG_CONFIG=./extlib/bin/smpeg-config
+    SMPEG_CONFIG=./build/extlib/install/bin/smpeg-config
 }
 
 if $INTERNAL_LIBS
@@ -347,79 +347,50 @@ esac
 
 # Compiler (gcc, g++, icpc)
 
-compilerver() {
-    compiler=$1
-    __COMPILERVER=
-    rm -rf .vertest
-    mkdir .vertest
-    cd .vertest
-    cat > ver.c <<-_EOF
-    #include <stdio.h>
-    int main(int argc, char** argv) {
-        int ret = 0;
-        const char* version;
-    #if defined(__clang__)
-        version = __clang_version__;
-    #elif defined(__INTEL_COMPILER) || defined(__INTEL_LLVM_COMPILER) || defined(__GNUC__)
-        version = __VERSION__;
-    #else
-        version = "unknown";
-        ret = -1;
-    #endif
-        fprintf(stdout, "%s", version);
-        return ret;
-    }
-_EOF
-    $compiler ver.c -o ver >/dev/null 2>&1
-    __COMPILERVER=`./ver | tr -d '\r\n'`
-    cd ..
-    rm -rf .vertest
+rm -rf .configtest
+mkdir .configtest
+cd .configtest
 
-    unset compiler
+cat > test.c <<-_EOF
+#include <stdio.h>
+#ifdef __cplusplus
+#include <iostream>
+#endif
+int main(int argc, char** argv) {
+  int ret = 0;
+#if defined(__INTEL_COMPILER) || defined(__INTEL_LLVM_COMPILER)
+  printf("intel intel %s", __VERSION__);
+#elif defined(__clang__)
+  printf("clang clang++ %s", __VERSION__);
+#elif defined(__GNUC__)
+  printf("gcc g++ %s", __VERSION__);
+#else
+  puts("unsupported unsupported unsupported");
+  ret = -1;
+#endif
+  return ret;
 }
+_EOF
 
-# Make the script detect clang as a supported
-# compiler on OpenBSD and FreeBSD (untested
-# on FreeBSD, but it ought to work).
-# onscripter-en compiles without fail with clang. -grodzio1
-case "$POSIX" in
-OpenBSD) CC=clang ;;
-FreeBSD) CC=clang ;;
-esac
+cat test.c > test.cc
 
-if [ -z "$CC" ]; then CC=gcc; fi
+if [ -z "$CC"                           ]; then CC=gcc; fi
+if [ ! command -v gcc >/dev/null 2>&1   ]; then CC=clang; fi
+if [ ! command -v clang >/dev/null 2>&1 ]; then CC=cc; fi
+if [ ! command -v cc >/dev/null 2>&1    ]; then CC=cc; fi
 if $UNSUPPORTED_COMPILER
 then
     echo "Unsupported compiler requested; please don't complain if anything doesn't work!"
 else
     $echo_n "Checking C compiler... ${nobr}"
-    rm -rf .configtest
-    mkdir .configtest
-    cd .configtest
-    cat > test.c <<-_EOF
-    #include <stdio.h>
-    int main(int argc, char** argv) {
-      int ret = 0;
-    #if defined(__INTEL_COMPILER) || defined(__INTEL_LLVM_COMPILER)
-      fprintf(stdout, "intel");
-    #elif defined(__clang__)
-      fprintf(stdout, "clang");
-    #elif defined(__GNUC__)
-      fprintf(stdout, "gcc");
-    #else
-      fprintf(stdout, "unsupported");
-      ret = -1;
-    #endif
-      return ret;
-    }
-_EOF
     $CC test.c -o ctest >/dev/null 2>&1
     case $? in
-    0) CC_TYPE=`./ctest`
-       compilerver "$CC"
-       CC_VER=$__COMPILERVER
-       echo "$CC_TYPE $CC_VER"
-       ;;
+    0) OUTPUT=`./ctest`
+        CC_TYPE=$(echo $OUTPUT | cut -d ' ' -f 1)
+        CXX_TEMP=$(echo $OUTPUT | cut -d ' ' -f 2)
+        CC_VER=$(echo $OUTPUT | cut -d ' ' -f 3)
+        echo "$CC_TYPE $CC_VER"
+        ;;
     *) echo "error" >&2
         cat >&2 <<-_ERR
 
@@ -429,14 +400,11 @@ _EOF
 	_ERR
         exit 1 ;;
     esac
-    cd ..
-    rm -rf .configtest
 fi
 
 if [ -z "$CXX" ]
 then case "x$CC_TYPE" in
-xgcc | x) CXX=g++ ;;
-xclang) CXX=clang++ ;; # same story as with C compiler. -grodzio1
+x) CXX=g++ ;;
 xintel)
    if command -v icpx >/dev/null
    then
@@ -445,39 +413,20 @@ xintel)
      CXX=icpc
    fi
    ;;
-*) CXX=$CC ;;
+*) CXX=$CXX_TEMP ;;
 esac
 fi
 
 if not $UNSUPPORTED_COMPILER 
 then
     $echo_n "Checking C++ compiler... ${nobr}"
-    rm -rf .configtest
-    mkdir .configtest
-    cd .configtest
-    cat > test.cc <<-_EOF
-    #include <iostream>
-    int main(int argc, char** argv) {
-      int ret = 0;
-    #if defined(__INTEL_COMPILER) || defined(__INTEL_LLVM_COMPILER)
-      std::cout << "intel++";
-    #elif defined(__clang__)
-      std::cout << "clang++";
-    #elif defined(__GNUC__)
-      std::cout << "g++";
-    #else
-      std::cout << "unsupported";
-      ret = -1;
-    #endif
-      return ret;
-    }
-_EOF
     $CXX test.cc -o cxxtest >/dev/null 2>&1
     case $? in
-    0) CXX_TYPE=`./cxxtest`
-       compilerver "$CXX"
-       CXX_VER=$__COMPILERVER
-       echo "$CXX_TYPE $CXX_VER"
+    0) OUTPUT=`./cxxtest`
+       CC_TYPE=$(echo $OUTPUT | cut -d ' ' -f 1)
+       CXX_TYPE=$(echo $OUTPUT | cut -d ' ' -f 2)
+       CXX_VER=$(echo $OUTPUT | cut -d ' ' -f 3)
+       echo "$CXX_TYPE $CXX_VER, chosen: $CXX"
        ;;
     *)  echo "error" >&2
         cat >&2 <<-_ERR
@@ -488,9 +437,10 @@ _EOF
 	_ERR
         exit 1 ;;
     esac
-    cd ..
-    rm -rf .configtest
 fi
+
+cd ..
+rm -rf .configtest
 
 # dependency generation
 DEPFLAGS=
@@ -620,7 +570,7 @@ then
         0)  echo "yes"
             GFX_MMX_FLAGS="-mmmx -DUSE_X86_GFX"
             GFX_SSE2_FLAGS="-msse2 -DUSE_X86_GFX"
-            GFX_EXT_OBJS="graphics_mmx.o graphics_sse2.o"
+            GFX_EXT_OBJS="\$(OBJDIR)graphics_mmx.o \$(OBJDIR)graphics_sse2.o"
             CFLAGSEXTRA="$CFLAGSEXTRA -DUSE_X86_GFX"
             echo "     Compiling with x86 MMX/SSE2 custom graphics routines"
             ;;
@@ -638,7 +588,7 @@ then
         case $? in
         0)  echo "yes"
             GFX_MALTIVEC_FLAGS="-maltivec -mabi=altivec -DUSE_PPC_GFX"
-            GFX_EXT_OBJS="graphics_altivec.o"
+            GFX_EXT_OBJS="\$(OBJDIR)graphics_altivec.o"
             CFLAGSEXTRA="$CFLAGSEXTRA -DUSE_PPC_GFX"
             echo "     Compiling with PPC custom graphics routines"
             ;;
@@ -713,16 +663,10 @@ fi
 
 if $INTERNAL_SDL
 then
-    SDL_CONFIG=./extlib/bin/sdl-config
+    SDL_CONFIG=./build/extlib/install/bin/sdl-config
 else
     $echo_n "Checking for system SDL... ${nobr}"
-    case "$SYS" in
-        MinGW)  SDL_CONFIG=`pwd`/extlib
-                cd win_dll; make prefix=$SDL_CONFIG > /dev/null 2>&1; cd ..
-                SDL_CONFIG=`pwd`/extlib/bin/sdl-config
-                DISTCLEAN_OTHER=SDL.dll $DISTCLEAN_OTHER
-                cp -p ./win_dll/SDL.dll `pwd`;;
-        esac
+    SDL_CONFIG=sdl-config
     VER=`($SDL_CONFIG --version) 2>/dev/null`
     if [ -n "$VER" ]
     then
@@ -921,7 +865,7 @@ fi
 
 if $INTERNAL_SMPEG
 then
-    SMPEG_CONFIG=./extlib/bin/smpeg-config
+    SMPEG_CONFIG=./build/extlib/install/bin/smpeg-config
 else
     $echo_n "Checking for system libsmpeg... ${nobr}"
     VER=`($SMPEG_CONFIG --version) 2>/dev/null`
@@ -929,7 +873,7 @@ else
     then echo "yes"
     else echo "no"
 	INTERNAL_SMPEG=true
-	SMPEG_CONFIG=./extlib/bin/smpeg-config
+	SMPEG_CONFIG=./build/extlib/install/bin/smpeg-config
     fi
 fi
 
@@ -962,7 +906,7 @@ fi
 if $INTERNAL_FREETYPE
 then
     INTERNAL_SDL_TTF=true
-    FREETYPE_CONFIG=./extlib/bin/freetype-config
+    FREETYPE_CONFIG=./build/extlib/install/bin/freetype-config
 elif not $INTERNAL_SDL_TTF
 then
     $echo_n "Checking for system SDL_ttf... ${nobr}"
@@ -981,16 +925,6 @@ fi
 
 cd ..
 rm -rf .configtest
-
-if $INTERNAL_FREETYPE
-then
-    # See the file itself for explaination
-    $(cd ${srcdir}; ${srcdir}/extlib/bin/freetype-config-setup --build ${builddir})
-    if [ $? -ne 0 ]; then
-        echo "Error: failed to configure internal FreeType" >&2
-        exit 1
-    fi
-fi
 
 X11_CFLAGS=
 X11_LIBS=
@@ -1078,7 +1012,7 @@ require $INTERNAL_SDL_TTF   internal_sdl_ttf   SDL_ttf
 genlink() {
     if $1
     then
-        eval "LINK$2=\"extlib/lib/lib$2\\\$(LIBSUFFIX)\""
+        eval "LINK$2=\"\\\$(INSTALLDIR)/lib/lib$2\\\$(LIBSUFFIX)\""
     else
         eval "LINK$2=-l$2"
     fi
@@ -1110,7 +1044,6 @@ _EOF
     exit
 fi
 
-
 $echo_n "Writing Makefile... ${nobr}"
 
 case "$SYS" in
@@ -1132,6 +1065,10 @@ cat > Makefile <<_EOF
 # Makefile for ONScripter-EN
 
 TOPSRC=${srcdir}
+INSTALLDIR = \$(TOPSRC)/build/extlib/install
+TBUILDDIR = build/tools/
+TOBJDIR = build/tools/.objs/
+OBJDIR = build/.objs/
 
 WIN32=$W32
 OBJSUFFIX=$OBJ
@@ -1142,19 +1079,27 @@ PREFIX ?= $PREFIX
 
 # Extra handling for internal libraries.
 EXTRADEPS=$DEPS
-INTERNAL_SDL=\$(findstring true,$INTERNAL_SDL)
-INTERNAL_SMPEG=\$(findstring true,$INTERNAL_SMPEG)
+INTERNAL_BZIP2=\$(findstring true,$INTERNAL_BZIP2)
 INTERNAL_LIBPNG=\$(findstring true,$INTERNAL_LIBPNG)
 INTERNAL_LIBJPEG=\$(findstring true,$INTERNAL_LIBJPEG)
+INTERNAL_FREETYPE=\$(findstring true,$INTERNAL_FREETYPE)
 INTERNAL_OGGLIBS=\$(findstring true,$INTERNAL_OGGLIBS)
+INTERNAL_SDL=\$(findstring true,$INTERNAL_SDL)
+INTERNAL_SDL_IMAGE=\$(findstring true,$INTERNAL_SDL_IMAGE)
+INTERNAL_SMPEG=\$(findstring true,$INTERNAL_SMPEG)
+INTERNAL_SDL_MIXER=\$(findstring true,$INTERNAL_SDL_MIXER)
+INTERNAL_SDL_TTF=\$(findstring true,$INTERNAL_SDL_TTF)
+PKG_CONFIG_PATH=\$(TOPSRC)/build/extlib/install/lib/pkgconfig
 SDL_CONFIG=$SDL_CONFIG
+SMPEG_CONFIG=$SMPEG_CONFIG
+FREETYPE_CONFIG=$FREETYPE_CONFIG
 
-export PATH     :=   \$(shell pwd)/extlib/bin:\$(PATH)
-export CFLAGS   := -I\$(shell pwd)/extlib/include \$(CFLAGS) $VECFLAGS
-export CPPFLAGS := -I\$(shell pwd)/extlib/include \$(CPPFLAGS) $VECFLAGS
-export LDFLAGS  := -L\$(shell pwd)/extlib/lib \$(LDFLAGS) $EXTRALDFLAGS
-export CSTD     := -std=c99
-export CXXSTD   := $CXXSTD
+export PATH            :=   \$(shell pwd)/\$(INSTALLDIR)/bin:\$(PATH)
+export CFLAGS          := -I\$(shell pwd)/\$(INSTALLDIR)/include \$(CFLAGS) $VECFLAGS
+export CPPFLAGS        := -I\$(shell pwd)/\$(INSTALLDIR)/include \$(CPPFLAGS) $VECFLAGS
+export LDFLAGS         := -L\$(shell pwd)/\$(INSTALLDIR)/lib \$(LDFLAGS) $EXTRALDFLAGS
+export CSTD            := -std=c99
+export CXXSTD          := $CXXSTD
 
 export CC      := $CC
 export CXX     := $CXX
@@ -1167,10 +1112,13 @@ export RANLIB  := $RANLIB
 DEPFLAGS = $DEPFLAGS
 OSCFLAGSEXTRA = $CFLAGSEXTRA \$(OSCTMPFLAGS)
 SANFLAGS = $SANFLAGS
-INCS = $X11_CFLAGS -Iextlib/include \$(shell \$(SDL_CONFIG) --cflags)      \\
-                        \$(shell $SMPEG_CONFIG --cflags)    \\
-                        \$(shell $FREETYPE_CONFIG --cflags) \\
-       \$(shell [ -d extlib/include/SDL ] && echo -Iextlib/include/SDL)
+INCS = \\
+  $X11_CFLAGS \\
+  -I\$(INSTALLDIR)/include \\
+  \$(shell export PKG_CONFIG_PATH=\$(PKG_CONFIG_PATH) && \$(SDL_CONFIG) --cflags) \\
+  \$(shell export PKG_CONFIG_PATH=\$(PKG_CONFIG_PATH) && \$(SMPEG_CONFIG) --cflags) \\
+  \$(shell export PKG_CONFIG_PATH=\$(PKG_CONFIG_PATH) && \$(FREETYPE_CONFIG) --cflags) \\
+  \$(shell [ -d \$(INSTALLDIR)/include/SDL ] && echo -I\$(INSTALLDIR)/include/SDL)
 _EOF
 
 
@@ -1187,23 +1135,30 @@ GNURX_DIR = tools/libgnurx
 TOOL_EXTRA_INCS = -I\$(GNURX_DIR)
 TOOL_EXTRADEPS = \$(GNURX_DIR)/libgnurx.a
 TOOL_EXTRA_CLEAN = clean_libgnurx
-TOOL_LIBS = -Lextlib/lib \\
+TOOL_LIBS = -L\$(INSTALLDIR)/lib \\
             -static -Wl,--start-group \\
-            $LINKjpeg $LINKpng $LINKz \\
+            $LINKjpeg \\
+            $LINKpng \\
+            $LINKz \\
             -L\$(GNURX_DIR) -lgnurx \\
             $LINKbz2 -Wl,--end-group
-LIBS = -Lextlib/lib \\
+LIBS = -L\$(INSTALLDIR)/lib \\
        -static -Wl,--start-group \\
+       $LINKSDL_ttf \$(shell export PKG_CONFIG_PATH=\$(PKG_CONFIG_PATH) && \$(FREETYPE_CONFIG) --libs --static) \\
+       $LINKSDL_image $LINKjpeg $LINKpng \\
+       $LINKz \\
+       $LINKSDL_mixer \\
+       \$(shell export PKG_CONFIG_PATH=\$(PKG_CONFIG_PATH) && \$(SMPEG_CONFIG) --libs) \\
+       $LINKogg \\
+       $LINKvorbis \\
+       $LINKvorbisfile \\
        $MY_SDL_LIBS \\
-       $LINKSDL_ttf \\
-       \$(shell $SMPEG_CONFIG --libs) \$(shell $FREETYPE_CONFIG --libs) \\
-       $LINKSDL_image $LINKjpeg $LINKpng $LINKz \\
-       $LINKSDL_mixer $LINKogg $LINKvorbis $LINKvorbisfile \\
-       $LINKbz2 -Wl,--end-group
+       $LINKbz2 \\
+       -Wl,--end-group
 
 # Remove -DUSE_MESSAGEBOX if you don't want Windows dialog boxes
 DEFS = -DWIN32 -DUSE_MESSAGEBOX -DUSE_OGG_VORBIS
-EXT_OBJS = win32rc.o $GFX_EXT_OBJS
+EXT_OBJS = \$(OBJDIR)win32rc.o $GFX_EXT_OBJS
 
 _EOF
 
@@ -1211,15 +1166,14 @@ _EOF
 MacOSX)
 cat >> Makefile <<_EOF
 
-TOOL_LIBS = -Lextlib/lib \\
+TOOL_LIBS = -Lbuild/extlib/install/lib \\
             $LINKjpeg $LINKpng \\
             $LINKbz2 -lm
-LIBS = -Lextlib/lib \\
-       \$(shell \$(SDL_CONFIG) --static-libs)         \\
-       \$(shell $SMPEG_CONFIG --libs)              \\
-       $LINKSDL_ttf \$(shell $FREETYPE_CONFIG --libs) \\
-       $LINKSDL_image $LINKjpeg $LINKpng              \\
-       $LINKSDL_mixer $LINKogg $LINKvorbis $LINKvorbisfile \\
+LIBS = -Lbuild/extlib/install/lib \\
+       $LINKSDL_ttf \$(shell  export PKG_CONFIG_PATH=\$(PKG_CONFIG_PATH) && \$(FREETYPE_CONFIG) --libs --static) \\
+       $LINKSDL_image $LINKjpeg $LINKpng \\
+       $LINKSDL_mixer $LINKogg $LINKvorbis $LINKvorbisfile \$(shell export PKG_CONFIG_PATH=\$(PKG_CONFIG_PATH) && \$(SMPEG_CONFIG) --libs) \\
+       \$(shell \$(SDL_CONFIG) --static-libs) \\
        $LINKbz2 -lm -framework QuickTime -framework CoreFoundation
 
 DEFS = -DMACOSX -DUTF8_CAPTION -DUTF8_FILESYSTEM -DUSE_OGG_VORBIS
@@ -1240,15 +1194,15 @@ Solaris) INTERNAL_LDFLAGS="-lX11 -lXext"
 esac
 cat >> Makefile <<_EOF
 
-TOOL_LIBS = -Lextlib/lib \\
+TOOL_LIBS = -Lbuild/extlib/install/lib \\
             $LINKjpeg $LINKpng $LINKz \\
             $LINKbz2
-LIBS = $X11_LIBS -Lextlib/lib \\
+LIBS = $X11_LIBS -Lbuild/extlib/install/lib \\
        $LINKSDL_image \$(if \$(findstring true,$INTERNAL_SDL_IMAGE),$LINKjpeg $LINKpng $LINKz) \\
        $LINKSDL_mixer \$(if \$(or \$(findstring true,$INTERNAL_SDL_MIXER),\$(findstring true,$EXPLICIT_OGGLIBS)),$LINKvorbisfile $LINKvorbis $LINKogg) \\
-       \$(shell \$(SDL_CONFIG) --libs)      \\
-       \$(shell $SMPEG_CONFIG --libs)    \\
-       $LINKSDL_ttf \$(shell $FREETYPE_CONFIG --libs) \\
+       \$(shell export PKG_CONFIG_PATH=\$(PKG_CONFIG_PATH) &&  \$(SMPEG_CONFIG) --libs)    \\
+       $LINKSDL_ttf \$(shell  export PKG_CONFIG_PATH=\$(PKG_CONFIG_PATH) && \$(FREETYPE_CONFIG) --libs --static) \\
+       \$(shell export PKG_CONFIG_PATH=\$(PKG_CONFIG_PATH) && \$(SDL_CONFIG) --libs) \\
        $LINKbz2 \$(if \$(findstring true,$INTERNAL_SDL),$INTERNAL_LDFLAGS)
 
 DEFS = -DLINUX -DUSE_OGG_VORBIS -D_FILE_OFFSET_BITS=64 -D_TIME_BITS=64 $EXTRA_DEPS
@@ -1264,18 +1218,16 @@ fi
 
 cat >> Makefile <<_EOF
 
-.SUFFIXES:
-.SUFFIXES: $OBJ .cpp .h .c
-
 ifdef DEBUG
 OSCFLAGS = -O0 -g -pg -ggdb -pipe -Wpointer-arith $WERROR $STRICT \$(OSCFLAGSEXTRA) \$(SANFLAGS)
 export LDFLAGS  := -pg \$(LDFLAGS)
 else
   ifdef PROF
   OSCFLAGS = -O2 -pg -pipe -Wpointer-arith $WERROR $STRICT \$(OSCFLAGSEXTRA)
-  export LDFLAGS  := -pg \$(LDFLAGS)
+  export LDFLAGS  := -pg -s \$(LDFLAGS)
   else
   OSCFLAGS = -O2 -fomit-frame-pointer -pipe -Wpointer-arith $WERROR $STRICT \$(OSCFLAGSEXTRA) \$(SANFLAGS)
+  export LDFLAGS  := -pg -s \$(LDFLAGS)
   endif
 endif
 
@@ -1322,15 +1274,10 @@ include Makefile.extlibs
 include Makefile.onscripter
 include Makefile.unittest
 
-.PHONY: libtoolreplace
-libtoolreplace: | \$(EB)
-	@cp \$(ES)/required/freetype-config \$(EB)
-
-clean: pclean \$(CLEAN_TARGETS) libtoolreplace
+clean:
+	rm -r -f \$(TOPSRC)/build
 distclean: clean pdistclean \$(DISTCLEAN_TARGETS)
-	rm -r -f extlib/bin extlib/lib extlib/include \\
-	         extlib/share extlib/man
-	rm -f Makefile $DISTCLEAN_OTHER
+	rm -r -f build/extlib
 
 .PHONY: install* uninstall*
 install-bin:
@@ -1351,7 +1298,7 @@ cat >> Makefile <<_EOF
 RCFILE ?= onscripter.rc
 WICONFILE ?= ons-en.ico
 RCCLEAN = \$(RCFILE)
-win32rc.o: \$(RCFILE) \$(WICONFILE)
+\$(OBJDIR)win32rc.o: \$(RCFILE) \$(WICONFILE)
 	windres \$< -o \$@
 
 %.rc: %.rc.in version.h winres.h
@@ -1376,17 +1323,20 @@ if $USE_X86_GFX
 then
 cat >> Makefile <<_EOF
 
-graphics_sse2.o: graphics_sse2.cpp graphics_sse2.h graphics_common.h graphics_sum.h graphics_blend.h
+\$(OBJDIR)graphics_sse2.o: graphics_sse2.cpp graphics_sse2.h graphics_common.h graphics_sum.h graphics_blend.h \$(INTERNALLY_BUILT_LIBS)
+	@mkdir -p \$(OBJDIR)
 	\$(CXX) \$(CXXSTD) \$(OSCFLAGS) \$(INCS) \$(DEPFLAGS) \$(DEFS) $GFX_SSE2_FLAGS -c \$< -o \$@
 
-graphics_mmx.o: graphics_mmx.cpp graphics_mmx.h graphics_common.h graphics_sum.h
+\$(OBJDIR)graphics_mmx.o: graphics_mmx.cpp graphics_mmx.h graphics_common.h graphics_sum.h \$(INTERNALLY_BUILT_LIBS)
+	@mkdir -p \$(OBJDIR)
 	\$(CXX) \$(CXXSTD) \$(OSCFLAGS) \$(INCS) \$(DEPFLAGS) \$(DEFS) $GFX_MMX_FLAGS -c \$< -o \$@
 _EOF
 elif $USE_PPC_GFX
 then
 cat >> Makefile <<_EOF
 
-graphics_altivec.o: graphics_altivec.cpp graphics_altivec.h graphics_common.h graphics_sum.h
+\$(OBJDIR)graphics_altivec.o: graphics_altivec.cpp graphics_altivec.h graphics_common.h graphics_sum.h \$(INTERNALLY_BUILT_LIBS)
+	@mkdir -p \$(OBJDIR)
 	\$(CXX) \$(CXXSTD) \$(OSCFLAGS) \$(INCS) \$(DEPFLAGS) \$(DEFS) $GFX_MALTIVEC_FLAGS -c \$< -o \$@
 _EOF
 fi

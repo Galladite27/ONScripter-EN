@@ -12,6 +12,7 @@ This will look the same no matter how you build. You'll need git, as we use subm
 
 ```
 git clone --recurse-submodules -j8 https://github.com/Galladite27/ONScripter-EN.git
+cd ONScripter-EN
 ```
 
 # Official Instructions
